@@ -102,7 +102,11 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
 .chev{color:var(--text3);font-size:16px}
 
 /* ── AVATAR ─────────────────────────────────────────────── */
-.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;font-family:var(--mono)}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;font-family:var(--mono);background:rgba(138,54,236,.2);color:rgba(255,255,255,.9);border:2px solid rgba(138,54,236,.5)}
+.av-linux{border-color:#45e68f;color:#45e68f;background:rgba(69,230,143,.1)}
+.av-mac{border-color:#8a36ec;color:#b06af5;background:rgba(138,54,236,.15)}
+.av-special{border-color:#f0b93a;color:#f0b93a;background:rgba(240,185,58,.1)}
+.av-conductor{border-color:#f0b93a;color:#f0b93a;background:rgba(240,185,58,.12)}
 .ab{background:rgba(138,54,236,.2);color:#b06af5}
 .ag{background:rgba(69,230,143,.15);color:#45e68f}
 .aa{background:rgba(138,54,236,.2);color:#b06af5}
@@ -157,7 +161,8 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
 .fs{appearance:none}
 
 /* ── TOGGLE ──────────────────────────────────────────────── */
-.tgr{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.tgr{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;border-radius:4px;margin:0 -4px;padding-left:4px;padding-right:4px}
+.tgr:hover{background:rgba(255,255,255,.04)}
 .tgr:last-child{border-bottom:none}
 .tgi{flex:1}
 .tgl-l{font-size:12px;font-weight:500;color:#45e68f}
@@ -319,12 +324,12 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
   <div class="card" style="padding:5px 13px">
 
     <!-- Tonmeister -->
-    <div class="tgr">
+    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">Tonmeister</div>
         <div class="tgl-s">Ontvangt alle audio-streams</div>
       </div>
-      <div class="tg" id="tg-tm" onclick="togSess('tm')"></div>
+      <div class="tg" id="tg-tm" onclick="event.stopPropagation();togSess('tm')"></div>
     </div>
     <div id="row-tm-ep" style="display:none;padding:4px 0 8px;gap:8px;flex-direction:column">
       <select class="fs" id="sel-tm" style="font-size:11px">
@@ -340,12 +345,12 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
     </div>
 
     <!-- Junctionbox -->
-    <div class="tgr">
+    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">Junctionbox</div>
         <div class="tgl-s">Vereist bij lbw-spelers of HUB</div>
       </div>
-      <div class="tg" id="tg-jb" onclick="togSess('jb')"></div>
+      <div class="tg" id="tg-jb" onclick="event.stopPropagation();togSess('jb')"></div>
     </div>
     <div id="row-jb-ep" style="display:none;padding:4px 0 8px">
       <select class="fs" id="sel-jb" style="font-size:11px">
@@ -354,12 +359,12 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
     </div>
 
     <!-- Conductor -->
-    <div class="tgr">
+    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">Conductor</div>
         <div class="tgl-s">Dirigent-visualisatie (Mac vereist)</div>
       </div>
-      <div class="tg" id="tg-cond" onclick="togSess('cond')"></div>
+      <div class="tg" id="tg-cond" onclick="event.stopPropagation();togSess('cond')"></div>
     </div>
     <div id="row-cond-ep" style="display:none;padding:4px 0 8px">
       <select class="fs" id="sel-cond" style="font-size:11px">
@@ -368,47 +373,56 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
     </div>
 
     <!-- UDP -->
-    <div class="tgr">
+    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">UDP hole punching</div>
         <div class="tgl-s">Alle eindpunten ondersteunen dit</div>
       </div>
-      <div class="tg on" id="tg-udp" onclick="togSess('udp')"></div>
+      <div class="tg on" id="tg-udp" onclick="event.stopPropagation();togSess('udp')"></div>
     </div>
 
     <!-- Test mode -->
-    <div class="tgr">
+    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">Test mode</div>
         <div class="tgl-s">Alle interfaces uitgeschakeld — tune speelt</div>
       </div>
-      <div class="tg" id="tg-test" onclick="togSess('test')"></div>
+      <div class="tg" id="tg-test" onclick="event.stopPropagation();togSess('test')"></div>
     </div>
 
     <!-- Headphone Mix default -->
-    <div class="tgr">
+    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">Headphone mix</div>
         <div class="tgl-s">Default aan voor alle spelers</div>
       </div>
-      <div class="tg on" id="tg-hpm" onclick="togSess('hpm')"></div>
+      <div class="tg on" id="tg-hpm" onclick="event.stopPropagation();togSess('hpm')"></div>
     </div>
 
-    <!-- NOCTCAST -->
-    <div class="tgr">
+    <!-- NoSleepCast -->
+    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
-        <div class="tgl-l">NOCTCAST</div>
+        <div class="tgl-l">NoSleepCast</div>
         <div class="tgl-s">Stream naar luisterserver</div>
       </div>
-      <div class="tg" id="tg-noctcast" onclick="togSess('noctcast')"></div>
+      <div class="tg" id="tg-noctcast" onclick="event.stopPropagation();togSess('noctcast')"></div>
     </div>
     <div id="row-noctcast" style="display:none;padding:4px 0 8px">
       <div class="tgr" style="padding:4px 0">
         <div class="tgi">
-          <div class="tgl-l" style="font-size:11px">Tonmeister-mix ook naar NOCTCAST</div>
+          <div class="tgl-l" style="font-size:11px">Tonmeister-mix ook naar NoSleepCast</div>
         </div>
         <div class="tg" id="tg-noctmix" onclick="togSess('noctmix')"></div>
       </div>
+    </div>
+
+    <!-- TapTapBoom sessie-breed -->
+    <div class="tgr">
+      <div class="tgi">
+        <div class="tgl-l">TapTapBoom</div>
+        <div class="tgl-s">MIDI-signaal per voetpedaal — routing in expert</div>
+      </div>
+      <div class="tg" id="tg-ttbsess" onclick="event.stopPropagation();togSess('ttbsess')"></div>
     </div>
 
     <!-- Lokale opname -->
@@ -417,7 +431,7 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
         <div class="tgl-l">Lokale opname</div>
         <div class="tgl-s">Per eindpunt instelbaar na activatie</div>
       </div>
-      <div class="tg" id="tg-rec" onclick="togSess('rec')"></div>
+      <div class="tg" id="tg-rec" onclick="event.stopPropagation();togSess('rec')"></div>
     </div>
     <div id="row-rec" style="display:none;padding:4px 0 8px">
       <div id="rec-eps" style="font-size:11px;color:rgba(255,255,255,.6)"></div>
@@ -432,9 +446,9 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
     <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:5px;font-family:var(--mono)">Rij=ontvanger · Kolom=zender · TM · JB</div>
   </div>
   <div class="expert" id="ttb-expert" style="display:none;margin-top:8px">
-    <div class="etit">TAPTAPBOOM — ROUTING</div>
+    <div class="etit">TAPTAPBOOM — ROUTING (✓ = signaal loopt van bron naar bestemming)</div>
     <div style="overflow-x:auto"><div class="mat" id="ttbmat"></div></div>
-    <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:5px;font-family:var(--mono)">Rij=verzender · Kolom=ontvanger · 1=stuurt · 0=stuurt niet</div>
+    <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:5px;font-family:var(--mono)">Kolommen = BRON (↓) · Rijen = BESTEMMING (→)</div>
   </div>
 
   <button class="btn btp" style="margin-top:14px" onclick="saveAndGo()">Sessie opslaan en versturen</button>
@@ -525,12 +539,7 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
 
     <div style="margin-bottom:12px">
       <label class="fl" id="edit-lbl-mics">Microfoons</label>
-      <div style="display:flex;gap:6px">
-        <button class="mic-btn" id="mic1" onclick="setMics(1)">1</button>
-        <button class="mic-btn" id="mic2" onclick="setMics(2)">2</button>
-        <button class="mic-btn" id="mic4" onclick="setMics(4)">4</button>
-        <button class="mic-btn" id="mic8" onclick="setMics(8)">8</button>
-      </div>
+      <select class="fs" id="mic-sel" onchange="setMics(parseInt(this.value))" style="font-size:13px"></select>
     </div>
 
     <div class="card" style="padding:5px 13px;margin-bottom:12px">
@@ -539,39 +548,39 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
           <div class="tgl-l" id="edit-lbl-lbw">Lage bandbreedte</div>
           <div class="tgl-s" id="edit-sub-lbw">Minder dan 5 Mbit/s upload</div>
         </div>
-        <div class="tg" id="edit-tg-lbw" onclick="editTog('lbw')"></div>
+        <div class="tg" id="edit-tg-lbw" onclick="event.stopPropagation();editTogLbw()"></div>
       </div>
       <div class="tgr" id="edit-row-str2t">
         <div class="tgi">
           <div class="tgl-l" id="edit-lbl-str2t">Stream naar Tonmeister</div>
         </div>
-        <div class="tg on" id="edit-tg-str2t" onclick="editTog('str2t')"></div>
+        <div class="tg on" id="edit-tg-str2t" onclick="event.stopPropagation();editTog('str2t')"></div>
       </div>
       <div class="tgr">
         <div class="tgi">
           <div class="tgl-l" id="edit-lbl-mixer">Headphone mix</div>
         </div>
-        <div class="tg on" id="edit-tg-mixer" onclick="editTog('mixer')"></div>
+        <div class="tg on" id="edit-tg-mixer" onclick="event.stopPropagation();editTog('mixer')"></div>
       </div>
       <div class="tgr">
         <div class="tgi">
           <div class="tgl-l" id="edit-lbl-ttb">TapTapBoom</div>
           <div class="tgl-s" id="edit-sub-ttb">Stuurt MIDI-signaal</div>
         </div>
-        <div class="tg" id="edit-tg-ttb" onclick="editTog('ttb')"></div>
+        <div class="tg" id="edit-tg-ttb" onclick="event.stopPropagation();editTog('ttb')"></div>
       </div>
       <div class="tgr" id="edit-row-noctcast">
         <div class="tgi">
-          <div class="tgl-l" id="edit-lbl-noctcast">NOCTCAST</div>
+          <div class="tgl-l" id="edit-lbl-noctcast">NoSleepCast</div>
           <div class="tgl-s" id="edit-sub-noctcast">Override sessie-instelling</div>
         </div>
-        <div class="tg on" id="edit-tg-noctcast" onclick="editTogWarn('noctcast')"></div>
+        <div class="tg on" id="edit-tg-noctcast" onclick="event.stopPropagation();editTogWarn('noctcast')"></div>
       </div>
       <div class="tgr" id="edit-row-rec">
         <div class="tgi">
           <div class="tgl-l" id="edit-lbl-rec">Lokale opname</div>
         </div>
-        <div class="tg" id="edit-tg-rec" onclick="editTog('rec')"></div>
+        <div class="tg" id="edit-tg-rec" onclick="event.stopPropagation();editTog('rec')"></div>
       </div>
       <div id="edit-row-tune" style="display:none;padding:6px 0 2px">
         <label class="fl" id="edit-lbl-tune" style="font-size:10px">Test tune</label>
@@ -667,6 +676,17 @@ function setLang(l){
     else el.textContent=v;
   });
   document.getElementById('ep-search').placeholder=t('search');
+
+// Event delegation: clicking anywhere on a .tgr row triggers its toggle
+document.addEventListener('click', function(e){
+  const tgr = e.target.closest('.tgr');
+  if(!tgr) return;
+  // Don't double-fire if click was on the toggle itself or a select/button
+  if(e.target.closest('.tg,.fs,.fi,button,select,input')) return;
+  // Find the toggle in this row and click it
+  const tg = tgr.querySelector('.tg');
+  if(tg) tg.click();
+});
   const ps=document.getElementById('picker-search');
   if(ps) ps.placeholder=t('picker_search');
   const bn=document.getElementById('b-name');
@@ -683,15 +703,16 @@ function setLang(l){
 }
 
 const EPS=[
-  {mac:'m_64_0b_d7_aa_d1_96',name:'Uli',loc:'Muziekhuis Utrecht',isp:'KPN VDSL',lbw:false,mics:2,roles:['normal'],av:'ab',ai:'Focusrite Scarlett 2i2'},
-  {mac:'m_00_23_24_55_0f_f1',name:'Siebe',loc:'Thuis Rotterdam',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],av:'ag',ai:'Behringer UMC22'},
-  {mac:'m_00_23_24_46_02_82',name:'Sabien',loc:'Thuis',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],av:'ag',ai:''},
-  {mac:'m_00_23_24_e3_22_be',name:'Pepe',loc:'Muziekhuis Utrecht',isp:'Odido glasvezel',lbw:false,mics:2,roles:['normal'],av:'ag',ai:'Scarlett Solo'},
-  {mac:'m_4c_20_b8_aa_b3_ad',name:'TouchLab-N03',loc:'Tivoli Vredenburg',isp:'KPN zakelijk',lbw:false,mics:1,roles:['normal','tonmeister'],av:'ab',ai:'RME Fireface'},
-  {mac:'m_14_98_77_46_64_d0',name:'TouchLab-N04',loc:'Tivoli Vredenburg',isp:'KPN zakelijk',lbw:false,mics:1,roles:['normal','tonmeister'],av:'ab',ai:''},
-  {mac:'m_00_e0_4c_68_52_df',name:'Christiaan',loc:'Thuis',isp:'KPN glasvezel',lbw:false,mics:1,roles:['normal','conductor'],av:'aa',ai:'Apogee Duet'},
-  {mac:'m_00_23_24_d6_81_82',name:'Tonmeister',loc:'ConcertLab',isp:'KPN zakelijk',lbw:false,mics:0,roles:['tonmeister'],av:'agr',ai:''},
-  {mac:'m_00_23_24_55_10_9a',name:'Junctionbox',loc:'Thuis Christiaan',isp:'KPN glasvezel',lbw:false,mics:0,roles:['hub'],av:'agr',ai:''}
+  {mac:'m_64_0b_d7_aa_d1_96',player:'Uli',name:'N08',display:'Uli — N08',loc:'Muziekhuis Utrecht',isp:'KPN VDSL',lbw:false,mics:2,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'Focusrite Scarlett 2i2',conductor_capable:false},
+  {mac:'m_00_23_24_55_0f_f1',player:'Siebe',name:'A6',display:'Siebe — A6',loc:'Thuis Rotterdam',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'Behringer UMC22',conductor_capable:false},
+  {mac:'m_00_23_24_46_02_82',player:'Sabien',name:'A5',display:'Sabien — A5',loc:'Thuis',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_e3_22_be',player:'Pepe',name:'A0',display:'Pepe — A0',loc:'Muziekhuis Utrecht',isp:'Odido glasvezel',lbw:false,mics:2,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'Scarlett Solo',conductor_capable:false},
+  {mac:'m_4c_20_b8_aa_b3_ad',player:null,name:'N03',display:'N03',loc:'Tivoli Vredenburg',isp:'KPN zakelijk',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'RME Fireface',conductor_capable:false},
+  {mac:'m_14_98_77_46_64_d0',player:null,name:'N04',display:'N04',loc:'Tivoli Vredenburg',isp:'KPN zakelijk',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_00_e0_4c_68_52_df',player:'Christiaan',name:'CJR',display:'Christiaan — CJR',loc:'Thuis',isp:'KPN glasvezel',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'aa',ai:'Apogee Duet',conductor_capable:false},
+  {mac:'m_00_23_24_d6_81_82',player:null,name:'MX0',display:'MX0',loc:'TouchLab Hall',isp:'KPN zakelijk',lbw:false,mics:0,roles:['tonmeister'],machine:'Mac Mini M4',av:'agr',ai:'',conductor_capable:false,avb_bridge:true,notes:'AVB bridge → MOTU netwerk. Reaper multispeaker.'},
+  {mac:'m_00_23_24_55_10_9a',player:null,name:'Junctionbox',display:'Junctionbox',loc:'Thuis Christiaan',isp:'KPN glasvezel',lbw:false,mics:0,roles:['hub'],machine:'Linux mini-PC',av:'agr',ai:'',conductor_capable:false},
+  {mac:'mx1_placeholder',player:'Uli',name:'MX1',display:'Uli — MX1',loc:'Bij jou',isp:'KPN glasvezel',lbw:false,mics:0,roles:['conductor'],machine:'Mac Mini',av:'aa',ai:'',conductor_capable:true,notes:'Conductor. Leap Motion, Max/MSP, Glover.'}
 ];
 
 const WR={
@@ -707,14 +728,16 @@ let sess={
   jb:false, jbEp:'',
   cond:false, condEp:'',
   udp:true, test:false, hpm:true,
-  noctcast:false, noctmix:false,
+  noctcast:false, noctmix:false, ttbsess:false,
   rec:false
 };
 let logLines=[];
 
 Object.entries(WR).forEach(([mac,info])=>{
   const ep=EPS.find(e=>e.mac===mac);
-  const name=ep?.name||info.name;
+  const name=ep?.display||ep?.name||info.name;
+    const monInitial=init2(ep?.name||info.name,ep?.player);
+    const monAvCls=avClass(ep);
   logLines.push(`<span class="lo">${info.online} ${name} READY</span>`);
   if(!info.ai) logLines.push(`<span class="lw">  ! ${lang==='nl'?'geen audio-interface':'no audio interface'}</span>`);
 });
@@ -731,9 +754,23 @@ function nav(s){
   if(s==='eps') renderEps('');
 }
 
-function avC(n){const ep=EPS.find(e=>e.name===n);if(ep)return ep.av;const c=['ab','ag','aa','agr'];let h=0;for(let ch of n)h=(h*31+ch.charCodeAt(0))&0xffff;return c[h%c.length];}
-function init2(n){return n.split(/[\s\-]/).map(w=>w[0]||'').join('').toUpperCase().slice(0,2)}
-function roleLbl(r){return r==='tonmeister'?t('tm'):r==='hub'?t('hub'):r==='conductor'?t('dir'):t('normal')}
+function avClass(ep){
+  if(!ep) return 'av-mac';
+  if(ep.conductor_capable) return 'av-conductor';
+  if(ep.machine&&ep.machine.includes('Linux')) return 'av-linux';
+  return 'av-mac';
+}
+function avC(n){return 'av-mac';}
+function init2(n,player){
+  if(player){
+    // Person: initials from name (up to 2 chars)
+    const initials=player.split(/[\s]+/).map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
+    return initials||player[0].toUpperCase();
+  }
+  // Machine code: use short name directly (up to 3 chars)
+  return n.replace('TouchLab-','').slice(0,3).toUpperCase();
+}
+function roleLbl(r){return r==='tonmeister'?'Tonmeister':r==='hub'?'Junctionbox':r==='conductor'?'Conductor':'Musician'}
 function roleCls(r){return r==='tonmeister'?'bam':r==='hub'||r==='conductor'?'bb':'bgr'}
 
 function renderMonitor(){
@@ -746,7 +783,9 @@ function renderMonitor(){
   badge.textContent=n+' '+t('online');
   el.innerHTML=Object.entries(WR).map(([mac,info])=>{
     const ep=EPS.find(e=>e.mac===mac);
-    const name=ep?.name||info.name;
+    const name=ep?.display||ep?.name||info.name;
+    const monInitial=init2(ep?.name||info.name,ep?.player);
+    const monAvCls=avClass(ep);
     const hasAi=!!info.ai;
     return `<div class="ep-r">
       <div class="sdot sg"></div>
@@ -787,7 +826,7 @@ function doCmd(cmd){
 
 function newSession(){
   parts=[];
-  sess={tm:false,tmEp:'',extmix:false,jb:false,jbEp:'',cond:false,condEp:'',udp:true,test:false,hpm:true,noctcast:false,noctmix:false,rec:false};
+  sess={tm:false,tmEp:'',extmix:false,jb:false,jbEp:'',cond:false,condEp:'',udp:true,test:false,hpm:true,noctcast:false,noctmix:false,ttbsess:false,rec:false};
   document.getElementById('b-name').value='';
   document.getElementById('b-mode').value='MESH';
   renderBuilder();nav('builder');
@@ -809,10 +848,16 @@ function openBuilder(name){
 }
 
 function roleLblFull(r){
-  if(r==='tonmeister') return lang==='nl'?'Tonmeister':'Tonmeister';
-  if(r==='hub') return 'Junctionbox';
-  if(r==='conductor') return lang==='nl'?'Conductor':'Conductor';
-  return lang==='nl'?'Speler':'Player';
+  if(r==='tonmeister') return 'TERMINAL Tonmeister';
+  if(r==='hub')        return 'TERMINAL Junctionbox';
+  if(r==='conductor')  return 'TERMINAL Conductor';
+  return 'TERMINAL Musician';
+}
+function roleLblShort(r){
+  if(r==='tonmeister') return 'Tonmeister';
+  if(r==='hub')        return 'Junctionbox';
+  if(r==='conductor')  return 'Conductor';
+  return 'Musician';
 }
 
 function renderBuilder(){
@@ -826,9 +871,9 @@ function renderBuilder(){
         <div class="av ${p.av}" style="width:28px;height:28px;font-size:9px">${init2(p.name)}</div>
         <div style="flex:1;min-width:0">
           <div class="pr-name" style="font-size:12px;font-weight:400;color:#45e68f;transition:color .15s">${p.name}</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.45)">${p.isp||''}${p.lbw?' · lbw':''} · ${p.mics||1} mic${(p.mics||1)>1?'s':''}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.45)">${p.isp||''}${p.lbw?' · lbw':''}${p.udpIssue?'<span style="color:#f0b93a"> · ⚠ UDP</span>':''} · ${p.mics||1} mic${(p.mics||1)>1?'s':''}</div>
         </div>
-        <span class="prl">${roleLblFull(p.role)}</span>
+        <span class="prl">${roleLblShort(p.role)}</span>
         <span style="font-size:11px;color:rgba(255,255,255,.25);margin-left:2px">›</span>
       </div>`).join('');
   }
@@ -843,34 +888,121 @@ function renderBuilder(){
   ['tm','jb','cond'].forEach(k=>{
     const sel=document.getElementById('sel-'+k);
     if(!sel) return;
-    const roleFilter={tm:'tonmeister',jb:'hub',cond:'conductor'};
-    const eligible=EPS.filter(e=>e.roles.includes(roleFilter[k])||parts.some(p=>p.mac===e.mac));
+    const roleMap={tm:'tonmeister',jb:'hub',cond:'conductor'};
+
+    let eligible=[];
+    if(k==='cond'){
+      // Conductor: only conductor_capable endpoints from full library
+      eligible=EPS.filter(e=>e.conductor_capable);
+    } else {
+      // TM + JB: all already-added players (any can fulfil these roles)
+      // PLUS dedicated machines from library not yet added as players
+      const dedicatedRoles={tm:'tonmeister',jb:'hub'};
+      const addedMacs=new Set(parts.map(p=>p.mac));
+      const dedicated=EPS.filter(e=>e.roles.includes(dedicatedRoles[k])&&!addedMacs.has(e.mac));
+      eligible=[...parts, ...dedicated];
+    }
+
     sel.innerHTML='<option value="">— kies eindpunt —</option>'+
       eligible.map(e=>`<option value="${e.mac}"${sess[k+'Ep']===e.mac?' selected':''}>${e.name}</option>`).join('');
-    // Show/hide dropdown row
+
+    sel.onchange=()=>{
+      const prev=sess[k+'Ep'];
+      sess[k+'Ep']=sel.value;
+      // Revert previous holder's role
+      if(prev){const pidx=parts.findIndex(p=>p.mac===prev);if(pidx>=0&&parts[pidx].role===roleMap[k])parts[pidx].role='normal';}
+      // Set new holder's role (only if they're a player)
+      if(sel.value){
+        const idx=parts.findIndex(p=>p.mac===sel.value);
+        if(idx>=0) parts[idx].role=roleMap[k];
+        // JB lbw warning
+        if(k==='jb'){
+          const selectedPart=parts.find(p=>p.mac===sel.value);
+          const selectedEP=EPS.find(e=>e.mac===sel.value);
+          if((selectedPart&&selectedPart.lbw)||(selectedEP&&selectedEP.lbw)){
+            setTimeout(()=>alert(lang==='nl'?'Let op: dit eindpunt heeft een lage bandbreedte verbinding. Een Junctionbox heeft juist voldoende bandbreedte nodig. Kies bij voorkeur een ander eindpunt.':'Warning: this endpoint has low bandwidth. A Junctionbox needs sufficient bandwidth. Please choose a different endpoint.'),100);
+          }
+        }
+        if(k==='cond'){
+          // Auto-add conductor endpoint as player if not yet in parts
+          if(sel.value&&!parts.some(p=>p.mac===sel.value)){
+            const condEP=EPS.find(e=>e.mac===sel.value);
+            if(condEP){
+              const mem=recallEp(condEP.mac);
+              const initRoles=mem.roles_active||['conductor','normal'];
+              parts.push({...condEP,role:'conductor',roles_active:initRoles,
+                mics:mem.mics||condEP.mics||1,lbw:false,str2t:true,
+                mixer:sess.hpm,ttb:false,noctcast:sess.noctcast,rec:false,tune:mem.tune||'viola.mp3'});
+            }
+          }
+          const linuxOthers=parts.filter(p=>p.mac!==sel.value&&(p.os==='Linux'||p.machine==='Linux mini-PC'));
+          if(linuxOthers.length>0) setTimeout(()=>alert(`Let op: ${linuxOthers.map(p=>p.name).join(', ')} heeft geen scherm en kan de dirigent niet zien.`),100);
+        }
+      }
+      renderBuilder();
+    };
+
     const row=document.getElementById('row-'+k+'-ep');
-    if(row) row.style.display=sess[k]?'flex':'none';
-    if(row) row.style.flexDirection='column';
+    if(row){row.style.display=sess[k]?'flex':'none';row.style.flexDirection='column';}
   });
 
-  // NOCTCAST sub-row
+  // Record default: all on when first enabled
+  if(sess.rec&&parts.every(p=>p.rec===undefined)){
+    parts.forEach(p=>p.rec=true);
+  }
+
+  // NoSleepCast sub-row
   const nrow=document.getElementById('row-noctcast');
   if(nrow) nrow.style.display=sess.noctcast?'block':'none';
 
-  // Record sub-row
+  // Record sub-row — default all on when first activated
   const rrow=document.getElementById('row-rec');
   if(rrow) rrow.style.display=sess.rec?'block':'none';
   if(sess.rec){
+    // Default all parts to rec=true if not yet set
+    parts.forEach(p=>{if(p.rec===undefined||p.rec===false&&!p._recTouched)p.rec=true;});
     const recEps=document.getElementById('rec-eps');
     if(recEps) recEps.innerHTML=parts.map((p,i)=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08)">
         <span style="color:#45e68f;font-size:11px">${p.name}</span>
-        <div class="tg${p.rec?' on':''}" style="width:28px;height:16px" onclick="parts[${i}].rec=!parts[${i}].rec;renderBuilder()"></div>
+        <div class="tg${p.rec!==false?' on':''}" style="width:28px;height:16px" onclick="parts[${i}].rec=!parts[${i}].rec;parts[${i}]._recTouched=true;renderBuilder()"></div>
       </div>`).join('');
   }
 
-  // Show TTB matrix if any player has TTB on
-  const hasTTB=parts.some(p=>p.ttb);
+  // Explicit role sync from session settings → parts
+  const roleSync={tm:'tonmeister',jb:'hub',cond:'conductor'};
+  Object.entries(roleSync).forEach(([k,role])=>{
+    if(sess[k]&&sess[k+'Ep']){
+      const idx=parts.findIndex(p=>p.mac===sess[k+'Ep']);
+      if(idx>=0&&parts[idx].role!==role) parts[idx].role=role;
+    }
+  });
+  // Re-render parts list if roles changed (force update of pills)
+  if(n>0){
+    pel.innerHTML=parts.map((p,i)=>{
+      const ep=EPS.find(e=>e.mac===p.mac)||p;
+      const dispName=ep.display||p.name;
+      const initial=init2(ep.name,ep.player);
+      const avcls=avClass(ep);
+      const roles=p.roles_active&&p.roles_active.length>0?p.roles_active:[p.role||'normal'];
+      const pills=roles.map(r=>{
+        const col=r==='normal'?'#45e68f':r==='conductor'?'#f0b93a':'#8a36ec';
+        const bg=r==='normal'?'rgba(69,230,143,.12)':r==='conductor'?'rgba(240,185,58,.12)':'rgba(138,54,236,.18)';
+        const bc=r==='normal'?'rgba(69,230,143,.3)':r==='conductor'?'rgba(240,185,58,.3)':'rgba(138,54,236,.4)';
+        return `<span style="font-size:9px;font-weight:600;font-family:var(--mono);padding:2px 7px;border-radius:20px;background:${bg};color:${col};border:1px solid ${bc};margin-left:3px">${roleLblShort(r)}</span>`;
+      }).join('');
+      return `<div class="pr pr-clickable" onclick="openEdit(${i})">
+        <div class="av ${avcls}" style="width:32px;height:32px;font-size:9px;font-weight:700;letter-spacing:-0.5px">${initial}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:400;color:#fff;transition:color .15s">${dispName}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.45)">${p.isp||''}${p.lbw?' · lbw':''}${p.udpIssue?'<span style="color:#f0b93a"> · ⚠ UDP</span>':''} · ${p.mics||1} mic${(p.mics||1)>1?'s':''}</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px;max-width:120px">${pills}</div>
+        <span style="font-size:11px;color:rgba(255,255,255,.25);margin-left:4px">›</span>
+      </div>`;
+    }).join('');
+  }
+  const hasTTB=sess.ttbsess||parts.some(p=>p.ttb);
   const ttbEx=document.getElementById('ttb-expert');
   if(ttbEx) ttbEx.style.display=hasTTB?'block':'none';
 
@@ -879,43 +1011,191 @@ function renderBuilder(){
 }
 
 function togSess(k){
+  // ── Headphone Mix ───────────────────────────────────────────
+  if(k==='hpm'){
+    const turning=!sess.hpm;
+    const msg=turning
+      ? (lang==='nl'?'Dit zet de headphone mix voor alle spelers aan. Weet je het zeker?':'This enables headphone mix for all players. Are you sure?')
+      : (lang==='nl'?'Dit zet de headphone mix voor alle spelers uit. Weet je het zeker?':'This disables headphone mix for all players. Are you sure?');
+    if(!confirm(msg)) return;
+    sess.hpm=turning;
+    parts.forEach(p=>p.mixer=turning);
+    renderBuilder();
+    return;
+  }
+
+  // ── NoSleepCast ─────────────────────────────────────────────────
+  if(k==='noctcast'){
+    if(sess.noctcast){
+      // Turning off → confirm
+      if(!confirm(lang==='nl'?'Dit zet NoSleepCast voor alle spelers uit. Weet je het zeker?':'This disables NoSleepCast for all players. Are you sure?')) return;
+      sess.noctcast=false;
+      parts.forEach(p=>p.noctcast=false);
+    } else {
+      // Turning on → sync all parts, no confirm needed
+      sess.noctcast=true;
+      parts.forEach(p=>p.noctcast=true);
+    }
+    renderBuilder();
+    return;
+  }
+
+  // ── UDP hole punching ────────────────────────────────────────
+  if(k==='udp'){
+    sess.udp=!sess.udp;
+    if(!sess.udp&&parts.length>0){
+      // Show dropdown to select the problematic endpoint
+      // Multi-select: checkboxes per player
+      const div=document.createElement('div');
+      div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
+      const checkboxes=parts.map((p,i)=>{
+        const ep=EPS.find(e=>e.mac===p.mac)||p;
+        const name=ep.display||p.name;
+        return `<label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;color:#fff;font-size:12px">
+          <input type="checkbox" id="udp-cb-${i}" style="width:16px;height:16px;accent-color:#45e68f"> ${name}
+        </label>`;
+      }).join('');
+      div.innerHTML=`<div style="background:#1e0840;border:1px solid rgba(138,54,236,.4);border-radius:10px;padding:20px;width:100%;max-width:320px">
+        <div style="font-size:13px;font-weight:600;color:#45e68f;margin-bottom:12px">${lang==='nl'?'Welke eindpunten ondersteunen UDP hole punching niet?':'Which endpoints do not support UDP hole punching?'}</div>
+        <div style="margin-bottom:14px">${checkboxes}</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn bot" style="margin:0;flex:1" onclick="this.closest('div[style*=fixed]').remove();sess.udp=true;renderBuilder()">${lang==='nl'?'Annuleren':'Cancel'}</button>
+          <button class="btn btp" style="margin:0;flex:2" onclick="
+            parts.forEach((p,i)=>{p.udpIssue=!!document.getElementById('udp-cb-'+i)?.checked;});
+            this.closest('div[style*=fixed]').remove();
+            renderBuilder();
+          ">${lang==='nl'?'Bevestigen':'Confirm'}</button>
+        </div>
+      </div>`;
+      document.querySelector('.app').appendChild(div);
+    }
+    renderBuilder();
+    return;
+  }
+
+  // ── TM / JB / COND ──────────────────────────────────────────
   if(k==='tm'||k==='jb'||k==='cond'){
     sess[k]=!sess[k];
-    if(!sess[k]) sess[k+'Ep']='';
-    // Auto-enable JB if lbw players present
+    if(!sess[k]){
+      // Revert role of previous holder
+      const mac=sess[k+'Ep'];
+      if(mac){const idx=parts.findIndex(p=>p.mac===mac);if(idx>=0)parts[idx].role='normal';}
+      sess[k+'Ep']='';
+    }
     if(k==='jb'&&!sess.jb&&parts.some(p=>p.lbw)){
       setTimeout(()=>alert(lang==='nl'?'Let op: er zijn lbw-spelers — Junctionbox is vereist.':'Warning: lbw players present — Junctionbox required.'),100);
     }
-  } else if(k==='cond'&&!sess.cond) {
-    // check will happen after toggle
+    // Conductor: auto-add MX1 as player if not yet added
+    if(k==='cond'&&sess.cond){
+      const mx1=EPS.find(e=>e.conductor_capable);
+      if(mx1&&!parts.some(p=>p.mac===mx1.mac)){
+        parts.push({...mx1,role:'conductor',mics:mx1.mics||1,lbw:false,str2t:true,mixer:sess.hpm,ttb:false,noctcast:sess.noctcast,rec:false,tune:'viola.mp3'});
+      }
+      sess.condEp=mx1?.mac||'';
+      const linuxPlayers=parts.filter(p=>p.mac!==sess.condEp&&(p.os==='Linux'||p.machine==='Linux mini-PC'));
+      if(linuxPlayers.length>0) setTimeout(()=>alert(`Let op: ${linuxPlayers.map(p=>p.name).join(', ')} heeft geen scherm.`),100);
+    }
+  } else if(k==='noctmix'){
+    if(!sess.noctmix&&!sess.tm){
+      // No TM yet — activate TM and scroll to dropdown
+      sess.noctmix=true;
+      sess.tm=true;
+      renderBuilder();
+      setTimeout(()=>{
+        const tmRow=document.getElementById('row-tm-ep');
+        if(tmRow){
+          tmRow.style.display='flex';
+          tmRow.style.flexDirection='column';
+          tmRow.scrollIntoView({behavior:'smooth',block:'center'});
+          // Flash green highlight
+          tmRow.style.background='rgba(69,230,143,.12)';
+          setTimeout(()=>tmRow.style.background='',1800);
+        }
+        alert(lang==='nl'?'Kies nu een Tonmeister in de sessie-instellingen hierboven.':'Please select a Tonmeister in the session settings above.');
+      },200);
+      return;
+    }
+    sess.noctmix=!sess.noctmix;
   } else {
     sess[k]=!sess[k];
   }
-  // Conductor + Linux check
-  if(k==='cond'&&sess.cond){
-    const linuxPlayers=parts.filter(p=>p.machine==='Linux mini-PC'||p.os==='Linux');
-    if(linuxPlayers.length>0){
-      const names=linuxPlayers.map(p=>p.name).join(', ');
-      setTimeout(()=>alert(`Let op: ${names} gebruikt een Linux mini-PC zonder scherm en kan de dirigent niet zien.`),100);
-    }
+
+  // TM: sync role in parts
+  if(k==='tm'&&sess.tm&&sess.tmEp){
+    const idx=parts.findIndex(p=>p.mac===sess.tmEp);
+    if(idx>=0) parts[idx].role='tonmeister';
   }
+
   renderBuilder();
 }
 
 function removePart(i){parts.splice(i,1);renderBuilder();}
 
+function qLatency(q){
+  const fps=64, sr=48000;
+  return ((q*fps/sr)*1000).toFixed(1);
+}
+function qTotal(q){
+  const fps=64, sr=48000, usb=3;
+  const jitter=(q*fps/sr)*1000;
+  const iface=(2*usb*fps/sr)*1000;
+  return (jitter+iface).toFixed(1);
+}
+function applyBulkQ(type){
+  const val=parseInt(document.getElementById('bulk-q-'+type).value);
+  const n=parts.length;
+  for(let i=0;i<n;i++){
+    for(let j=0;j<n+2;j++){
+      if(i===j) continue;
+      const inp=document.getElementById(`q_${i}_${j}`);
+      if(!inp) continue;
+      const isTM=j===n, isJB=j===n+1;
+      if(type==='all') inp.value=val;
+      else if(type==='mm'&&!isTM&&!isJB) inp.value=val;
+      else if(type==='tm'&&isTM) inp.value=val;
+      else if(type==='jb'&&isJB) inp.value=val;
+    }
+  }
+}
+function updateBulkLatency(type){
+  const val=parseInt(document.getElementById('bulk-q-'+type).value)||8;
+  const el=document.getElementById('bulk-lat-'+type);
+  if(el) el.textContent=`${qLatency(val)}ms · totaal ~${qTotal(val)}ms`;
+}
+
 function renderQmat(){
   const n=parts.length;
   const el=document.getElementById('qmat');
   if(n===0){el.innerHTML='';return;}
-  const names=parts.map(p=>p.name.slice(0,3));
+  const names=parts.map(p=>{const ep=EPS.find(e=>e.mac===p.mac);return ep?(ep.player||ep.name).slice(0,3):p.name.slice(0,3);});
   const cols=[...names,'TM','JB'];
-  let h='<table><tr><th></th>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
+
+  // Bulk edit controls
+  const qOpts=[4,6,8,10,12,16,20].map(q=>`<option value="${q}">q=${q} — ${qLatency(q)}ms</option>`).join('');
+  const qOptsTM=[8,10,12,16,20,25,32,40,50].map(q=>`<option value="${q}"${q===16?' selected':''}">q=${q} — ${qLatency(q)}ms</option>`).join('');
+  let h=`<div style="margin-bottom:10px;display:flex;flex-direction:column;gap:6px">
+    <div style="font-size:9px;color:#45e68f;font-family:var(--mono);font-weight:600;margin-bottom:2px">BULK INSTELLEN</div>
+    ${[
+      {id:'mm',label:'Musici → Musici',opts:qOpts,def:8},
+      {id:'tm',label:'Musici → Tonmeister',opts:qOptsTM,def:16},
+      {id:'jb',label:'Musici → Junctionbox',opts:qOpts,def:4},
+      {id:'all',label:'Alles tegelijk',opts:qOpts,def:8}
+    ].map(({id,label,opts,def})=>`
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span style="font-size:10px;color:rgba(255,255,255,.55);min-width:130px">${label}</span>
+      <select id="bulk-q-${id}" class="fs" style="font-size:10px;padding:4px 6px;flex:1;min-width:90px" onchange="updateBulkLatency('${id}')">${opts}</select>
+      <span id="bulk-lat-${id}" style="font-size:9px;color:rgba(255,255,255,.4);font-family:var(--mono);min-width:110px">${qLatency(def)}ms · totaal ~${qTotal(def)}ms</span>
+      <button onclick="applyBulkQ('${id}')" style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(138,54,236,.3);border:1px solid rgba(138,54,236,.5);color:#fff;cursor:pointer">Toepassen</button>
+    </div>`).join('')}
+  </div>`;
+
+  // Matrix
+  h+='<table><tr><th></th>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
   for(let i=0;i<n;i++){
     h+=`<tr><th>${names[i]}</th>`;
     for(let j=0;j<cols.length;j++){
       if(j===i){h+=`<td class="dx">X</td>`;}
-      else{const d=j>=n?4:8;h+=`<td><input type="number" min="1" max="50" value="${d}" id="q_${i}_${j}"></td>`;}
+      else{const d=j>=n?(j===n?16:4):8;h+=`<td><input type="number" min="1" max="50" value="${d}" id="q_${i}_${j}" style="font-size:10px"></td>`;}
     }
     h+='</tr>';
   }
@@ -926,17 +1206,62 @@ function renderTTBmat(){
   const n=parts.length;
   const el=document.getElementById('ttbmat');
   if(n===0){el.innerHTML='';return;}
-  const names=parts.map(p=>p.name.slice(0,3));
-  let h='<table><tr><th></th>'+names.map(c=>`<th>${c}</th>`).join('')+'</tr>';
-  for(let i=0;i<n;i++){
-    h+=`<tr><th>${names[i]}</th>`;
-    for(let j=0;j<n;j++){
-      if(j===i){h+=`<td class="dx">X</td>`;}
-      else{h+=`<td><input type="number" min="0" max="1" value="1" id="ttb_${i}_${j}" style="color:#45e68f"></td>`;}
-    }
+  const names=parts.map(p=>p.name.slice(0,4));
+
+  // Initialize ttb routing state if not set
+  parts.forEach((p,i)=>{
+    if(!p.ttbRoutes) p.ttbRoutes=parts.map((_,j)=>j!==i);
+  });
+
+  // TTB matrix: columns = SOURCE (top/boven), rows = DESTINATION (left/links)
+  // Signal flows top → down (bron → bestemming)
+  // cell[col][row] = does source col send to destination row?
+
+  // Build transposed routing: ttbTo[j][i] = parts[j] sends to parts[i]
+  // i.e. column j, row i
+  let h=`<div style="font-size:9px;color:rgba(255,255,255,.5);font-family:var(--mono);margin-bottom:4px;display:flex;align-items:center;gap:4px">
+    <span>BRON</span><span style="font-size:14px">↓</span><span style="color:rgba(255,255,255,.3)">signaalflow</span>
+  </div>`;
+  h+=`<table style="border-collapse:collapse">`;
+  // Header row: empty corner + source names (columns = sources)
+  h+=`<tr>
+    <td style="font-size:8px;color:rgba(255,255,255,.35);font-family:var(--mono);padding:0 6px 4px 0;text-align:right;vertical-align:bottom;white-space:nowrap">BESTEMMING →</td>`;
+  names.forEach((name,idx)=>{
+    const bronLabel=idx===0?`<div style="font-size:8px;color:rgba(255,255,255,.5);margin-bottom:2px">BRON ↓</div>`:'';
+    h+=`<th style="font-size:9px;color:#45e68f;font-family:var(--mono);padding:2px 6px;text-align:center;font-weight:600;vertical-align:bottom">${bronLabel}${name}</th>`;
+  });
+  h+='</tr>';
+
+  // Data rows: row = destination, col = source
+  parts.forEach((dest,i)=>{
+    h+=`<tr>`;
+    // Row label = destination
+    h+=`<th style="font-size:9px;color:#45e68f;font-family:var(--mono);padding:2px 6px 2px 0;text-align:right;font-weight:600;white-space:nowrap">${names[i]}</th>`;
+    parts.forEach((src,j)=>{
+      if(i===j){
+        h+=`<td style="text-align:center;padding:3px;color:rgba(255,255,255,.2);font-size:11px">—</td>`;
+      } else {
+        // Does source j send to destination i?
+        // In parts[j].ttbRoutes[i]: row=sender(j), col=receiver(i) — existing data
+        const on=(parts[j].ttbRoutes?parts[j].ttbRoutes[i]!==false:true);
+        h+=`<td style="text-align:center;padding:3px">
+          <div onclick="toggleTTB(${j},${i})" style="width:22px;height:22px;border-radius:4px;border:1px solid ${on?'#45e68f':'rgba(255,255,255,.2)'};background:${on?'rgba(69,230,143,.15)':'transparent'};display:flex;align-items:center;justify-content:center;cursor:pointer;margin:0 auto;font-size:13px;color:${on?'#45e68f':'rgba(255,255,255,.2)'}">
+            ${on?'✓':''}
+          </div>
+        </td>`;
+      }
+    });
     h+='</tr>';
-  }
-  el.innerHTML=h+'</table>';
+  });
+
+  h+='</table>';
+  el.innerHTML=h;
+}
+
+function toggleTTB(i,j){
+  if(!parts[i].ttbRoutes) parts[i].ttbRoutes=parts.map((_,k)=>k!==i);
+  parts[i].ttbRoutes[j]=!parts[i].ttbRoutes[j];
+  renderTTBmat();
 }
 let editIdx=-1;
 function openEdit(i){
@@ -946,21 +1271,37 @@ function openEdit(i){
 
   const avEl=document.getElementById('edit-av');
   avEl.className='av '+p.av;
-  avEl.style.cssText='width:38px;height:38px;font-size:13px';
+  avEl.style.cssText='width:38px;height:38px;font-size:11px;font-weight:700;letter-spacing:-0.5px';
   avEl.textContent=init2(p.name);
   document.getElementById('edit-name').textContent=p.name;
   document.getElementById('edit-loc').textContent=(p.loc||p.location||'')+(p.isp?' · '+p.isp:'');
 
-  // Roles — use full labels
-  const roles=ep.roles||['normal'];
+  // Roles — multiple selection possible
+  if(!parts[i].roles_active) parts[i].roles_active=[parts[i].role||'normal'];
+  const allRoles=['normal','tonmeister','hub','conductor'];
   const rolesEl=document.getElementById('edit-roles');
-  rolesEl.innerHTML=roles.map(r=>`
-    <div class="role-option${p.role===r?' active':''}" onclick="setRole('${r}')">${roleLblFull(r)}</div>
-  `).join('');
+  rolesEl.innerHTML=allRoles.map(r=>{
+    const active=parts[i].roles_active.includes(r);
+    return `<div class="role-option${active?' active':''}" 
+      style="background:${active?'#45e68f':'rgba(138,54,236,.12)'};color:${active?'#0e0020':'#b06af5'};border-color:${active?'#45e68f':'rgba(138,54,236,.3)'};padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--mono);cursor:pointer;border:1px solid;transition:all .15s"
+      onclick="toggleRole('${r}')">${roleLblFull(r)}</div>`;
+  }).join('');
 
-  setMics(p.mics||1,false);
+  // Mic dropdown 1-64 + localStorage recall
+  const remembered=recallEp(p.mac);
+  const micCount=p.mics||(remembered.mics||1);
+  parts[i].mics=micCount;
+  const micSel=document.getElementById('mic-sel');
+  if(micSel){
+    micSel.innerHTML=Array.from({length:64},(_,j)=>`<option value="${j+1}"${(j+1)===micCount?' selected':''}>${j+1}</option>`).join('');
+  }
 
-  // Toggles — lbw, str2t (only if TM active), mixer, ttb, noctcast (only if NOCTCAST active), rec
+  // Hide str2t if this endpoint IS the Tonmeister
+  const isTM=p.mac===sess.tmEp&&sess.tm;
+  const str2tRow=document.getElementById('edit-row-str2t');
+  if(str2tRow) str2tRow.style.display=(sess.tm&&!isTM)?'flex':'none';
+
+  // Toggles
   const tvals={
     lbw:!!p.lbw,
     str2t:p.str2t!==false,
@@ -973,10 +1314,6 @@ function openEdit(i){
     const el=document.getElementById('edit-tg-'+k);
     if(el) el.className='tg'+(v?' on':'');
   });
-
-  // Show/hide str2t row based on TM session setting
-  const str2tRow=document.getElementById('edit-row-str2t');
-  if(str2tRow) str2tRow.style.display=sess.tm?'flex':'none';
 
   // Show/hide noctcast row
   const ncRow=document.getElementById('edit-row-noctcast');
@@ -1016,32 +1353,122 @@ function closeEdit(){
   p.mixer=document.getElementById('edit-tg-mixer').classList.contains('on');
   p.noctcast=document.getElementById('edit-tg-noctcast')?.classList.contains('on')??true;
   p.tune=document.getElementById('edit-sel-tune')?.value||'viola.mp3';
+  const micSel=document.getElementById('mic-sel');
+  if(micSel) p.mics=parseInt(micSel.value)||1;
+  // Save primary role from roles_active
+  if(p.roles_active&&p.roles_active.length>0) p.role=p.roles_active[0];
+  // Remember stable settings per MAC
+  rememberEp(p.mac,{mics:p.mics,lbw:p.lbw,mixer:p.mixer,tune:p.tune,roles_active:p.roles_active});
   editIdx=-1;
   document.getElementById('ep-edit').classList.remove('open');
   renderBuilder();
 }
 
-function setRole(r){
+function toggleRole(r){
   if(editIdx<0) return;
-  parts[editIdx].role=r;
-  document.querySelectorAll('.role-option').forEach(el=>{
-    el.classList.toggle('active',el.textContent===roleLbl(r));
+  const p=parts[editIdx];
+  if(!p.roles_active) p.roles_active=[p.role||'normal'];
+
+  if(p.roles_active.includes(r)){
+    // Deselect — keep at least one role
+    if(p.roles_active.length>1){
+      p.roles_active=p.roles_active.filter(x=>x!==r);
+      // JB removed: warn if lbw players still in session
+      if(r==='hub'&&parts.some(pl=>pl.lbw&&pl.mac!==p.mac)){
+        const lbwNames=parts.filter(pl=>pl.lbw&&pl.mac!==p.mac).map(pl=>pl.name).join(', ');
+        const msg=lang==='nl'
+          ?`Let op: ${lbwNames} heeft een lage bandbreedte verbinding en heeft een Junctionbox nodig. Wie vervult deze rol nu?`
+          :`Warning: ${lbwNames} has low bandwidth and needs a Junctionbox. Who will fulfil this role now?`;
+        setTimeout(()=>{
+          alert(msg);
+          // Highlight JB section in SI
+          sess.jb=true;
+          sess.jbEp='';
+          renderBuilder();
+          const jbRow=document.getElementById('row-jb-ep');
+          if(jbRow){jbRow.style.display='flex';jbRow.scrollIntoView({behavior:'smooth',block:'center'});}
+        },300);
+      }
+      // TM removed: clear SI TM if this was the holder
+      if(r==='tonmeister'&&sess.tmEp===p.mac){
+        sess.tm=false;sess.tmEp='';
+      }
+    }
+  } else {
+    p.roles_active.push(r);
+    // Sync SI when special role selected
+    if(r==='tonmeister'){sess.tm=true;sess.tmEp=p.mac;}
+    if(r==='hub'){sess.jb=true;sess.jbEp=p.mac;}
+    if(r==='conductor'){sess.cond=true;sess.condEp=p.mac;}
+  }
+  // Primary role = first in list
+  p.role=p.roles_active[0];
+
+  // Re-render role pills
+  const allRoles=['normal','tonmeister','hub','conductor'];
+  document.querySelectorAll('.role-option').forEach((el,idx)=>{
+    const roleR=allRoles[idx];
+    const active=p.roles_active.includes(roleR);
+    el.classList.toggle('active',active);
+    el.style.background=active?'#45e68f':'rgba(138,54,236,.12)';
+    el.style.color=active?'#0e0020':'#b06af5';
+    el.style.borderColor=active?'#45e68f':'rgba(138,54,236,.3)';
   });
 }
 
+function editTogLbw(){
+  const el=document.getElementById('edit-tg-lbw');
+  el.classList.toggle('on');
+  const isOn=el.classList.contains('on');
+  // If lbw turned on and no JB set → prompt to set JB after save
+  if(isOn&&!sess.jb){
+    parts[editIdx].lbw=true;
+    // Close edit first, then highlight JB section
+    setTimeout(()=>{
+      closeEdit();
+      // Auto-enable JB and scroll to it
+      sess.jb=true;
+      renderBuilder();
+      const jbRow=document.getElementById('tg-jb');
+      if(jbRow){
+        jbRow.scrollIntoView({behavior:'smooth',block:'center'});
+        // Flash highlight
+        const rowEl=jbRow.closest('.tgr');
+        if(rowEl){
+          rowEl.style.background='rgba(69,230,143,.15)';
+          setTimeout(()=>rowEl.style.background='',1500);
+        }
+      }
+      // Open JB dropdown
+      const jbDropdown=document.getElementById('row-jb-ep');
+      if(jbDropdown) jbDropdown.style.display='flex';
+      alert(lang==='nl'?'lbw ingeschakeld — kies nu een Junctionbox in de sessie-instellingen.':'lbw enabled — please select a Junctionbox in session settings.');
+    },100);
+  }
+}
+
+// ── localStorage memory per MAC ──────────────────────────────
+function rememberEp(mac, data){
+  try{const all=JSON.parse(localStorage.getItem('terminal_ep')||'{}');all[mac]={...all[mac],...data};localStorage.setItem('terminal_ep',JSON.stringify(all));}catch(e){}
+}
+function recallEp(mac){
+  try{return JSON.parse(localStorage.getItem('terminal_ep')||'{}')[mac]||{};}catch(e){return {};}
+}
+
 function setMics(n,save=true){
-  if(save&&editIdx>=0) parts[editIdx].mics=n;
-  [1,2,4,8].forEach(v=>{
-    const b=document.getElementById('mic'+v);
-    if(b) b.classList.toggle('active',v===n);
-  });
+  if(save&&editIdx>=0){
+    parts[editIdx].mics=n;
+    rememberEp(parts[editIdx].mac,{mics:n});
+  }
+  const sel=document.getElementById('mic-sel');
+  if(sel) sel.value=n;
 }
 
 function editTogWarn(k){
   const el=document.getElementById('edit-tg-'+k);
   const wasOn=el.classList.contains('on');
   if(wasOn){
-    if(!confirm(lang==='nl'?'Let op: dit eindpunt wordt uit de NOCTCAST-stream gehaald. Weet je het zeker?':'Warning: this endpoint will be removed from the NOCTCAST stream. Are you sure?')) return;
+    if(!confirm(lang==='nl'?'Let op: dit eindpunt wordt uit de NoSleepCast-stream gehaald. Weet je het zeker?':'Warning: this endpoint will be removed from the NoSleepCast stream. Are you sure?')) return;
   }
   el.classList.toggle('on');
 }
@@ -1058,23 +1485,6 @@ function removeFromEdit(){
   renderBuilder();
 }
 
-function renderQmat(){
-  const n=parts.length;
-  const el=document.getElementById('qmat');
-  if(n===0){el.innerHTML='';return;}
-  const names=parts.map(p=>p.name.slice(0,3));
-  const cols=[...names,'TM','JB'];
-  let h='<table><tr><th></th>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
-  for(let i=0;i<n;i++){
-    h+=`<tr><th>${names[i]}</th>`;
-    for(let j=0;j<cols.length;j++){
-      if(j===i){h+=`<td class="dx">X</td>`;}
-      else{const d=j>=n?4:8;h+=`<td><input type="number" min="1" max="50" value="${d}"></td>`;}
-    }
-    h+='</tr>';
-  }
-  el.innerHTML=h+'</table>';
-}
 
 function generateBash(name){
   const n=parts.length;
@@ -1129,7 +1539,7 @@ function generateBash(name){
   lines.push(`record=(      ${parts.map(p=>p.rec&&sess.rec?'1':'0').join('  ')})`+'\t# make local recording?');
   lines.push(`mixer=(\t      ${ba('mixer',1)})`+'\t# mixer required?');
   lines.push(`str2T=(\t      ${parts.map(p=>sess.tm&&p.str2t!==false?'1':'0').join('  ')})`+'\t# stream to Tonmeister?');
-  lines.push(`str2I=(       ${parts.map(p=>p.noctcast&&sess.noctcast?'1':'0').join('  ')})`+'\t# stream to NOCTCAST?');
+  lines.push(`str2I=(       ${parts.map(p=>p.noctcast&&sess.noctcast?'1':'0').join('  ')})`+'\t# stream to NoSleepCast?');
   lines.push(`conductor=(   ${parts.map(p=>p.role==='conductor'?'1':'0').join('  ')})`+'\t# show conductor hands?');
   lines.push(`ttb=(         ${ba('ttb',0)})`+'\t# TTB-device in use?');
   lines.push(`in_test=(     ${parts.map(()=>sess.test?'1':'0').join('  ')})`+'\t# put endpoint in test?');
@@ -1170,7 +1580,10 @@ function generateBash(name){
   // TTB matrix
   lines.push(`# TapTapBoom routing-matrix.`);
   for(let i=0;i<n;i++){
-    const row=parts.map((_,j)=>j===i?'X':'1').join('  ');
+    const row=parts.map((_,j)=>{
+      if(j===i) return 'X';
+      return (parts[i].ttbRoutes&&parts[i].ttbRoutes[j]!==false)?'1':'0';
+    }).join('  ');
     lines.push(`declare -a     ttb_${i}=( ${row})`);
   }
   lines.push(``);
@@ -1268,12 +1681,16 @@ function filterPicker(q){
 
 function addPart(mac){
   const ep=EPS.find(e=>e.mac===mac);if(!ep)return;
+  const mem=recallEp(mac);
+  const initRoles=mem.roles_active||[ep.roles[0]||'normal'];
   parts.push({
-    ...ep, role:ep.roles[0],
-    mics:ep.mics||1, lbw:!!ep.lbw,
-    str2t:true, mixer:sess.hpm,
+    ...ep, role:initRoles[0],
+    roles_active:initRoles,
+    mics:mem.mics||ep.mics||1,
+    lbw:mem.lbw!==undefined?mem.lbw:!!ep.lbw,
+    str2t:true, mixer:mem.mixer!==undefined?mem.mixer:sess.hpm,
     ttb:false, noctcast:sess.noctcast,
-    rec:false, tune:'viola.mp3'
+    rec:false, tune:mem.tune||'viola.mp3'
   });
   closePicker();renderBuilder();
 }
@@ -1299,6 +1716,17 @@ function renderEps(q){
 function filterEps(q){renderEps(q);}
 
 document.getElementById('ep-search').placeholder=t('search');
+
+// Event delegation: clicking anywhere on a .tgr row triggers its toggle
+document.addEventListener('click', function(e){
+  const tgr = e.target.closest('.tgr');
+  if(!tgr) return;
+  // Don't double-fire if click was on the toggle itself or a select/button
+  if(e.target.closest('.tg,.fs,.fi,button,select,input')) return;
+  // Find the toggle in this row and click it
+  const tg = tgr.querySelector('.tg');
+  if(tg) tg.click();
+});
 renderMonitor();
 renderEps('');
 </script>
