@@ -687,7 +687,7 @@ const T={
     saved:(name)=>`Sessie "${name}" opgeslagen!\nBash-configuratie aangemaakt.`,
     no_name:'Voer een sessienaam in',
     no_parts:'Voeg minimaal één deelnemer toe',
-    mac_mac:'Mac Mini — macOS',
+    mac_mac:'Mac Mini - macOS',
     linux:'Linux mini-PC',
     special:'Speciale eindpunten',
     sub:(n)=>`${n} eindpunt${n!==1?'en':''} aangemeld`,
@@ -707,7 +707,7 @@ const T={
     saved:(name)=>`Session "${name}" saved!\nBash config generated.`,
     no_name:'Enter a session name',
     no_parts:'Add at least one participant',
-    mac_mac:'Mac Mini — macOS',
+    mac_mac:'Mac Mini - macOS',
     linux:'Linux mini-PC',
     special:'Special endpoints',
     sub:(n)=>`${n} endpoint${n!==1?'s':''} registered`,
@@ -746,8 +746,8 @@ document.addEventListener('click', function(e){
   if(bn) bn.placeholder=t('session_ph');
   const mo=document.getElementById('b-mode');
   if(mo){
-    mo.options[0].textContent=l==='nl'?'MESH — iedereen verbindt met iedereen':'MESH — all connect to all';
-    mo.options[1].textContent=l==='nl'?'HUB — via centrale Junctionbox':'HUB — via central Junctionbox';
+    mo.options[0].textContent=l==='nl'?'MESH - iedereen verbindt met iedereen':'MESH - all connect to all';
+    mo.options[1].textContent=l==='nl'?'HUB - via centrale Junctionbox':'HUB - via central Junctionbox';
   }
   const ct=document.getElementById('cmd-target');
   if(ct&&ct.options[0]) ct.options[0].textContent=t('all_part');
@@ -1864,14 +1864,12 @@ function isEditingJB(){
 
 function jbWarn(msg){
   const jokes=[
-    'Sorry, heb geen oren! 👂',
-    'Sorry, heb geen armen noch benen! 🤷',
+    'Sorry, heb geen oren!',
+    'Sorry, heb geen armen noch benen!',
     'Een Junctionbox routeert — geen concert!',
     'Vergeet het maar! Ik ben een router.'
   ];
-  alert(jokes[Math.floor(Math.random()*jokes.length)]+'
-
-'+msg);
+  alert(jokes[Math.floor(Math.random()*jokes.length)]+'\n\n'+msg);
 }
 
 function editTog(k){
