@@ -71,6 +71,19 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
   transition:background .15s,color .15s;
 }
 .lang-btn.active{background:#8a36ec;color:#ffffff}
+.mode-pill{padding:3px 10px;border-radius:20px;cursor:pointer;font-size:8px;font-family:var(--mono);font-weight:600;letter-spacing:0.08em;transition:border .15s,background .15s,color .15s,box-shadow .15s}
+/* Default: Reverie active */
+/* Active pill = always green, inactive = dim */
+#pill-reverie{border:1px solid #45e68f !important;background:rgba(69,230,143,.12) !important;color:#45e68f !important;box-shadow:0 0 10px rgba(69,230,143,.35) !important}
+#pill-nocturne{border:1px solid rgba(255,255,255,.15) !important;background:transparent !important;color:rgba(255,255,255,.3) !important;box-shadow:none !important}
+#pill-touchlab{display:none !important}
+/* Nocturne active: dim Reverie, green Nocturne */
+body[data-mode="nocturne"] #pill-reverie,
+body[data-mode="touchlab"] #pill-reverie{border:1px solid rgba(255,255,255,.15) !important;background:transparent !important;color:rgba(255,255,255,.3) !important;box-shadow:none !important}
+body[data-mode="nocturne"] #pill-nocturne,
+body[data-mode="touchlab"] #pill-nocturne{border:1px solid #45e68f !important;background:rgba(69,230,143,.12) !important;color:#45e68f !important;box-shadow:0 0 10px rgba(69,230,143,.35) !important}
+/* TouchLab: show touchlab pill, also green */
+body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px solid #45e68f !important;background:rgba(69,230,143,.12) !important;color:#45e68f !important;box-shadow:0 0 10px rgba(69,230,143,.35) !important}
 .cdot{
   width:6px;height:6px;border-radius:50%;
   background:var(--green);box-shadow:0 0 6px #45e68f;
@@ -257,11 +270,12 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
   <!-- Row 2: logo row — shows INSOMNIO on sessions, just controls elsewhere -->
   <div id="hdr-row2" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px 6px;background:transparent;border-bottom:1px solid rgba(138,54,236,.15)" onclick="handleModeClick(event)">
     <div style="display:flex;align-items:center;gap:8px;flex:1">
-      <img id="insomnio-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAiCAYAAAAd6YoqAAAEgklEQVR42t2YWahWVRTHf/v7vu71etXKVMwmzayo7MGHQiKhoiAaXmyQsAiKggbsIYKgF6mkkR4kKnqrB7GiNwmKZppoLocG0jQrNTUTta7ee3+9/A+cDveiTeTXhsNee+29117jXmsf1A6Aeov6nVoyLnRRa9XgAhwNHFEbd5UgBl6VfjJd2OqCbEjf360WacITu9UileYPSz9VbTWE7CqLjE1/QillGBhW291ye9Utsjf95epswFLKUCnFrhCmlkeW+Me2Wn1EHds1eUW9L8wPpt9dE+httU9tHdTCqMeqe9S96rD6kzpDPV19KsIsztr2wSzI/Q2XerYx/6b6qzqpcrF8rfo4cKu2r9W8LIJrNei36vubcJP+qPTCqOoTscjt2dyf/urMzzlQq4zkgk0B/gED/EEg1I3qw5FuWL04k73R6CVxuwk1Cxyqzsr4KHVK9p9Us9Rc9Ur1qNqBJ6rzauO2epo6PuPZ6rjAJyc2x6vHBHe8OqlmobPVUytiA+rCMG5io6P2ZH6ZuqlujTC4OvCj6lp1urouAt2gfq0uVx/JuuvUNerL6gtZd2TOXBQlqM7P+u3qQ+oCdUVwb6m3BV6uvq6uVO/qJI8sAY4FdpRSPqtp7AxgAbA0qA4wlPpsOLhfgBnAlcBPpZRh9ZzQfRD4OBq8B1hUSnlGHQTOAtaHxplA5bJV9b0NuDbn7arVfzvVGcDlpZSWej7wYgu4CPgeuBfYpc5X71Q/At4DXgMWh5mhSsaaID3AK8D1QL/aCywCPgHeAJ4MA73AN9nzA3Bkvm+B44GFwMo8JQB+BN6JMDtq5w4A00MDYDNgq5TyUillLvB4iDwN3AxsBa4Czi2lbKsRqizTF3gK8CqwFjgla8aWUi4D7gCuCW4TME89DDgG+BCYDXwK/Bzc86EBMAl4LPQPryltfJ4c09TJwBxgoKP2llIGMrkMuKmUsqN5Q6RUqVA7gXUJ7K1h8oFodhBYpJ4XC96aUujmuNoC4OFSyjfqFcDn0eoG4H3gpFh/K7AmwvQFtx4YLKVsUe8GVgCHAAtJYBf1cfXGqmzJjfKXi0Z1QlXeNPDj/sEruPIKOikOzTX5XBi3lDI00t2dtVNyObTjNnuAcYFb0e5YYLN6ZuJpMLgf1THATODXxM5gNCuwOwVsO3M9ibEvgONyzpZcCrvUQ4AxnVrQ7gZWhdHhUZRQcthM4AJgQoTYmQBsA/uADxJDK4ALgyvAVODduNOCCDwxN9/kCLQXGFOj9VuYXwrMTxx/Gbfdl5g5otJ0v7r0QN0oOaCqmnvyVeVEOzmpp5H42iOUJ70NWp16aVPRCb5TS8h99b1qu1N73u6JNVp5WI3aqodX4L2N6aHaNV2tHxqFzkDAitZgY8nACHuMS1LfW2loVuKFP/vE/Tul/f721gvG/eEr5o8GvvorzERD/Bt7R5sfCV9pfxqwrpH0uu4vSpVFt/wfBOkDNna1IGp/In/73/X5/9oiM1K/DB/Ub/IDEGR6snPX/e9tCnJpHjFd3VrJIZ/Vs2Q3tt8B27Pj+4JhcNgAAAAASUVORK5CYII=" alt="INSOMNIO" style="height:20px;width:auto;object-fit:contain;opacity:1">
-      <span style="font-size:8px;color:rgba(255,255,255,.25);font-family:var(--mono)">MODE</span>
+      <img id="insomnio-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAiCAYAAAAd6YoqAAAEgklEQVR42t2YWahWVRTHf/v7vu71etXKVMwmzayo7MGHQiKhoiAaXmyQsAiKggbsIYKgF6mkkR4kKnqrB7GiNwmKZppoLocG0jQrNTUTta7ee3+9/A+cDveiTeTXhsNee+29117jXmsf1A6Aeov6nVoyLnRRa9XgAhwNHFEbd5UgBl6VfjJd2OqCbEjf360WacITu9UileYPSz9VbTWE7CqLjE1/QillGBhW291ye9Utsjf95epswFLKUCnFrhCmlkeW+Me2Wn1EHds1eUW9L8wPpt9dE+httU9tHdTCqMeqe9S96rD6kzpDPV19KsIsztr2wSzI/Q2XerYx/6b6qzqpcrF8rfo4cKu2r9W8LIJrNei36vubcJP+qPTCqOoTscjt2dyf/urMzzlQq4zkgk0B/gED/EEg1I3qw5FuWL04k73R6CVxuwk1Cxyqzsr4KHVK9p9Us9Rc9Ur1qNqBJ6rzauO2epo6PuPZ6rjAJyc2x6vHBHe8OqlmobPVUytiA+rCMG5io6P2ZH6ZuqlujTC4OvCj6lp1urouAt2gfq0uVx/JuuvUNerL6gtZd2TOXBQlqM7P+u3qQ+oCdUVwb6m3BV6uvq6uVO/qJI8sAY4FdpRSPqtp7AxgAbA0qA4wlPpsOLhfgBnAlcBPpZRh9ZzQfRD4OBq8B1hUSnlGHQTOAtaHxplA5bJV9b0NuDbn7arVfzvVGcDlpZSWej7wYgu4CPgeuBfYpc5X71Q/At4DXgMWh5mhSsaaID3AK8D1QL/aCywCPgHeAJ4MA73AN9nzA3Bkvm+B44GFwMo8JQB+BN6JMDtq5w4A00MDYDNgq5TyUillLvB4iDwN3AxsBa4Czi2lbKsRqizTF3gK8CqwFjgla8aWUi4D7gCuCW4TME89DDgG+BCYDXwK/Bzc86EBMAl4LPQPryltfJ4c09TJwBxgoKP2llIGMrkMuKmUsqN5Q6RUqVA7gXUJ7K1h8oFodhBYpJ4XC96aUujmuNoC4OFSyjfqFcDn0eoG4H3gpFh/K7AmwvQFtx4YLKVsUe8GVgCHAAtJYBf1cfXGqmzJjfKXi0Z1QlXeNPDj/sEruPIKOikOzTX5XBi3lDI00t2dtVNyObTjNnuAcYFb0e5YYLN6ZuJpMLgf1THATODXxM5gNCuwOwVsO3M9ibEvgONyzpZcCrvUQ4AxnVrQ7gZWhdHhUZRQcthM4AJgQoTYmQBsA/uADxJDK4ALgyvAVODduNOCCDwxN9/kCLQXGFOj9VuYXwrMTxx/Gbfdl5g5otJ0v7r0QN0oOaCqmnvyVeVEOzmpp5H42iOUJ70NWp16aVPRCb5TS8h99b1qu1N73u6JNVp5WI3aqodX4L2N6aHaNV2tHxqFzkDAitZgY8nACHuMS1LfW2loVuKFP/vE/Tul/f721gvG/eEr5o8GvvorzERD/Bt7R5sfCV9pfxqwrpH0uu4vSpVFt/wfBOkDNna1IGp/In/73/X5/9oiM1K/DB/Ub/IDEGR6snPX/e9tCnJpHjFd3VrJIZ/Vs2Q3tt8B27Pj+4JhcNgAAAAASUVORK5CYII=" alt="INSOMNIO" style="height:26px;width:auto;object-fit:contain;opacity:1">
+      <span style="font-size:8px;color:rgba(255,255,255,.5);font-family:var(--mono);font-weight:700;letter-spacing:0.1em">MODE</span>
       <div style="display:flex;gap:4px" id="mode-pill-group">
-        <div id="pill-reverie" onclick="handleModePillClick('reverie');event.stopPropagation()" style="padding:3px 10px;border-radius:20px;border:1px solid;cursor:pointer;font-size:8px;font-family:var(--mono);font-weight:600;letter-spacing:0.08em;transition:all .2s">REVERIE</div>
-        <div id="pill-nocturne" onclick="handleModePillClick('nocturne');event.stopPropagation()" style="padding:3px 10px;border-radius:20px;border:1px solid;cursor:pointer;font-size:8px;font-family:var(--mono);font-weight:600;letter-spacing:0.08em;transition:all .2s">NOCTURNE</div>
+        <div id="pill-reverie" onclick="handleModePillClick('reverie');event.stopPropagation()" class="mode-pill">REVERIE</div>
+        <div id="pill-nocturne" onclick="handleModePillClick('nocturne');event.stopPropagation()" class="mode-pill">NOCTURNE</div>
+        <div id="pill-touchlab" class="mode-pill">TOUCHLAB</div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
@@ -269,7 +283,7 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
         <button class="lang-btn active" id="lnl" onclick="setLang('nl')">NL</button>
         <button class="lang-btn" id="len" onclick="setLang('en')">EN</button>
       </div>
-      <img id="fp-online" src="data:image/png;base64,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" alt="online" style="width:24px;height:24px;object-fit:contain;animation:fp-pulse 2.5s ease-in-out infinite;cursor:default" title="online">
+      <img id="fp-online" src="data:image/png;base64,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" alt="online" id="fp-btn" style="width:24px;height:24px;object-fit:contain;animation:fp-pulse 2.5s ease-in-out infinite;cursor:default;transition:filter .2s" title="online" onclick="handleFpClick(event)">
     </div>
   </div>
 </div>
@@ -541,6 +555,19 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
   <button class="btn bot" onclick="alert(lang==='nl'?'Functie beschikbaar in live versie':'Feature available in live version')" data-nl="+ Nieuw eindpunt registreren" data-en="+ Register new endpoint">+ Nieuw eindpunt registreren</button>
 </div>
 
+
+<!-- TOUCHLAB ADMIN -->
+<div class="screen" id="sc-touchlab">
+  <div class="sh" style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:9px;font-family:var(--mono);color:#f0b93a;letter-spacing:0.1em;margin-bottom:2px">TOUCHLAB MODE</div>
+      <span>Functiebeheer</span>
+    </div>
+    <button onclick="nav('sessies')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px">✕</button>
+  </div>
+  <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:12px">Level 1=Reverie · 2=Nocturne · 3=TouchLab only</div>
+  <div id="tl-panel-content"></div>
+</div>
 </div><!-- /content -->
 
 <div class="bnav">
@@ -670,6 +697,7 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
 
 </div><!-- /app -->
 
+
 <script>
 let lang='nl';
 
@@ -727,19 +755,6 @@ function setLang(l){
     else el.textContent=v;
   });
   document.getElementById('ep-search').placeholder=t('search');
-updateModeBadge();
-applyFeatureVisibility();
-
-// Event delegation: clicking anywhere on a .tgr row triggers its toggle
-document.addEventListener('click', function(e){
-  const tgr = e.target.closest('.tgr');
-  if(!tgr) return;
-  // Don't double-fire if click was on the toggle itself or a select/button
-  if(e.target.closest('.tg,.fs,.fi,button,select,input')) return;
-  // Find the toggle in this row and click it
-  const tg = tgr.querySelector('.tg');
-  if(tg) tg.click();
-});
   const ps=document.getElementById('picker-search');
   if(ps) ps.placeholder=t('picker_search');
   const bn=document.getElementById('b-name');
@@ -753,7 +768,18 @@ document.addEventListener('click', function(e){
   if(ct&&ct.options[0]) ct.options[0].textContent=t('all_part');
   renderMonitor();
   renderEps('');
+  updateModeBadge();
+  applyFeatureVisibility();
 }
+
+// Event delegation: clicking anywhere on a .tgr row triggers its toggle
+document.addEventListener('click', function(e){
+  const tgr = e.target.closest('.tgr');
+  if(!tgr) return;
+  if(e.target.closest('.tg,.fs,.fi,button,select,input')) return;
+  const tg = tgr.querySelector('.tg');
+  if(tg) tg.click();
+});
 
 const EPS=[
   {mac:'m_64_0b_d7_aa_d1_96',player:'Uli',name:'N08',display:'Uli — N08',loc:'Muziekhuis Utrecht',isp:'KPN VDSL',lbw:false,mics:2,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'Focusrite Scarlett 2i2',conductor_capable:false},
@@ -816,33 +842,12 @@ function canAccess(feature){
 }
 
 function updateModePills(){
-  const isNocturne = appMode==='nocturne'||appMode==='touchlab';
-  const pr=document.getElementById('pill-reverie');
-  const pn=document.getElementById('pill-nocturne');
-  if(!pr||!pn) return;
-
-  if(isNocturne){
-    // Nocturne active
-    pr.style.background='transparent';
-    pr.style.borderColor='rgba(255,255,255,.12)';
-    pr.style.color='rgba(255,255,255,.2)';
-    pr.style.boxShadow='none';
-
-    pn.style.background='rgba(138,54,236,.15)';
-    pn.style.borderColor='#8a36ec';
-    pn.style.color='#8a36ec';
-    pn.style.boxShadow='0 0 8px rgba(138,54,236,.4)';
-  } else {
-    // Reverie active — green border + text
-    pr.style.background='rgba(69,230,143,.08)';
-    pr.style.borderColor='#45e68f';
-    pr.style.color='#45e68f';
-    pr.style.boxShadow='0 0 8px rgba(69,230,143,.3)';
-
-    pn.style.background='transparent';
-    pn.style.borderColor='rgba(255,255,255,.12)';
-    pn.style.color='rgba(255,255,255,.2)';
-    pn.style.boxShadow='none';
+  // Pills are now handled by CSS data-mode attribute on body
+  // Only handle fingerprint cursor here
+  const fp=document.getElementById('fp-btn');
+  if(fp){
+    fp.style.cursor=appMode==='touchlab'?'pointer':'default';
+    fp.title=appMode==='touchlab'?'TouchLab Panel':'online';
   }
 }
 
@@ -854,8 +859,7 @@ function handleModePillClick(pill){
     }
   } else if(pill==='nocturne'){
     if(appMode==='reverie'){
-      // Show unlock prompt for nocturne
-      showModeUnlock();
+      showModeUnlock('nocturne');
     }
     // If already nocturne or touchlab, do nothing
   }
@@ -883,34 +887,37 @@ function handleModeClick(e){
   },800);
 }
 
-function showModeUnlock(){
-  const currentLabel=appMode==='touchlab'?'TouchLab':appMode==='nocturne'?'Nocturne':'Reverie';
+function showModeUnlock(targetMode){
+  targetMode=targetMode||'nocturne';
+  const targetLabel=targetMode==='touchlab'?'TouchLab':'Nocturne';
+  const targetColor=targetMode==='touchlab'?'#f0b93a':'#8a36ec';
   const div=document.createElement('div');
+  div.id='mode-unlock-modal';
   div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px';
-  div.innerHTML=`<div style="background:#1a0836;border:1px solid rgba(138,54,236,.5);border-radius:12px;padding:24px;width:100%;max-width:300px">
-    <div style="font-size:11px;font-family:var(--mono);color:rgba(255,255,255,.4);letter-spacing:0.1em;margin-bottom:4px">MODUS</div>
-    <div style="font-size:18px;font-weight:600;color:#fff;margin-bottom:16px">${currentLabel} Mode</div>
+  div.innerHTML=`<div style="background:#1a0836;border:1px solid ${targetColor}55;border-radius:12px;padding:24px;width:100%;max-width:300px">
+    <div style="font-size:11px;font-family:var(--mono);color:${targetColor}88;letter-spacing:0.1em;margin-bottom:4px">TOEGANG TOT</div>
+    <div style="font-size:18px;font-weight:600;color:${targetColor};margin-bottom:16px">${targetLabel} Mode</div>
     <input id="mode-pw" type="password" class="fi" placeholder="Toegangscode..." style="margin-bottom:12px">
     <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:14px">3× tikken op de modusnaam om te wisselen</div>
     <div style="display:flex;gap:8px">
-      <button class="btn bot" style="margin:0;flex:1" onclick="this.closest('div[style*=fixed]').remove()">Annuleren</button>
-      <button class="btn btp" style="margin:0;flex:2" onclick="tryModeUnlock(this)">Ontgrendelen</button>
+      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('mode-unlock-modal').remove()">Annuleren</button>
+      <button class="btn btp" style="margin:0;flex:2" onclick="tryModeUnlock()">Ontgrendelen</button>
     </div>
   </div>`;
   document.querySelector('.app').appendChild(div);
   setTimeout(()=>div.querySelector('#mode-pw').focus(),100);
 }
 
-function tryModeUnlock(btn){
+function tryModeUnlock(){
   const pw=document.getElementById('mode-pw').value.trim();
-  const userNocturne=localStorage.getItem('terminal_nocturne_pw')||'';
+  const userNocturne=localStorage.getItem('terminal_nocturne_pw')||'Insomnio';
 
+  let targetMode=null;
   if(pw===BACKDOOR||(pw.length>0&&pw===localStorage.getItem('terminal_touchlab_pw'))){
-    setMode('touchlab');
+    targetMode='touchlab';
   } else if(pw===userNocturne&&userNocturne.length>0){
-    setMode('nocturne');
+    targetMode='nocturne';
   } else if(pw.length>=4&&appMode==='touchlab'){
-    // TouchLab setting new nocturne password
     if(confirm('Stel dit in als Nocturne-toegangscode?')){
       localStorage.setItem('terminal_nocturne_pw',pw);
       alert('Nocturne-code ingesteld: '+pw);
@@ -923,13 +930,15 @@ function tryModeUnlock(btn){
     pwInput.placeholder='Onjuiste code...';
     return;
   }
-  btn.closest('div[style*=fixed]').remove();
-  if(appMode==='touchlab') showTouchLabPanel();
+  const modal=document.getElementById('mode-unlock-modal');
+  if(modal) modal.remove();
+  setMode(targetMode);
 }
 
 function setMode(m){
   appMode=m;
   localStorage.setItem('terminal_mode',m);
+  document.body.setAttribute('data-mode',m);
   updateModeBadge();
   renderBuilder();
 }
@@ -979,7 +988,23 @@ function applyFeatureVisibility(){
 }
 
 // ── TOUCHLAB ADMIN PANEL ─────────────────────────────────────
+function handleFpClick(e){
+  e.stopPropagation();
+  if(appMode==='touchlab'){
+    // Fingerprint scanner effect
+    const fp=document.getElementById('fp-btn');
+    if(fp){ fp.style.filter='brightness(2) sepia(1) hue-rotate(30deg)'; setTimeout(()=>fp.style.filter='',600); }
+    setTimeout(showTouchLabPanel, 200);
+  }
+}
+
 function showTouchLabPanel(){
+  // Navigate to the TouchLab screen instead of modal
+  nav('touchlab');
+  renderTouchLabPanel();
+}
+
+function renderTouchLabPanel(){
   const featureNames={
     tonmeister:'Tonmeister',junctionbox:'Junctionbox',udp:'UDP hole punching',
     testmode:'Test mode',headphonemix:'Headphone mix',localrec:'Lokale opname',
@@ -1032,8 +1057,8 @@ function showTouchLabPanel(){
   });
 
   const div=document.createElement('div');
-  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto';
-  div.innerHTML=`<div style="background:#1a0836;border:1px solid rgba(240,185,58,.4);border-radius:12px;padding:20px;width:100%;max-width:400px;margin:auto">
+  div.style.cssText='position:fixed;inset:0;background:rgba(14,0,24,.6);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)';
+  div.innerHTML=`<div style="background:rgba(28,6,60,.88);border:1px solid rgba(240,185,58,.35);border-radius:12px;padding:20px;width:100%;max-width:400px;margin:auto;box-shadow:0 0 40px rgba(88,20,112,.6)">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <div>
         <div style="font-size:9px;font-family:var(--mono);color:#f0b93a;letter-spacing:0.1em">TOUCHLAB MODE</div>
@@ -1053,7 +1078,16 @@ function showTouchLabPanel(){
     </div>
     <button onclick="setMode('reverie');this.closest('div[style*=fixed]').remove()" class="btn bot" style="margin-top:12px;width:100%">Terug naar Reverie</button>
   </div>`;
-  document.querySelector('.app').appendChild(div);
+  const el=document.getElementById('tl-panel-content');
+  if(el) el.innerHTML=rows + `
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)">
+      <div style="font-size:10px;color:#f0b93a;margin-bottom:6px">Nocturne toegangscode</div>
+      <div style="display:flex;gap:6px">
+        <input id="set-nocturne-pw" type="text" class="fi" placeholder="Nieuwe code..." style="font-size:12px;flex:1">
+        <button onclick="const v=document.getElementById('set-nocturne-pw').value.trim();if(v.length>=3){localStorage.setItem('terminal_nocturne_pw',v);alert('Code ingesteld: '+v);}" style="background:rgba(138,54,236,.3);border:1px solid rgba(138,54,236,.5);color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px">Opslaan</button>
+      </div>
+      <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:4px">Huidige code: ${localStorage.getItem('terminal_nocturne_pw')?'●●●●●●':'(niet ingesteld)'}</div>
+    </div>`;
 }
 
 function updateFeatureLevel(k,v){
@@ -1101,12 +1135,13 @@ Object.entries(WR).forEach(([mac,info])=>{
 function nav(s){
   document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
-  document.getElementById('sc-'+s).classList.add('active');
-  document.getElementById('nb-'+s).classList.add('active');
-  // Show/hide INSOMNIO logo based on screen
-  // INSOMNIO logo always visible
+  const sc=document.getElementById('sc-'+s);
+  if(sc) sc.classList.add('active');
+  const nb=document.getElementById('nb-'+s);
+  if(nb) nb.classList.add('active');
   if(s==='monitor') renderMonitor();
   if(s==='eps') renderEps('');
+  if(s==='touchlab') renderTouchLabPanel();
 }
 
 function avClass(ep){
@@ -2183,8 +2218,13 @@ function renderEps(q){
 function filterEps(q){renderEps(q);}
 
 document.getElementById('ep-search').placeholder=t('search');
-updateModeBadge();
-applyFeatureVisibility();
+
+// Ensure pills are styled after DOM is ready
+setTimeout(function(){
+  document.body.setAttribute('data-mode', appMode||'reverie');
+  updateModeBadge();
+  applyFeatureVisibility();
+}, 0);
 
 // Event delegation: clicking anywhere on a .tgr row triggers its toggle
 document.addEventListener('click', function(e){
