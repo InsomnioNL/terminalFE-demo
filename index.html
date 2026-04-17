@@ -471,7 +471,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
   <div class="card" style="padding:10px 13px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div>
-        <div class="tgl-l">Musici ↔ Musici</div>
+        <div class="tgl-l">Musici &lt;-&gt; Musici</div>
         <div class="tgl-s" id="masterq-sub">Standaard voor alle musici-verbindingen</div>
       </div>
       <select id="masterq-sel" class="fs" style="font-size:11px;width:105px;padding:4px 6px" onchange="applyMasterQ()">
@@ -486,9 +486,9 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
         <option value="38">q=38 — 50.7ms</option>
       </select>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div>
-        <div class="tgl-l">Musici → Tonmeister</div>
+        <div class="tgl-l">Musici -&gt; Tonmeister</div>
         <div class="tgl-s" id="mastertmq-sub">Broadcast-lijnen naar Tonmeister</div>
       </div>
       <select id="mastertmq-sel" class="fs" style="font-size:11px;width:105px;padding:4px 6px" onchange="applyMasterTMQ()">
@@ -501,6 +501,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
         <option value="38" selected>q=38 — 50.7ms</option>
       </select>
     </div>
+    <div id="jb-sys-info" style="font-size:9px;color:rgba(255,255,255,.35);font-family:var(--mono);padding-top:6px;border-top:1px solid rgba(255,255,255,.07)">Systeeminstellingen: 64 fps · 48 kHz</div>
   </div>
 
   <!-- STAP 4: Expert -->
@@ -1037,9 +1038,16 @@ function renderTouchLabPanel(){
         const curVal=sysVals[k];
         rows+=`<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06)">
           <span style="flex:1;font-size:10px;color:rgba(255,255,255,.7)">${featureNames[k]}</span>
-          <select id="sys-${k}" class="fs" style="font-size:10px;padding:2px 4px;width:90px" onchange="updateSysSetting('${k}',this.value)">
+          <select id="fl-${k}" class="fs" style="font-size:10px;padding:2px 4px;width:55px" onchange="updateFeatureLevel('${k}',this.value)">
+            <option value="1"${lv===1?' selected':''}>1</option>
+            <option value="2"${lv===2?' selected':''}>2</option>
+            <option value="3"${lv===3?' selected':''}>3</option>
+          </select>
+          <select id="sys-${k}" class="fs" style="font-size:10px;padding:2px 4px;width:80px" onchange="updateSysSetting('${k}',this.value)">
             ${opts[k].map(v=>`<option value="${v}"${v===curVal?' selected':''}>${v}</option>`).join('')}
           </select>
+          <input id="exp-${k}" type="date" value="${exp}" style="font-size:9px;padding:2px;border-radius:4px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;width:105px" onchange="updateFeatureExpiry('${k}',this.value)" title="Verloopdatum (leeg = altijd)">
+          <span style="font-size:8px;color:${expDate?'#f0b93a':'rgba(255,255,255,.3)'}">${expDate?'tot '+expDate:'altijd'}</span>
         </div>`;
       } else {
         rows+=`<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06)">
@@ -1558,6 +1566,11 @@ function onModeChange(){
   }
 }
 
+function updateSysInfoLabel(){
+  const el=document.getElementById('jb-sys-info');
+  if(el) el.textContent=`Systeeminstellingen: ${getSys('fps')} fps · ${(getSys('samplerate')/1000).toFixed(1).replace('.0','')} kHz`;
+}
+
 function applyMasterTMQ(){
   const q=parseInt(document.getElementById('mastertmq-sel')?.value||38);
   const n=parts.length;
@@ -1583,6 +1596,7 @@ function applyMasterQ(){
   // Update sub label with latency
   const sub=document.getElementById('masterq-sub');
   if(sub) sub.textContent=`q=${q} — ${qLatency(q)}ms · totaal ~${qTotal(q)}ms`;
+  updateSysInfoLabel();
 }
 
 function applyBulkQ(type){
