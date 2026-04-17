@@ -430,25 +430,6 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
       </div>
     </div>
 
-    <!-- Master Q-size (Reverie) -->
-    <div class="tgr" style="cursor:pointer">
-      <div class="tgi">
-        <div class="tgl-l">Jitter buffer musici</div>
-        <div class="tgl-s" id="masterq-sub">Standaard voor alle musici-verbindingen</div>
-      </div>
-      <select id="masterq-sel" class="fs" style="font-size:11px;width:90px;padding:4px 6px" onclick="event.stopPropagation()" onchange="applyMasterQ()">
-        <option value="4">q=4 — 5.3ms</option>
-        <option value="6">q=6 — 8.0ms</option>
-        <option value="8" selected>q=8 — 10.7ms</option>
-        <option value="10">q=10 — 13.3ms</option>
-        <option value="12">q=12 — 16.0ms</option>
-        <option value="16">q=16 — 21.3ms</option>
-        <option value="20">q=20 — 26.7ms</option>
-        <option value="28">q=28 — 37.3ms</option>
-        <option value="38">q=38 — 50.7ms</option>
-      </select>
-    </div>
-
     <!-- TapTapBoom sessie-breed -->
     <div class="tgr">
       <div class="tgi">
@@ -468,6 +449,43 @@ html,body{height:100%;background:#0e0018;display:flex;align-items:center;justify
     </div>
     <div id="row-rec" style="display:none;padding:4px 0 8px">
       <div id="rec-eps" style="font-size:11px;color:rgba(255,255,255,.6)"></div>
+    </div>
+  </div>
+
+  <!-- STAP 3b: Jitter buffer + systeem -->
+  <div class="sh" style="margin-top:10px">Jitter buffer</div>
+  <div class="card" style="padding:10px 13px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div>
+        <div class="tgl-l">Musici ↔ Musici</div>
+        <div class="tgl-s" id="masterq-sub">Standaard voor alle musici-verbindingen</div>
+      </div>
+      <select id="masterq-sel" class="fs" style="font-size:11px;width:105px;padding:4px 6px" onchange="applyMasterQ()">
+        <option value="4">q=4 — 5.3ms</option>
+        <option value="6">q=6 — 8.0ms</option>
+        <option value="8" selected>q=8 — 10.7ms</option>
+        <option value="10">q=10 — 13.3ms</option>
+        <option value="12">q=12 — 16.0ms</option>
+        <option value="16">q=16 — 21.3ms</option>
+        <option value="20">q=20 — 26.7ms</option>
+        <option value="28">q=28 — 37.3ms</option>
+        <option value="38">q=38 — 50.7ms</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="tgl-l">Musici → Tonmeister</div>
+        <div class="tgl-s" id="mastertmq-sub">Broadcast-lijnen naar Tonmeister</div>
+      </div>
+      <select id="mastertmq-sel" class="fs" style="font-size:11px;width:105px;padding:4px 6px" onchange="applyMasterTMQ()">
+        <option value="8">q=8 — 10.7ms</option>
+        <option value="10">q=10 — 13.3ms</option>
+        <option value="12">q=12 — 16.0ms</option>
+        <option value="16">q=16 — 21.3ms</option>
+        <option value="20">q=20 — 26.7ms</option>
+        <option value="28">q=28 — 37.3ms</option>
+        <option value="38" selected>q=38 — 50.7ms</option>
+      </select>
     </div>
   </div>
 
@@ -804,26 +822,26 @@ function updateModePills(){
   if(!pr||!pn) return;
 
   if(isNocturne){
-    // Nocturne active — vivid purple
+    // Nocturne active
     pr.style.background='transparent';
-    pr.style.borderColor='rgba(255,255,255,.15)';
-    pr.style.color='rgba(255,255,255,.25)';
+    pr.style.borderColor='rgba(255,255,255,.12)';
+    pr.style.color='rgba(255,255,255,.2)';
     pr.style.boxShadow='none';
 
-    pn.style.background='#8a36ec';
+    pn.style.background='rgba(138,54,236,.15)';
     pn.style.borderColor='#8a36ec';
-    pn.style.color='#ffffff';
-    pn.style.boxShadow='0 0 10px rgba(138,54,236,.5)';
+    pn.style.color='#8a36ec';
+    pn.style.boxShadow='0 0 8px rgba(138,54,236,.4)';
   } else {
-    // Reverie active — vivid green
-    pr.style.background='#45e68f';
+    // Reverie active — green border + text
+    pr.style.background='rgba(69,230,143,.08)';
     pr.style.borderColor='#45e68f';
-    pr.style.color='#0e0020';
-    pr.style.boxShadow='0 0 10px rgba(69,230,143,.4)';
+    pr.style.color='#45e68f';
+    pr.style.boxShadow='0 0 8px rgba(69,230,143,.3)';
 
     pn.style.background='transparent';
-    pn.style.borderColor='rgba(255,255,255,.15)';
-    pn.style.color='rgba(255,255,255,.25)';
+    pn.style.borderColor='rgba(255,255,255,.12)';
+    pn.style.color='rgba(255,255,255,.2)';
     pn.style.boxShadow='none';
   }
 }
@@ -1272,7 +1290,10 @@ function renderBuilder(){
                 mixer:sess.hpm,ttb:false,noctcast:sess.noctcast,rec:false,tune:mem.tune||'viola.mp3'});
             }
           }
-          const linuxOthers=parts.filter(p=>p.mac!==sel.value&&(p.os==='Linux'||p.machine==='Linux mini-PC'));
+          const linuxOthers=parts.filter(p=>p.mac!==sel.value
+            &&(p.os==='Linux'||p.machine==='Linux mini-PC')
+            &&!(p.roles_active&&p.roles_active.includes('hub'))
+            &&p.role!=='hub');
           if(linuxOthers.length>0) setTimeout(()=>alert(`Let op: ${linuxOthers.map(p=>p.name).join(', ')} heeft geen scherm en kan de dirigent niet zien.`),100);
         }
       }
@@ -1297,9 +1318,9 @@ function renderBuilder(){
   if(rrow) rrow.style.display=sess.rec?'block':'none';
   if(sess.rec){
     // Default all parts to rec=true if not yet set
-    parts.forEach(p=>{if(p.rec===undefined||p.rec===false&&!p._recTouched)p.rec=true;});
+    parts.filter(p=>p.role!=='hub'&&!(p.roles_active&&p.roles_active.includes('hub'))).forEach(p=>{if(p.rec===undefined||p.rec===false&&!p._recTouched)p.rec=true;});
     const recEps=document.getElementById('rec-eps');
-    if(recEps) recEps.innerHTML=parts.map((p,i)=>`
+    if(recEps) recEps.innerHTML=parts.filter(p=>p.role!=='hub'&&!(p.roles_active&&p.roles_active.includes('hub'))).map((p,i)=>`
       <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08)">
         <span style="color:#45e68f;font-size:11px">${p.name}</span>
         <div class="tg${p.rec!==false?' on':''}" style="width:28px;height:16px" onclick="parts[${i}].rec=!parts[${i}].rec;parts[${i}]._recTouched=true;renderBuilder()"></div>
@@ -1430,8 +1451,11 @@ function togSess(k){
         parts.push({...mx1,role:'conductor',mics:mx1.mics||1,lbw:false,str2t:true,mixer:sess.hpm,ttb:false,noctcast:sess.noctcast,rec:false,tune:'viola.mp3'});
       }
       sess.condEp=mx1?.mac||'';
-      const linuxPlayers=parts.filter(p=>p.mac!==sess.condEp&&(p.os==='Linux'||p.machine==='Linux mini-PC'));
-      if(linuxPlayers.length>0) setTimeout(()=>alert(`Let op: ${linuxPlayers.map(p=>p.name).join(', ')} heeft geen scherm.`),100);
+      const linuxPlayers=parts.filter(p=>p.mac!==sess.condEp
+        &&(p.os==='Linux'||p.machine==='Linux mini-PC')
+        &&!(p.roles_active&&p.roles_active.includes('hub'))
+        &&p.role!=='hub');
+      if(linuxPlayers.length>0) setTimeout(()=>alert(`Let op: ${linuxPlayers.map(p=>p.name).join(', ')} heeft geen scherm en kan de dirigent niet zien.`),100);
     }
   } else if(k==='noctmix'){
     if(!sess.noctmix&&!sess.tm){
@@ -1499,6 +1523,17 @@ function onModeChange(){
   }
 }
 
+function applyMasterTMQ(){
+  const q=parseInt(document.getElementById('mastertmq-sel')?.value||38);
+  const n=parts.length;
+  for(let i=0;i<n;i++){
+    const inp=document.getElementById(`q_${i}_${n}`); // TM column = index n
+    if(inp) inp.value=q;
+  }
+  const sub=document.getElementById('mastertmq-sub');
+  if(sub) sub.textContent=`q=${q} — ${qLatency(q)}ms · totaal ~${qTotal(q)}ms`;
+}
+
 function applyMasterQ(){
   const q=parseInt(document.getElementById('masterq-sel')?.value||8);
   const n=parts.length;
@@ -1551,7 +1586,7 @@ function renderQmat(){
     <div style="font-size:9px;color:#45e68f;font-family:var(--mono);font-weight:600;margin-bottom:2px">BULK INSTELLEN</div>
     ${[
       {id:'mm',label:'Musici → Musici',opts:qOpts,def:8},
-      {id:'tm',label:'Musici → Tonmeister',opts:qOptsTM,def:16},
+      {id:'tm',label:'Musici → Tonmeister',opts:qOpts,def:38},
       {id:'jb',label:'Musici → Junctionbox',opts:qOpts,def:4},
       {id:'all',label:'Alles tegelijk',opts:qOpts,def:8}
     ].map(({id,label,opts,def})=>`
@@ -1602,25 +1637,38 @@ function renderTTBmat(){
     <td style="font-size:8px;color:rgba(255,255,255,.35);font-family:var(--mono);padding:0 6px 4px 0;text-align:right;vertical-align:bottom;white-space:nowrap">BESTEMMING →</td>`;
   names.forEach((name,idx)=>{
     const bronLabel=idx===0?`<div style="font-size:8px;color:rgba(255,255,255,.5);margin-bottom:2px">BRON ↓</div>`:'';
-    h+=`<th style="font-size:9px;color:#45e68f;font-family:var(--mono);padding:2px 6px;text-align:center;font-weight:600;vertical-align:bottom">${bronLabel}${name}</th>`;
+    const srcHasTTB=parts[idx]&&parts[idx].ttb;
+    const isJBsrc=parts[idx]&&(parts[idx].role==='hub'||(parts[idx].roles_active&&parts[idx].roles_active.includes('hub')));
+    const colColor=isJBsrc?'rgba(255,255,255,.15)':srcHasTTB?'#45e68f':'rgba(255,255,255,.3)';
+    h+=`<th style="font-size:9px;color:${colColor};font-family:var(--mono);padding:2px 6px;text-align:center;font-weight:600;vertical-align:bottom">${bronLabel}${name}</th>`;
   });
   h+='</tr>';
 
   // Data rows: row = destination, col = source
   parts.forEach((dest,i)=>{
     h+=`<tr>`;
-    // Row label = destination
-    h+=`<th style="font-size:9px;color:#45e68f;font-family:var(--mono);padding:2px 6px 2px 0;text-align:right;font-weight:600;white-space:nowrap">${names[i]}</th>`;
+    // Row label = destination — white always (anyone can receive)
+    const isJBdest=dest.role==='hub'||(dest.roles_active&&dest.roles_active.includes('hub'));
+    const destColor=isJBdest?'rgba(255,255,255,.2)':'rgba(255,255,255,.7)';
+    h+=`<th style="font-size:9px;color:${destColor};font-family:var(--mono);padding:2px 6px 2px 0;text-align:right;font-weight:600;white-space:nowrap">${names[i]}</th>`;
     parts.forEach((src,j)=>{
       if(i===j){
-        h+=`<td style="text-align:center;padding:3px;color:rgba(255,255,255,.2);font-size:11px">—</td>`;
+        h+=`<td style="text-align:center;padding:3px;color:rgba(255,255,255,.15);font-size:11px">—</td>`;
       } else {
-        // Does source j send to destination i?
-        // In parts[j].ttbRoutes[i]: row=sender(j), col=receiver(i) — existing data
         const on=(parts[j].ttbRoutes?parts[j].ttbRoutes[i]!==false:true);
+        const srcHasTTB=parts[j].ttb;
+        // Only clickable if source has TTB
+        const clickable=srcHasTTB&&!isJBdest;
+        // Dest green if receiving (on=true and src has TTB)
+        const isActive=on&&srcHasTTB;
+        const boxBorder=isActive?'#45e68f':clickable?'rgba(255,255,255,.2)':'rgba(255,255,255,.08)';
+        const boxBg=isActive?'rgba(69,230,143,.15)':'transparent';
+        const boxColor=isActive?'#45e68f':clickable?'rgba(255,255,255,.25)':'rgba(255,255,255,.08)';
+        const cursor=clickable?'pointer':'default';
         h+=`<td style="text-align:center;padding:3px">
-          <div onclick="toggleTTB(${j},${i})" style="width:22px;height:22px;border-radius:4px;border:1px solid ${on?'#45e68f':'rgba(255,255,255,.2)'};background:${on?'rgba(69,230,143,.15)':'transparent'};display:flex;align-items:center;justify-content:center;cursor:pointer;margin:0 auto;font-size:13px;color:${on?'#45e68f':'rgba(255,255,255,.2)'}">
-            ${on?'✓':''}
+          <div ${clickable?`onclick="toggleTTB(${j},${i})"`:''}
+            style="width:22px;height:22px;border-radius:4px;border:1px solid ${boxBorder};background:${boxBg};display:flex;align-items:center;justify-content:center;cursor:${cursor};margin:0 auto;font-size:13px;color:${boxColor}">
+            ${isActive?'✓':''}
           </div>
         </td>`;
       }
@@ -1676,6 +1724,16 @@ function openEdit(i){
     if(micLbl) micLbl.style.opacity=isPureJB?'0.3':'1';
     if(isPureJB){parts[i].mics=0;micSel.value=1;}
   }
+
+  // Junctionbox: grey out mixer, ttb, rec toggles
+  const isPureJB2=p.roles_active&&p.roles_active.length===1&&p.roles_active[0]==='hub'
+    ||(!p.roles_active&&p.role==='hub');
+  ['mixer','ttb','rec'].forEach(k=>{
+    const tg=document.getElementById('edit-tg-'+k);
+    const row=document.getElementById('edit-row-'+k)||tg?.closest('.tgr');
+    if(tg){ tg.style.opacity=isPureJB2?'0.25':'1'; }
+    if(row){ row.style.opacity=isPureJB2?'0.35':'1'; }
+  });
 
   // Hide str2t if this endpoint IS the Tonmeister
   const isTM=p.mac===sess.tmEp&&sess.tm;
@@ -1795,6 +1853,36 @@ function toggleRole(r){
     el.style.color=active?'#0e0020':'#b06af5';
     el.style.borderColor=active?'#45e68f':'rgba(138,54,236,.3)';
   });
+}
+
+function isEditingJB(){
+  if(editIdx<0) return false;
+  const p=parts[editIdx];
+  return p.roles_active&&p.roles_active.length===1&&p.roles_active[0]==='hub'
+    ||(!p.roles_active&&p.role==='hub');
+}
+
+function jbWarn(msg){
+  const jokes=[
+    'Sorry, heb geen oren! 👂',
+    'Sorry, heb geen armen noch benen! 🤷',
+    'Een Junctionbox routeert — geen concert!',
+    'Vergeet het maar! Ik ben een router.'
+  ];
+  alert(jokes[Math.floor(Math.random()*jokes.length)]+'
+
+'+msg);
+}
+
+function editTog(k){
+  // JB exceptions
+  if(isEditingJB()){
+    if(k==='mixer') { jbWarn('Een Junctionbox heeft geen Headphone Mix nodig.'); return; }
+    if(k==='ttb')   { jbWarn('Een Junctionbox heeft geen voetpedaal nodig.'); return; }
+    if(k==='rec')   { jbWarn('Kies lokale opname bij de bron, niet bij de Junctionbox!'); return; }
+  }
+  const el=document.getElementById('edit-tg-'+k);
+  if(el) el.classList.toggle('on');
 }
 
 function editTogLbw(){
