@@ -360,7 +360,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       <div class="tg" id="tg-tm" onclick="event.stopPropagation();togSess('tm')"></div>
     </div>
     <div id="row-tm-ep" style="display:none;padding:4px 0 8px;gap:8px;flex-direction:column">
-      <select class="fs" id="sel-tm" style="font-size:11px">
+      <select class="fs" id="sel-tm" style="font-size:11px" onchange="onSiEpChange('tm',this.value)">
         <option value="">— kies eindpunt —</option>
       </select>
       <div class="tgr" style="padding:6px 0 0">
@@ -381,7 +381,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       <div class="tg" id="tg-jb" onclick="event.stopPropagation();togSess('jb')"></div>
     </div>
     <div id="row-jb-ep" style="display:none;padding:4px 0 8px">
-      <select class="fs" id="sel-jb" style="font-size:11px">
+      <select class="fs" id="sel-jb" style="font-size:11px" onchange="onSiEpChange('jb',this.value)">
         <option value="">— kies eindpunt —</option>
       </select>
     </div>
@@ -395,7 +395,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       <div class="tg" id="tg-cond" onclick="event.stopPropagation();togSess('cond')"></div>
     </div>
     <div id="row-cond-ep" style="display:none;padding:4px 0 8px">
-      <select class="fs" id="sel-cond" style="font-size:11px">
+      <select class="fs" id="sel-cond" style="font-size:11px" onchange="onSiEpChange('cond',this.value)">
         <option value="">— kies eindpunt —</option>
       </select>
     </div>
@@ -474,16 +474,17 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
         <div class="tgl-l">Musici &lt;-&gt; Musici</div>
         <div class="tgl-s" id="masterq-sub">Standaard voor alle musici-verbindingen</div>
       </div>
-      <select id="masterq-sel" class="fs" style="font-size:11px;width:105px;padding:4px 6px" onchange="applyMasterQ()">
+      <select id="masterq-sel" class="fs" style="font-size:11px;width:120px;padding:4px 6px" onchange="applyMasterQ()">
+        <option value="2">q=2 — 2.7ms</option>
         <option value="4">q=4 — 5.3ms</option>
         <option value="6">q=6 — 8.0ms</option>
         <option value="8" selected>q=8 — 10.7ms</option>
         <option value="10">q=10 — 13.3ms</option>
         <option value="12">q=12 — 16.0ms</option>
+        <option value="14">q=14 — 18.7ms</option>
         <option value="16">q=16 — 21.3ms</option>
+        <option value="18">q=18 — 24.0ms</option>
         <option value="20">q=20 — 26.7ms</option>
-        <option value="28">q=28 — 37.3ms</option>
-        <option value="38">q=38 — 50.7ms</option>
       </select>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -491,14 +492,32 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
         <div class="tgl-l">Musici -&gt; Tonmeister</div>
         <div class="tgl-s" id="mastertmq-sub">Broadcast-lijnen naar Tonmeister</div>
       </div>
-      <select id="mastertmq-sel" class="fs" style="font-size:11px;width:105px;padding:4px 6px" onchange="applyMasterTMQ()">
+      <select id="mastertmq-sel" class="fs" style="font-size:11px;width:120px;padding:4px 6px" onchange="applyMasterTMQ()">
+        <option value="2">q=2 — 2.7ms</option>
+        <option value="4">q=4 — 5.3ms</option>
+        <option value="6">q=6 — 8.0ms</option>
         <option value="8">q=8 — 10.7ms</option>
         <option value="10">q=10 — 13.3ms</option>
         <option value="12">q=12 — 16.0ms</option>
+        <option value="14">q=14 — 18.7ms</option>
         <option value="16">q=16 — 21.3ms</option>
+        <option value="18">q=18 — 24.0ms</option>
         <option value="20">q=20 — 26.7ms</option>
+        <option value="22">q=22 — 29.3ms</option>
+        <option value="24">q=24 — 32.0ms</option>
+        <option value="26">q=26 — 34.7ms</option>
         <option value="28">q=28 — 37.3ms</option>
+        <option value="30">q=30 — 40.0ms</option>
+        <option value="32">q=32 — 42.7ms</option>
+        <option value="34">q=34 — 45.3ms</option>
+        <option value="36">q=36 — 48.0ms</option>
         <option value="38" selected>q=38 — 50.7ms</option>
+        <option value="40">q=40 — 53.3ms</option>
+        <option value="42">q=42 — 56.0ms</option>
+        <option value="44">q=44 — 58.7ms</option>
+        <option value="46">q=46 — 61.3ms</option>
+        <option value="48">q=48 — 64.0ms</option>
+        <option value="50">q=50 — 66.7ms</option>
       </select>
     </div>
     <div id="jb-sys-info" style="font-size:9px;color:rgba(255,255,255,.35);font-family:var(--mono);padding-top:6px;border-top:1px solid rgba(255,255,255,.07)">Systeeminstellingen: 64 fps · 48 kHz</div>
@@ -1263,17 +1282,6 @@ function renderBuilder(){
   const pel=document.getElementById('b-parts');
   if(n===0){
     pel.innerHTML=`<div class="nf" style="color:rgba(255,255,255,.55)">${lang==='nl'?'Voeg spelers toe via de knop hieronder':'Add players via the button below'}</div>`;
-  } else {
-    pel.innerHTML=parts.map((p,i)=>`
-      <div class="pr pr-clickable" onclick="openEdit(${i})">
-        <div class="av ${p.av}" style="width:28px;height:28px;font-size:9px">${init2(p.name)}</div>
-        <div style="flex:1;min-width:0">
-          <div class="pr-name" style="font-size:12px;font-weight:400;color:#45e68f;transition:color .15s">${p.name}</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.45)">${p.isp||''}${p.lbw?' · lbw':''}${p.udpIssue?'<span style="color:#f0b93a"> · ⚠ UDP</span>':''} · ${p.mics||1} mic${(p.mics||1)>1?'s':''}</div>
-        </div>
-        <span class="prl">${roleLblShort(p.role)}</span>
-        <span style="font-size:11px;color:rgba(255,255,255,.25);margin-left:2px">›</span>
-      </div>`).join('');
   }
 
   // Sync session toggles
@@ -1378,8 +1386,9 @@ function renderBuilder(){
       if(idx>=0&&parts[idx].role!==role) parts[idx].role=role;
     }
   });
-  // Re-render parts list if roles changed (force update of pills)
+  // Re-render parts list
   if(n>0){
+    try {
     pel.innerHTML=parts.map((p,i)=>{
       const ep=EPS.find(e=>e.mac===p.mac)||p;
       const dispName=ep.display||p.name;
@@ -1402,6 +1411,10 @@ function renderBuilder(){
         <span style="font-size:11px;color:rgba(255,255,255,.25);margin-left:4px">›</span>
       </div>`;
     }).join('');
+    } catch(e){
+      alert('Render fout bij deel '+parts.findIndex((_,idx)=>idx)+': '+e.message);
+      pel.innerHTML=parts.map((p,i)=>`<div class="pr pr-clickable" onclick="openEdit(${i})"><span style="color:#f0b93a">${p.name||'?'} (${(p.roles_active||[p.role||'?']).join(',')})</span></div>`).join('');
+    }
   }
   const hasTTB=sess.ttbsess||parts.some(p=>p.ttb);
   const ttbEx=document.getElementById('ttb-expert');
@@ -1428,16 +1441,8 @@ function togSess(k){
 
   // ── NoSleepCast ─────────────────────────────────────────────────
   if(k==='noctcast'){
-    if(sess.noctcast){
-      // Turning off → confirm
-      if(!confirm(lang==='nl'?'Dit zet NoSleepCast voor alle spelers uit. Weet je het zeker?':'This disables NoSleepCast for all players. Are you sure?')) return;
-      sess.noctcast=false;
-      parts.forEach(p=>p.noctcast=false);
-    } else {
-      // Turning on → sync all parts, no confirm needed
-      sess.noctcast=true;
-      parts.forEach(p=>p.noctcast=true);
-    }
+    sess.noctcast=!sess.noctcast;
+    parts.forEach(p=>p.noctcast=sess.noctcast);
     renderBuilder();
     return;
   }
@@ -1608,10 +1613,8 @@ function applyBulkQ(type){
       const inp=document.getElementById(`q_${i}_${j}`);
       if(!inp) continue;
       const isTM=j===n, isJB=j===n+1;
-      if(type==='all') inp.value=val;
-      else if(type==='mm'&&!isTM&&!isJB) inp.value=val;
-      else if(type==='tm'&&isTM) inp.value=val;
-      else if(type==='jb'&&isJB) inp.value=val;
+      if(type==='mm') { if(!isTM) inp.value=val; }       // Musici + JB
+      else if(type==='tm') { if(isTM) inp.value=val; }   // TM only
     }
   }
 }
@@ -1621,6 +1624,37 @@ function updateBulkLatency(type){
   if(el) el.textContent=`${qLatency(val)}ms · totaal ~${qTotal(val)}ms`;
 }
 
+function applyRowQ(row, val){
+  const n=parts.length;
+  const cols=n+2; // +TM +JB
+  for(let j=0;j<cols;j++){
+    if(j===row) continue;
+    const inp=document.getElementById(`q_${row}_${j}`);
+    if(inp) inp.value=val;
+  }
+}
+
+function showRowQPicker(rowIdx, name){
+  // Remove any existing picker
+  const existing=document.getElementById('row-q-picker');
+  if(existing){existing.remove();return;}
+
+  const div=document.createElement('div');
+  div.id='row-q-picker';
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px';
+  const opts=[4,6,8,10,12,16,20,28,38].map(q=>`<option value="${q}">q=${q} — ${qLatency(q)}ms</option>`).join('');
+  div.innerHTML=`<div style="background:#1a0836;border:1px solid rgba(138,54,236,.5);border-radius:10px;padding:18px;width:100%;max-width:280px">
+    <div style="font-size:10px;color:rgba(255,255,255,.5);font-family:var(--mono);margin-bottom:4px">ALLE INKOMENDE Q-SIZES</div>
+    <div style="font-size:15px;font-weight:600;color:#45e68f;margin-bottom:14px">${name}</div>
+    <select id="row-q-val" class="fs" style="margin-bottom:12px">${opts}</select>
+    <div style="display:flex;gap:8px">
+      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('row-q-picker').remove()">Annuleren</button>
+      <button class="btn btp" style="margin:0;flex:2" onclick="applyRowQ(${rowIdx},parseInt(document.getElementById('row-q-val').value));document.getElementById('row-q-picker').remove()">Toepassen</button>
+    </div>
+  </div>`;
+  document.querySelector('.app').appendChild(div);
+}
+
 function renderQmat(){
   const n=parts.length;
   const el=document.getElementById('qmat');
@@ -1628,32 +1662,14 @@ function renderQmat(){
   const names=parts.map(p=>{const ep=EPS.find(e=>e.mac===p.mac);return ep?(ep.player||ep.name).slice(0,3):p.name.slice(0,3);});
   const cols=[...names,'TM','JB'];
 
-  // Bulk edit controls
-  const qOpts=[4,6,8,10,12,16,20].map(q=>`<option value="${q}">q=${q} — ${qLatency(q)}ms</option>`).join('');
-  const qOptsTM=[8,10,12,16,20,25,32,40,50].map(q=>`<option value="${q}"${q===16?' selected':''}">q=${q} — ${qLatency(q)}ms</option>`).join('');
-  let h=`<div style="margin-bottom:10px;display:flex;flex-direction:column;gap:6px">
-    <div style="font-size:9px;color:#45e68f;font-family:var(--mono);font-weight:600;margin-bottom:2px">BULK INSTELLEN</div>
-    ${[
-      {id:'mm',label:'Musici → Musici',opts:qOpts,def:8},
-      {id:'tm',label:'Musici → Tonmeister',opts:qOpts,def:38},
-      {id:'jb',label:'Musici → Junctionbox',opts:qOpts,def:4},
-      {id:'all',label:'Alles tegelijk',opts:qOpts,def:8}
-    ].map(({id,label,opts,def})=>`
-    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-      <span style="font-size:10px;color:rgba(255,255,255,.55);min-width:130px">${label}</span>
-      <select id="bulk-q-${id}" class="fs" style="font-size:10px;padding:4px 6px;flex:1;min-width:90px" onchange="updateBulkLatency('${id}')">${opts}</select>
-      <span id="bulk-lat-${id}" style="font-size:9px;color:rgba(255,255,255,.4);font-family:var(--mono);min-width:110px">${qLatency(def)}ms · totaal ~${qTotal(def)}ms</span>
-      <button onclick="applyBulkQ('${id}')" style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(138,54,236,.3);border:1px solid rgba(138,54,236,.5);color:#fff;cursor:pointer">Toepassen</button>
-    </div>`).join('')}
-  </div>`;
-
-  // Matrix
+  // Matrix — row header is clickable for bulk row edit
+  let h='';
   h+='<table><tr><th></th>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
   for(let i=0;i<n;i++){
-    h+=`<tr><th>${names[i]}</th>`;
+    h+=`<tr><th style="cursor:pointer;color:#45e68f;text-decoration:underline dotted;text-underline-offset:3px" onclick="showRowQPicker(${i},'${names[i]}')" title="Klik: alle inkomende q-sizes voor ${names[i]}">${names[i]}</th>`;
     for(let j=0;j<cols.length;j++){
       if(j===i){h+=`<td class="dx">X</td>`;}
-      else{const d=j>=n?(j===n?16:4):8;h+=`<td><input type="number" min="1" max="50" value="${d}" id="q_${i}_${j}" style="font-size:10px"></td>`;}
+      else{const d=j>=n?(j===n?38:4):8;h+=`<td><input type="number" min="1" max="50" value="${d}" id="q_${i}_${j}" style="font-size:10px"></td>`;}
     }
     h+='</tr>';
   }
@@ -1735,13 +1751,36 @@ function toggleTTB(i,j){
   renderTTBmat();
 }
 let editIdx=-1;
+function applyRowState(key, state){
+  const tg=document.getElementById('edit-tg-'+key);
+  const row=tg?tg.closest('.tgr'):null;
+  const lbl=document.getElementById('edit-lbl-'+key);
+  if(!tg) return;
+  if(state==='grey'){
+    tg.style.opacity='0.2'; tg.style.pointerEvents='none';
+    if(row){row.style.opacity='0.35';row.style.pointerEvents='none';}
+    if(lbl) lbl.style.color='rgba(255,255,255,.3)';
+  } else if(state==='warn'){
+    tg.style.opacity='0.7'; tg.style.pointerEvents='auto';
+    if(row){row.style.opacity='0.8';row.style.pointerEvents='auto';}
+    if(lbl) lbl.style.color='#f0b93a';
+  } else {
+    tg.style.opacity='1'; tg.style.pointerEvents='auto';
+    if(row){row.style.opacity='1';row.style.pointerEvents='auto';}
+    if(lbl) lbl.style.color='#45e68f';
+  }
+}
+
 function openEdit(i){
+  if(i<0||i>=parts.length) return;
   editIdx=i;
   const p=parts[i];
+  if(!p) return;
   const ep=EPS.find(e=>e.mac===p.mac)||p;
 
   const avEl=document.getElementById('edit-av');
-  avEl.className='av '+p.av;
+  if(!avEl) return;
+  avEl.className='av '+(p.av||'av-mac');
   avEl.style.cssText='width:38px;height:38px;font-size:11px;font-weight:700;letter-spacing:-0.5px';
   avEl.textContent=init2(p.name);
   document.getElementById('edit-name').textContent=p.name;
@@ -1763,31 +1802,21 @@ function openEdit(i){
   const micCount=p.mics||(remembered.mics||1);
   parts[i].mics=micCount;
   const micSel=document.getElementById('mic-sel');
+  const isPureJBmic=p.roles_active&&p.roles_active.length===1&&p.roles_active[0]==='hub';
   if(micSel){
     micSel.innerHTML=Array.from({length:64},(_,j)=>`<option value="${j+1}"${(j+1)===micCount?' selected':''}>${j+1}</option>`).join('');
     // Grey out mics if pure Junctionbox role
-    const isPureJB=p.roles_active&&p.roles_active.length===1&&p.roles_active[0]==='hub';
-    micSel.disabled=isPureJB;
-    micSel.style.opacity=isPureJB?'0.3':'1';
+    micSel.disabled=isPureJBmic;
+    micSel.style.opacity=isPureJBmic?'0.3':'1';
     const micLbl=document.getElementById('edit-lbl-mics');
-    if(micLbl) micLbl.style.opacity=isPureJB?'0.3':'1';
-    if(isPureJB){parts[i].mics=0;micSel.value=1;}
+    if(micLbl) micLbl.style.opacity=isPureJBmic?'0.3':'1';
+    if(isPureJBmic){parts[i].mics=0;micSel.value=1;}
   }
 
-  // Junctionbox: grey out mixer, ttb, rec toggles
-  const isPureJB2=p.roles_active&&p.roles_active.length===1&&p.roles_active[0]==='hub'
-    ||(!p.roles_active&&p.role==='hub');
-  ['mixer','ttb','rec'].forEach(k=>{
-    const tg=document.getElementById('edit-tg-'+k);
-    const row=document.getElementById('edit-row-'+k)||tg?.closest('.tgr');
-    if(tg){ tg.style.opacity=isPureJB2?'0.25':'1'; }
-    if(row){ row.style.opacity=isPureJB2?'0.35':'1'; }
-  });
-
-  // Hide str2t if this endpoint IS the Tonmeister
+  // Hide str2t row if no TM in session
   const isTM=p.mac===sess.tmEp&&sess.tm;
   const str2tRow=document.getElementById('edit-row-str2t');
-  if(str2tRow) str2tRow.style.display=(sess.tm&&!isTM)?'flex':'none';
+  if(str2tRow) str2tRow.style.display=(sess.tm&&!isTM&&!isPureJBmic)?'flex':'none';
 
   // Toggles
   const tvals={
@@ -1828,19 +1857,70 @@ function openEdit(i){
   document.getElementById('edit-remove').textContent=lang==='nl'?'Verwijderen':'Remove';
   document.getElementById('edit-save').textContent=lang==='nl'?'Opslaan':'Save';
 
+  // Apply role matrix LAST so it overrides green labels
+  // ── Role matrix: grey/warn per feature per role ─────────────
+  const roles=p.roles_active||[p.role||'normal'];
+  const isPureTM =roles.length===1&&roles[0]==='tonmeister';
+  const isPureJB =roles.length===1&&roles[0]==='hub';
+  const isPureCond=roles.length===1&&roles[0]==='conductor';
+  const hasMusician=roles.includes('normal');
+
+  // applyRowState moved to top-level
+
+  // JUNCTIONBOX (pure)
+  if(isPureJB){
+    applyRowState('mixer','grey');   // geen oren
+    applyRowState('ttb','grey');     // geen benen
+    applyRowState('rec','grey');
+    applyRowState('str2t','grey');
+    applyRowState('lbw','grey');
+    applyRowState('noctcast','grey');
+    // tune already hidden if test mode off
+  }
+  // TONMEISTER (pure)
+  else if(isPureTM){
+    applyRowState('mixer','warn');   // JackMixer→NSC nog niet beschikbaar
+    applyRowState('rec','warn');     // opname via JackMixer nog niet beschikbaar
+    applyRowState('ttb','grey');
+    applyRowState('lbw','grey');
+    applyRowState('str2t','grey');   // hij IS de TM
+    applyRowState('noctcast','on');  // TM kan wel naar NSC
+  }
+  // CONDUCTOR (pure)
+  else if(isPureCond){
+    applyRowState('mixer','on');
+    applyRowState('ttb','on');
+    applyRowState('rec','grey');
+    applyRowState('lbw','grey');
+    applyRowState('str2t','on');     // via externe mixer gefilterd
+    applyRowState('noctcast','grey');
+  }
+  // MUSICIAN (or combined roles)
+  else {
+    applyRowState('mixer','on');
+    applyRowState('ttb','on');
+    applyRowState('rec','on');
+    applyRowState('lbw','on');
+    applyRowState('str2t','on');
+    applyRowState('noctcast','on');
+  }
+
   document.getElementById('ep-edit').classList.add('open');
 }
 
 function closeEdit(){
   if(editIdx<0) return;
   const p=parts[editIdx];
-  ['lbw','ttb','rec'].forEach(k=>{
-    p[k]=document.getElementById('edit-tg-'+k).classList.contains('on');
-  });
-  p.str2t=document.getElementById('edit-tg-str2t')?.classList.contains('on')??true;
-  p.mixer=document.getElementById('edit-tg-mixer').classList.contains('on');
-  p.noctcast=document.getElementById('edit-tg-noctcast')?.classList.contains('on')??true;
-  p.tune=document.getElementById('edit-sel-tune')?.value||'viola.mp3';
+  if(!p) { editIdx=-1; document.getElementById('ep-edit').classList.remove('open'); return; }
+  const tgVal=(id,def)=>{ const el=document.getElementById(id); return el?el.classList.contains('on'):def; };
+  p.lbw=tgVal('edit-tg-lbw',false);
+  p.ttb=tgVal('edit-tg-ttb',false);
+  p.rec=tgVal('edit-tg-rec',false);
+  p.str2t=tgVal('edit-tg-str2t',true);
+  p.mixer=tgVal('edit-tg-mixer',true);
+  p.noctcast=tgVal('edit-tg-noctcast',true);
+  const tuneSel=document.getElementById('edit-sel-tune');
+  p.tune=tuneSel?tuneSel.value||'viola.mp3':'viola.mp3';
   const micSel=document.getElementById('mic-sel');
   if(micSel) p.mics=parseInt(micSel.value)||1;
   // Save primary role from roles_active
@@ -1869,28 +1949,57 @@ function toggleRole(r){
           :`Warning: ${lbwNames} has low bandwidth and needs a Junctionbox. Who will fulfil this role now?`;
         setTimeout(()=>{
           alert(msg);
-          // Highlight JB section in SI
-          sess.jb=true;
-          sess.jbEp='';
+          sess.jb=true; sess.jbEp='';
           renderBuilder();
           const jbRow=document.getElementById('row-jb-ep');
           if(jbRow){jbRow.style.display='flex';jbRow.scrollIntoView({behavior:'smooth',block:'center'});}
         },300);
       }
-      // TM removed: clear SI TM if this was the holder
-      if(r==='tonmeister'&&sess.tmEp===p.mac){
-        sess.tm=false;sess.tmEp='';
-      }
+      if(r==='tonmeister'&&sess.tmEp===p.mac){ sess.tm=false;sess.tmEp=''; }
+      if(r==='hub'&&sess.jbEp===p.mac){ sess.jb=false;sess.jbEp=''; }
     }
   } else {
+    // ── Unique role check: TM and JB can only exist once ──────
+    if(r==='tonmeister'||r==='hub'){
+      const roleName=r==='tonmeister'?'Tonmeister':'Junctionbox';
+      // Ensure roles_active initialized on all parts
+      parts.forEach(pl=>{if(!pl.roles_active)pl.roles_active=[pl.role||'normal'];});
+      const existing=parts.find(pl=>pl.mac!==p.mac&&pl.roles_active.includes(r));
+      if(existing){
+        const existName=existing.display||existing.name;
+        const choice=confirm(
+          lang==='nl'
+            ?`Er is al een ${roleName} in de sessie: ${existName}.\n\nOK = verwijder die rol bij ${existName}\nAnnuleren = behoud huidige situatie`
+            :`There is already a ${roleName} in this session: ${existName}.\n\nOK = remove that role from ${existName}\nCancel = keep current situation`
+        );
+        if(!choice) return; // Annuleer
+        // Remove role from existing endpoint
+        existing.roles_active=existing.roles_active.filter(x=>x!==r);
+        if(existing.roles_active.length===0) existing.roles_active=['normal'];
+        existing.role=existing.roles_active[0];
+      }
+    }
     p.roles_active.push(r);
-    // Sync SI when special role selected
-    if(r==='tonmeister'){sess.tm=true;sess.tmEp=p.mac;}
-    if(r==='hub'){sess.jb=true;sess.jbEp=p.mac;}
+    // EI → SI sync
+    if(r==='tonmeister'){
+      sess.tm=true; sess.tmEp=p.mac;
+      // Remove TM role from any previous holder
+      parts.forEach(pl=>{if(pl.mac!==p.mac&&pl.roles_active?.includes('tonmeister')){pl.roles_active=pl.roles_active.filter(x=>x!=='tonmeister');if(!pl.roles_active.length)pl.roles_active=['normal'];pl.role=pl.roles_active[0];}});
+    }
+    if(r==='hub'){
+      sess.jb=true; sess.jbEp=p.mac;
+      parts.forEach(pl=>{if(pl.mac!==p.mac&&pl.roles_active?.includes('hub')){pl.roles_active=pl.roles_active.filter(x=>x!=='hub');if(!pl.roles_active.length)pl.roles_active=['normal'];pl.role=pl.roles_active[0];}});
+    }
     if(r==='conductor'){sess.cond=true;sess.condEp=p.mac;}
   }
   // Primary role = first in list
   p.role=p.roles_active[0];
+
+  // Re-render builder so SI syncs visually
+  renderBuilder();
+
+  // Re-apply role matrix in EI
+  if(editIdx>=0) setTimeout(()=>openEdit(editIdx),50);
 
   // Re-render role pills
   const allRoles=['normal','tonmeister','hub','conductor'];
@@ -1912,22 +2021,31 @@ function isEditingJB(){
 }
 
 function jbWarn(msg){
-  const jokes=[
-    'Sorry, heb geen oren!',
-    'Sorry, heb geen armen noch benen!',
-    'Een Junctionbox routeert — geen concert!',
-    'Vergeet het maar! Ik ben een router.'
-  ];
-  alert(jokes[Math.floor(Math.random()*jokes.length)]+'\n\n'+msg);
+  alert(msg);
 }
 
 function editTog(k){
-  // JB exceptions
-  if(isEditingJB()){
-    if(k==='mixer') { jbWarn('Een Junctionbox heeft geen Headphone Mix nodig.'); return; }
-    if(k==='ttb')   { jbWarn('Een Junctionbox heeft geen voetpedaal nodig.'); return; }
-    if(k==='rec')   { jbWarn('Kies lokale opname bij de bron, niet bij de Junctionbox!'); return; }
+  if(editIdx<0) return;
+  const p=parts[editIdx];
+  const roles=p.roles_active||[p.role||'normal'];
+  const isPureJB=roles.length===1&&roles[0]==='hub';
+  const isPureTM=roles.length===1&&roles[0]==='tonmeister';
+  const isPureCond=roles.length===1&&roles[0]==='conductor';
+
+  // JB warnings
+  if(isPureJB){
+    if(k==='mixer') { alert('Sorry, heb geen oren! Een Junctionbox heeft geen Headphone Mix nodig.'); return; }
+    if(k==='ttb')   { alert('Sorry, heb geen armen noch benen! Een Junctionbox heeft geen voetpedaal nodig.'); return; }
+    if(k==='rec')   { alert('Kies lokale opname bij de bron, niet bij de Junctionbox!'); return; }
+    return;
   }
+  // TM warnings
+  if(isPureTM){
+    if(k==='mixer') { alert('Functie nog niet beschikbaar — routing JackMixer naar Headphone Mix moet nog gemaakt worden.'); return; }
+    if(k==='rec')   { alert('Functie nog niet beschikbaar — routing JackMixer naar lokale opname moet nog gemaakt worden.'); return; }
+    return;
+  }
+
   const el=document.getElementById('edit-tg-'+k);
   if(el) el.classList.toggle('on');
 }
@@ -1982,14 +2100,6 @@ function setMics(n,save=true){
 
 function editTogWarn(k){
   const el=document.getElementById('edit-tg-'+k);
-  const wasOn=el.classList.contains('on');
-  if(wasOn){
-    if(!confirm(lang==='nl'?'Let op: dit eindpunt wordt uit de NoSleepCast-stream gehaald. Weet je het zeker?':'Warning: this endpoint will be removed from the NoSleepCast stream. Are you sure?')) return;
-  }
-  el.classList.toggle('on');
-}
-function editTog(k){
-  const el=document.getElementById('edit-tg-'+k);
   if(el) el.classList.toggle('on');
 }
 
@@ -2003,26 +2113,37 @@ function removeFromEdit(){
 
 
 function generateBash(name){
-  const n=parts.length;
   const today=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
   const mode=document.getElementById('b-mode').value.split(' ')[0];
 
-  // Q-matrix from DOM
+  // Split parts into roles
+  const isMusician=p=>!(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const musicians=parts.filter(isMusician);
+  const tmPart=parts.find(p=>(p.roles_active||[p.role]).includes('tonmeister'));
+  const jbPart=parts.find(p=>(p.roles_active||[p.role]).includes('hub'));
+  const nm=musicians.length;
+
+  const jbEp=sess.jbEp||(jbPart&&jbPart.mac)||'';
+  const tmEp=sess.tmEp||(tmPart&&tmPart.mac)||'';
+
+  // Q-matrix from DOM — only musician rows/cols, last two cols = TM, JB
   const qmat=[];
-  for(let i=0;i<n;i++){
+  for(let i=0;i<parts.length;i++){
+    const mi=musicians.indexOf(parts[i]);
+    if(mi<0) continue; // skip TM/JB rows
     const row=[];
-    for(let j=0;j<n+2;j++){
+    for(let j=0;j<parts.length+2;j++){
+      const mj=j<parts.length?musicians.indexOf(parts[j]):-1;
       if(j===i){row.push('X');continue;}
       const inp=document.getElementById(`q_${i}_${j}`);
-      row.push(inp?inp.value:(j>=n?'4':'8'));
+      const val=inp?inp.value:(j>=parts.length?'4':'8');
+      row.push(val);
     }
     qmat.push(row);
   }
 
-  const jbEp=sess.jbEp||EPS.find(e=>e.roles.includes('hub'))?.mac||'';
-  const tmEp=sess.tmEp||EPS.find(e=>e.roles.includes('tonmeister'))?.mac||'';
-
-  const ba=(key,def=0)=>parts.map(p=>p[key]!==undefined?(p[key]?1:0):def).join('\t');
+  const pad=(v,w=2)=>String(v).padStart(w);
+  const ba=(arr,key,def=0)=>arr.map(p=>p[key]!==undefined?(p[key]?1:0):def).join('  ');
 
   let lines=[];
   lines.push(`# ${name}`);
@@ -2030,92 +2151,169 @@ function generateBash(name){
   lines.push(`# CONFIGv1.3`);
   lines.push(`#`);
   lines.push(`# Lots of parameters are booleans, where "1" should be read as "Yes" and "0" as "No".`);
+  lines.push(`#`);
+  // Endpoint comment block
+  lines.push(`# Deelnemers:`);
+  musicians.forEach(p=>{ const ep=EPS.find(e=>e.mac===p.mac)||p; lines.push(`# ${ep.display||p.name}\t${p.mac}\t${p.isp||''}`); });
+  if(tmPart){ const ep=EPS.find(e=>e.mac===tmPart.mac)||tmPart; lines.push(`# Tonmeister: ${ep.display||tmPart.name}\t${tmPart.mac}`); }
+  if(jbPart){ const ep=EPS.find(e=>e.mac===jbPart.mac)||jbPart; lines.push(`# Junctionbox: ${ep.display||jbPart.name}\t${jbPart.mac}`); }
   lines.push(``);
+
   lines.push(`soundcloud_mode=${mode}`);
   lines.push(`UDP_hole_punching=${sess.udp?1:0}`);
   lines.push(``);
 
-  if(sess.tm&&tmEp) lines.push(`Tonmeister=(\t${tmEp})`);
-  if(sess.jb&&jbEp) lines.push(`Junctionbox=(\t${jbEp})`);
+  if(sess.tm&&tmEp) lines.push(`Tonmeister=(\t${tmEp})\t# Tonmeister MAC`);
+  if(sess.jb&&jbEp) lines.push(`Junctionbox=(\t${jbEp})\t# Junctionbox MAC`);
   lines.push(`external_mixer=${sess.extmix?1:0}`);
   lines.push(``);
 
-  const epList=parts.map(p=>p.mac).join(' \\\n\t\t');
-  const pList=parts.map(p=>p.name).join(' \\\n\t\t');
+  // Only musicians in endpoints/participants
+  const epList=musicians.map(p=>p.mac).join(' \\\n\t\t');
+  const pList=musicians.map(p=>{ const ep=EPS.find(e=>e.mac===p.mac)||p; return ep.player||p.name; }).join(' \\\n\t\t');
   lines.push(`endpoints=(\t${epList})`);
   lines.push(``);
   lines.push(`participants=(\t${pList})`);
   lines.push(``);
 
-  lines.push(`#                    E N D P O I N T   C O N F I G U R A T I O N`);
-  const hdr='#             '+parts.map((_,i)=>String(i+1).padStart(2)).join(' ');
-  lines.push(hdr);
-
-  lines.push(`no_of_mics=(  ${parts.map(p=>String(p.mics||1).padStart(1)).join('  ')})`+'\t# number of microphones');
-  lines.push(`record=(      ${parts.map(p=>p.rec&&sess.rec?'1':'0').join('  ')})`+'\t# make local recording?');
-  lines.push(`mixer=(\t      ${ba('mixer',1)})`+'\t# mixer required?');
-  lines.push(`str2T=(\t      ${parts.map(p=>sess.tm&&p.str2t!==false?'1':'0').join('  ')})`+'\t# stream to Tonmeister?');
-  lines.push(`str2I=(       ${parts.map(p=>p.noctcast&&sess.noctcast?'1':'0').join('  ')})`+'\t# stream to NoSleepCast?');
-  lines.push(`conductor=(   ${parts.map(p=>p.role==='conductor'?'1':'0').join('  ')})`+'\t# show conductor hands?');
-  lines.push(`ttb=(         ${ba('ttb',0)})`+'\t# TTB-device in use?');
-  lines.push(`in_test=(     ${parts.map(()=>sess.test?'1':'0').join('  ')})`+'\t# put endpoint in test?');
+  // lbw array — musicians only
+  lines.push(`lbw_endpoint=(\t${musicians.map(p=>p.lbw?'1':'0').join('\t')})\t# low bandwidth connection?`);
   lines.push(``);
+
+  // Per-endpoint arrays — musicians only
+  lines.push(`#                    E N D P O I N T   C O N F I G U R A T I O N`);
+  const hdr='#             '+musicians.map((_,i)=>pad(i+1)).join('  ');
+  lines.push(hdr);
+  lines.push(`no_of_mics=(  ${musicians.map(p=>pad(p.mics||1,1)).join('  ')})\t# number of microphones`);
+  lines.push(`mixer=(       ${ba(musicians,'mixer',1)})\t# headphone mix required?`);
+  lines.push(`str2T=(       ${musicians.map(p=>sess.tm&&p.str2t!==false?'1':'0').join('  ')})\t# stream to Tonmeister?`);
+  lines.push(`str2I=(       ${musicians.map(p=>p.noctcast&&sess.noctcast?'1':'0').join('  ')})\t# stream to NoSleepCast?`);
+  lines.push(`ttb=(         ${ba(musicians,'ttb',0)})\t# TTB-device in use?`);
+  lines.push(`in_test=(     ${musicians.map(()=>sess.test?'1':'0').join('  ')})\t# endpoint in test?`);
+  if(sess.rec) lines.push(`record=(      ${musicians.map(p=>p.rec?'1':'0').join('  ')})\t# make local recording?`);
+  // Conductor
+  const condMusicians=musicians.filter(p=>(p.roles_active||[]).includes('conductor')||(p.roles_active||[]).includes('normal')&&p.mac===sess.condEp);
+  if(sess.cond) lines.push(`conductor=(   ${musicians.map(p=>p.mac===sess.condEp?'1':'0').join('  ')})\t# conductor endpoint?`);
+  lines.push(``);
+  lines.push(`tune=(\t${musicians.map(p=>p.tune||'viola.mp3').join(' \\\n\t')})`);
+  lines.push(``);
+
   lines.push(`########################## SETTINGS BEYOND THIS LINE ARE EXPERT-MODE #################################`);
   lines.push(``);
-  lines.push(`lbw_endpoint=(  ${parts.map(p=>p.lbw?'1':'0').join('  ')})`+'\t# low bandwidth?');
-  lines.push(``);
 
-  // Q-matrices
+  // Q-matrices — musicians only, last 2 cols = TM, JB
+  const colHdr='# inbound from: '+musicians.map((_,i)=>pad(i+1)).join('  ')+' TM  JB';
   lines.push(`# Jacktrip (jitter-buffer) Qsize-matrices.`);
-  for(let i=0;i<n;i++){
-    const row=qmat[i].map(v=>String(v).padStart(2)).join('  ');
-    lines.push(`declare -a   Qsize_${i}=(${row})`);
+  lines.push(`# Rows = receiving endpoint, Columns = sending endpoint`);
+  lines.push(colHdr);
+  for(let i=0;i<nm;i++){
+    const row=qmat[i]||[];
+    lines.push(`declare -a Qsize_${i}=(${row.map(v=>pad(v)).join('  ')})`);
   }
-  lines.push(`declare -a   Qsize_T=( ${parts.map(()=>' 6').join('  ')}   X   X   X)\t# in-queue @TM`);
-  lines.push(`declare -a   Qsize_J=( ${parts.map(()=>' 4').join('  ')}   X   X   X)\t# in-queue @JB`);
+  // TM and JB inbound rows — use master Q values
+  const masterQ=parseInt(document.getElementById('masterq-sel')?.value||8);
+  const masterTMQ=parseInt(document.getElementById('mastertmq-sel')?.value||38);
+  lines.push(`declare -a Qsize_T=(${musicians.map(()=>pad(masterTMQ)).join('  ')}  X   X   X)\t# in-queue @Tonmeister`);
+  if(sess.jb) lines.push(`declare -a Qsize_J=(${musicians.map(()=>pad(4)).join('  ')}  X   X   X)\t# in-queue @Junctionbox`);
   lines.push(``);
 
-  // BQsize
-  for(let i=0;i<n;i++){
-    const row=[...parts.map((_,j)=>j===i?' X':'50'),'50','50'].map(v=>String(v).padStart(2)).join('  ');
-    lines.push(`declare -a  BQsize_${i}=(${row})`);
+  // BQsize — broadcast lines, always 50
+  for(let i=0;i<nm;i++){
+    const row=[...musicians.map((_,j)=>j===i?' X':'50'),'50','50'].map(v=>pad(v)).join('  ');
+    lines.push(`declare -a BQsize_${i}=(${row})`);
   }
-  lines.push(`declare -a  BQsize_T=( ${parts.map(()=>'50').join('  ')}   X   X   X)\t# in-queue @TM`);
-  lines.push(`declare -a  BQsize_J=( ${parts.map(()=>'50').join('  ')}   X   X   X)\t# in-queue @JB`);
+  lines.push(`declare -a BQsize_T=(${musicians.map(()=>pad(50)).join('  ')}  X   X   X)\t# broadcast @Tonmeister`);
+  if(sess.jb) lines.push(`declare -a BQsize_J=(${musicians.map(()=>pad(50)).join('  ')}  X   X   X)\t# broadcast @Junctionbox`);
   lines.push(``);
 
-  // Redundancy
-  for(let i=0;i<n;i++){
-    const row=[...parts.map((_,j)=>j===i?'X':'1'),'1','1','1'].map(v=>String(v).padStart(2)).join('  ');
-    lines.push(`declare -a   Redun_${i}=(${row})`);
+  // Redundancy — default 1, TM gets 2
+  for(let i=0;i<nm;i++){
+    const row=[...musicians.map((_,j)=>j===i?'X':'1'),'2','1'].map(v=>pad(v)).join('  ');
+    lines.push(`declare -a Redun_${i}=(${row})\t# 2x redundancy to TM`);
   }
-  lines.push(`declare -a   Redun_T=( ${parts.map(()=>' 1').join('  ')}   X   X   X)`);
-  lines.push(`declare -a   Redun_J=( ${parts.map(()=>' 1').join('  ')}   X   X   X)`);
+  lines.push(`declare -a Redun_T=(${musicians.map(()=>pad(1)).join('  ')}  X   X   X)`);
+  if(sess.jb) lines.push(`declare -a Redun_J=(${musicians.map(()=>pad(1)).join('  ')}  X   X   X)`);
   lines.push(``);
 
-  // TTB matrix
-  lines.push(`# TapTapBoom routing-matrix.`);
-  for(let i=0;i<n;i++){
-    const row=parts.map((_,j)=>{
-      if(j===i) return 'X';
-      return (parts[i].ttbRoutes&&parts[i].ttbRoutes[j]!==false)?'1':'0';
-    }).join('  ');
-    lines.push(`declare -a     ttb_${i}=( ${row})`);
+  // TTB matrix — musicians only
+  const ttbMusicians=musicians.filter(p=>p.ttb);
+  if(ttbMusicians.length>0){
+    lines.push(`# TapTapBoom routing-matrix.`);
+    for(let i=0;i<nm;i++){
+      const row=musicians.map((_,j)=>{
+        if(j===i) return 'X';
+        return (musicians[i].ttbRoutes&&musicians[i].ttbRoutes[j]!==false)?'1':'0';
+      }).join('  ');
+      lines.push(`declare -a ttb_${i}=( ${row})`);
+    }
+    lines.push(``);
   }
-  lines.push(``);
 
-  lines.push(`HUB_Qsize=4`);
-  lines.push(`HUB_BQsize=50`);
-  lines.push(`HUB_Redun=1`);
+  // Device params
+  lines.push(`HUB_Qsize=4\t\t# HUBserver incoming Qsize`);
+  lines.push(`HUB_BQsize=50\t\t# HUBserver broadcast Qsize`);
+  lines.push(`HUB_Redun=1\t\t# HUBserver redundancy`);
   lines.push(`HUB_Port=60`);
   lines.push(`HUB_UDPbaseport=61001`);
+  lines.push(`BAB_Qsize=25\t\t# Babbelbox incoming Qsize`);
+  lines.push(`BAB_BQsize=50\t\t# Babbelbox broadcast Qsize`);
+  lines.push(`BAB_Redun=1`);
   lines.push(``);
-  lines.push(`sample_rate=48000\t# 48Khz meaning CD-quality`);
-  lines.push(`fps=64\t\t\t# audio-samples per frame`);
+  lines.push(`sample_rate=${getSys('samplerate')}\t# sample rate`);
+  lines.push(`fps=${getSys('fps')}\t\t\t# audio-samples per frame`);
   lines.push(`bitres=16\t\t# Audio Bit Rate Resolution`);
-  lines.push(`USB_bufsize=3\t\t# recommended buffersize for USB audio-interfaces`);
+  lines.push(`USB_bufsize=${getSys('usbbuffer')}\t\t# USB buffer size`);
 
   return lines.join('\n');
+}
+
+function onSiEpChange(role, mac){
+  if(!mac) return;
+  // Map role key to roles_active value
+  const roleMap={tm:'tonmeister', jb:'hub', cond:'conductor'};
+  const epRole=roleMap[role];
+
+  // Update sess EP reference
+  if(role==='tm') sess.tmEp=mac;
+  if(role==='jb') sess.jbEp=mac;
+  if(role==='cond') sess.condEp=mac;
+
+  // Auto-add endpoint to session if not already there
+  if(!parts.some(p=>p.mac===mac)){
+    const ep=EPS.find(e=>e.mac===mac);
+    if(ep){
+      const mem=recallEp(ep.mac);
+      parts.push({...ep, role:epRole, roles_active:[epRole],
+        mics:mem.mics||ep.mics||1, lbw:false, str2t:true,
+        mixer:sess.hpm, ttb:false, noctcast:sess.noctcast,
+        rec:false, tune:mem.tune||'viola.mp3'});
+    }
+  } else {
+    // Endpoint already in session — update its role
+    const p=parts.find(p=>p.mac===mac);
+    if(p){
+      if(!p.roles_active) p.roles_active=[p.role||'normal'];
+      if(!p.roles_active.includes(epRole)){
+        // Remove any conflicting exclusive role first
+        if(role==='tm') p.roles_active=p.roles_active.filter(r=>r!=='tonmeister');
+        if(role==='jb') p.roles_active=p.roles_active.filter(r=>r!=='hub');
+        p.roles_active.push(epRole);
+        p.role=p.roles_active[0];
+      }
+    }
+  }
+
+  // Remove role from any previous holder
+  parts.forEach(p=>{
+    if(p.mac===mac) return;
+    if(p.roles_active&&p.roles_active.includes(epRole)){
+      p.roles_active=p.roles_active.filter(r=>r!==epRole);
+      if(p.roles_active.length===0) p.roles_active=['normal'];
+      p.role=p.roles_active[0];
+    }
+  });
+
+  renderBuilder();
 }
 
 function saveAndGo(){
@@ -2198,16 +2396,62 @@ function filterPicker(q){
 function addPart(mac){
   const ep=EPS.find(e=>e.mac===mac);if(!ep)return;
   const mem=recallEp(mac);
-  const initRoles=mem.roles_active||[ep.roles[0]||'normal'];
+  // Always use EPS default role — never restore JB/TM from localStorage
+  // to avoid stale unique-role conflicts
+  const epDefaultRole=ep.roles[0]||'normal';
+  const initRoles=[epDefaultRole];
+
+  // Unique check: if this EP's default role is JB or TM, check for existing holder
+  if(epDefaultRole==='hub'||epDefaultRole==='tonmeister'){
+    parts.forEach(pl=>{if(!pl.roles_active)pl.roles_active=[pl.role||'normal'];});
+    const existing=parts.find(pl=>pl.roles_active.includes(epDefaultRole));
+    if(existing){
+      const roleName=epDefaultRole==='hub'?'Junctionbox':'Tonmeister';
+      const existName=existing.display||existing.name;
+      const choice=confirm(
+        lang==='nl'
+          ?`Er is al een ${roleName} in de sessie: ${existName}.
+
+OK = verwijder die rol bij ${existName}
+Annuleren = voeg toe als Musician`
+          :`There is already a ${roleName}: ${existName}.
+
+OK = remove that role
+Cancel = add as Musician`
+      );
+      if(choice){
+        existing.roles_active=existing.roles_active.filter(x=>x!==epDefaultRole);
+        if(!existing.roles_active.length) existing.roles_active=['normal'];
+        existing.role=existing.roles_active[0];
+      } else {
+        initRoles[0]='normal';
+      }
+    }
+  }
+
+  // Fix up initRoles for conductor_capable before push
+  if(ep.conductor_capable && !initRoles.includes('conductor')){
+    initRoles.unshift('conductor');
+  }
+
   parts.push({
     ...ep, role:initRoles[0],
-    roles_active:initRoles,
+    roles_active:[...initRoles],
     mics:mem.mics||ep.mics||1,
     lbw:mem.lbw!==undefined?mem.lbw:!!ep.lbw,
     str2t:true, mixer:mem.mixer!==undefined?mem.mixer:sess.hpm,
     ttb:false, noctcast:sess.noctcast,
     rec:false, tune:mem.tune||'viola.mp3'
   });
+
+  // Sync SI for special roles
+  if(initRoles.includes('tonmeister')){sess.tm=true;sess.tmEp=mac;}
+  if(initRoles.includes('hub')){sess.jb=true;sess.jbEp=mac;}
+  if(initRoles.includes('conductor')||ep.conductor_capable){
+    sess.cond=true;
+    sess.condEp=mac;
+  }
+
   closePicker();renderBuilder();
 }
 
