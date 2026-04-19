@@ -950,7 +950,7 @@ let appMode = localStorage.getItem('terminal_mode')||'reverie'; // reverie / noc
 // Feature levels: 1=reverie, 2=nocturne, 3=touchlab
 let featureLevels = JSON.parse(localStorage.getItem('terminal_feature_levels')||'null') || {
   tonmeister:1, junctionbox:1, udp:1, testmode:1,
-  headphonemix:1, localrec:1, masterq:1,
+  headphonemix:1, localrec:2, masterq:1,
   conductor:2, nosleepcast:2, ttb:2, hub:2, extmix:2,
   expertq:2, ttbrouting:2,
   fps:3, samplerate:3, usbbuffer:3
@@ -1093,6 +1093,7 @@ function applyFeatureVisibility(){
   // Grey out features not accessible in current mode
   const features={
     'tg-cond':'conductor','tg-noctcast':'nosleepcast',
+    'tg-ttbsess':'ttb','tg-rec':'localrec',
     'row-cond-ep':'conductor','row-noctcast':'nosleepcast',
     'tg-extmix':'extmix'
   };
