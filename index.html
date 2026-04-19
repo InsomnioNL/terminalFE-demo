@@ -1,7 +1,15 @@
 <!DOCTYPE html>
+<!--
+  TERMINAL by TouchLab
+  © 2026 TouchLab. All rights reserved.
+  Developed for Ensemble INSOMNIO.
+  Unauthorized reproduction or distribution is prohibited.
+-->
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
+  <meta name="copyright" content="© 2026 TouchLab. All rights reserved.">
+  <meta name="application-name" content="TERMINAL by TouchLab">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a0836">
@@ -536,6 +544,83 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:5px;font-family:var(--mono)">Kolommen = BRON (↓) · Rijen = BESTEMMING (→)</div>
   </div>
 
+  <!-- Redundancy matrix (Expert) -->
+  <div class="expert" style="margin-top:8px">
+    <div class="etit">REDUNDANTIE — MATRIX</div>
+    <div style="overflow-x:auto"><div class="mat" id="redunmat"></div></div>
+    <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:5px;font-family:var(--mono)">Kolom = zender &#8594; Rij = bestemming &nbsp;·&nbsp; Klik kolom voor bulk instelling</div>
+  </div>
+
+  <!-- TouchLab sectie: Babbelbox + Systeem -->
+  <div id="tl-builder-section" style="display:none;margin-top:12px">
+    <!-- Babbelbox -->
+    <div class="expert" style="margin-top:8px">
+      <div class="etit">BABBELBOX</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div>
+          <div class="tgl-l" style="font-size:11px">BAB_Qsize</div>
+          <div class="tgl-s">Inbound buffer Babbelbox</div>
+        </div>
+        <select id="bab-qsize" class="fs" style="font-size:11px;width:80px;padding:4px 6px">
+          <option value="10">10</option><option value="15">15</option>
+          <option value="20">20</option><option value="25" selected>25</option>
+          <option value="30">30</option><option value="38">38</option><option value="50">50</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div>
+          <div class="tgl-l" style="font-size:11px">BAB_BQsize</div>
+          <div class="tgl-s">Broadcast buffer Babbelbox</div>
+        </div>
+        <select id="bab-bqsize" class="fs" style="font-size:11px;width:80px;padding:4px 6px">
+          <option value="25">25</option><option value="38">38</option>
+          <option value="50" selected>50</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div class="tgl-l" style="font-size:11px">BAB_Redun</div>
+          <div class="tgl-s">Redundantie Babbelbox</div>
+        </div>
+        <select id="bab-redun" class="fs" style="font-size:11px;width:80px;padding:4px 6px">
+          <option value="1" selected>1</option><option value="2">2</option><option value="3">3</option>
+        </select>
+      </div>
+    </div>
+    <!-- Systeem -->
+    <div class="expert" style="margin-top:8px">
+      <div class="etit">SYSTEEM</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div class="tgl-l" style="font-size:11px">Sample frames (fps)</div>
+        <select id="sys-fps-b" class="fs" style="font-size:11px;width:80px;padding:4px 6px" onchange="updateSysSetting('fps',this.value)">
+          <option value="32">32</option><option value="64" selected>64</option>
+          <option value="128">128</option><option value="256">256</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div class="tgl-l" style="font-size:11px">Sample rate</div>
+        <select id="sys-sr-b" class="fs" style="font-size:11px;width:80px;padding:4px 6px" onchange="updateSysSetting('samplerate',this.value)">
+          <option value="44100">44100</option><option value="48000" selected>48000</option>
+          <option value="96000">96000</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div class="tgl-l" style="font-size:11px">Bit resolution</div>
+        <select id="sys-bitres-b" class="fs" style="font-size:11px;width:80px;padding:4px 6px">
+          <option value="8">8</option><option value="16" selected>16</option>
+          <option value="24">24</option><option value="32">32</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="tgl-l" style="font-size:11px">USB buffer</div>
+        <select id="sys-usb-b" class="fs" style="font-size:11px;width:80px;padding:4px 6px" onchange="updateSysSetting('usbbuffer',this.value)">
+          <option value="2">2</option><option value="3" selected>3</option>
+          <option value="4">4</option><option value="6">6</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
   <button class="btn btp" style="margin-top:14px" onclick="saveAndGo()">Sessie opslaan en versturen</button>
 </div>
 
@@ -590,6 +675,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
 </div>
 </div><!-- /content -->
 
+<div style="text-align:center;font-size:7px;color:rgba(255,255,255,.2);font-family:var(--mono);padding:3px 0;letter-spacing:0.06em">© 2026 TOUCHLAB · TERMINAL v1.0 · ENSEMBLE INSOMNIO</div>
 <div class="bnav">
   <button class="nb active" id="nb-sessies" onclick="nav('sessies')">
     <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1.5" fill="currentColor" opacity=".9"/><rect x="11" y="3" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/><rect x="3" y="11" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/><rect x="11" y="11" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/></svg>
@@ -964,6 +1050,10 @@ function setMode(m){
 }
 
 function applyFeatureVisibility(){
+  // Show TouchLab builder section
+  const tlSection=document.getElementById('tl-builder-section');
+  if(tlSection) tlSection.style.display=appMode==='touchlab'?'block':'none';
+
   // Grey out features not accessible in current mode
   const features={
     'tg-cond':'conductor','tg-noctcast':'nosleepcast','tg-ttbsess':'ttb',
@@ -976,11 +1066,25 @@ function applyFeatureVisibility(){
     const ok=canAccess(feat);
     el.style.opacity=ok?'1':'0.35';
     el.style.pointerEvents=ok?'':'none';
-    // Show lock icon on parent tgr
+    // Show lock hint on parent tgr
     const tgr=el.closest('.tgr');
     if(tgr){
-      tgr.style.opacity=ok?'1':'0.4';
+      tgr.style.opacity=ok?'1':'0.5';
       tgr.style.pointerEvents=ok?'':'none';
+      // Add/remove lock badge
+      let badge=tgr.querySelector('.feat-lock');
+      if(!ok){
+        if(!badge){
+          badge=document.createElement('span');
+          badge.className='feat-lock';
+          badge.style.cssText='font-size:8px;color:rgba(138,54,236,.8);font-family:var(--mono);margin-left:6px;letter-spacing:0.05em;pointer-events:none';
+          badge.innerHTML='&#128274; Nocturne';
+          const lbl=tgr.querySelector('.tgl-l');
+          if(lbl) lbl.appendChild(badge);
+        }
+      } else {
+        if(badge) badge.remove();
+      }
     }
   });
   // Expert sections
@@ -1309,8 +1413,17 @@ function renderBuilder(){
       eligible=[...parts, ...dedicated];
     }
 
-    sel.innerHTML='<option value="">— kies eindpunt —</option>'+
-      eligible.map(e=>`<option value="${e.mac}"${sess[k+'Ep']===e.mac?' selected':''}>${e.name}</option>`).join('');
+    // Rebuild options using DOM (more reliable than innerHTML on iOS)
+    while(sel.options.length>0) sel.remove(0);
+    const emptyOpt=new Option('— kies eindpunt —','');
+    sel.add(emptyOpt);
+    eligible.forEach(e=>{
+      const ep=EPS.find(x=>x.mac===e.mac)||e;
+      const label=ep.display||(ep.player?(ep.player+' \u2014 '+ep.name):ep.name);
+      const opt=new Option(label, e.mac);
+      if(sess[k+'Ep']===e.mac) opt.selected=true;
+      sel.add(opt);
+    });
 
     sel.onchange=()=>{
       const prev=sess[k+'Ep'];
@@ -1371,11 +1484,14 @@ function renderBuilder(){
     // Default all parts to rec=true if not yet set
     parts.filter(p=>p.role!=='hub'&&!(p.roles_active&&p.roles_active.includes('hub'))).forEach(p=>{if(p.rec===undefined||p.rec===false&&!p._recTouched)p.rec=true;});
     const recEps=document.getElementById('rec-eps');
-    if(recEps) recEps.innerHTML=parts.filter(p=>p.role!=='hub'&&!(p.roles_active&&p.roles_active.includes('hub'))).map((p,i)=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08)">
-        <span style="color:#45e68f;font-size:11px">${p.name}</span>
-        <div class="tg${p.rec!==false?' on':''}" style="width:28px;height:16px" onclick="parts[${i}].rec=!parts[${i}].rec;parts[${i}]._recTouched=true;renderBuilder()"></div>
-      </div>`).join('');
+    if(recEps) recEps.innerHTML=parts.filter(p=>p.role!=='hub'&&!(p.roles_active&&p.roles_active.includes('hub'))).map(p=>{
+      const pi=parts.indexOf(p);
+      const ep=EPS.find(e=>e.mac===p.mac)||p;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+        <span style="color:#45e68f;font-size:11px">${ep.display||p.name}</span>
+        <div class="tg${p.rec!==false?' on':''}" style="width:28px;height:16px" onclick="parts[${pi}].rec=!parts[${pi}].rec;parts[${pi}]._recTouched=true;renderBuilder()"></div>
+      </div>`;
+    }).join('');
   }
 
   // Explicit role sync from session settings → parts
@@ -1421,6 +1537,7 @@ function renderBuilder(){
   if(ttbEx) ttbEx.style.display=hasTTB?'block':'none';
 
   renderQmat();
+  renderRedunmat();
   if(hasTTB) renderTTBmat();
   applyFeatureVisibility();
 }
@@ -1606,15 +1723,17 @@ function applyMasterQ(){
 
 function applyBulkQ(type){
   const val=parseInt(document.getElementById('bulk-q-'+type).value);
-  const n=parts.length;
-  for(let i=0;i<n;i++){
-    for(let j=0;j<n+2;j++){
-      if(i===j) continue;
-      const inp=document.getElementById(`q_${i}_${j}`);
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const nm=parts.filter(p=>!isSpecial(p)).length;
+  const nc=nm+3; // musicians + TM + JB + HUB
+  for(let mi=0;mi<nm;mi++){
+    for(let ci=0;ci<nc;ci++){
+      if(ci===mi) continue;
+      const inp=document.getElementById(`q_${mi}_${ci}`);
       if(!inp) continue;
-      const isTM=j===n, isJB=j===n+1;
-      if(type==='mm') { if(!isTM) inp.value=val; }       // Musici + JB
-      else if(type==='tm') { if(isTM) inp.value=val; }   // TM only
+      const isTM=ci===nm;
+      if(type==='mm' && !isTM) inp.value=val;  // all non-TM cols
+      else if(type==='tm' && isTM) inp.value=val; // TM col only
     }
   }
 }
@@ -1625,11 +1744,12 @@ function updateBulkLatency(type){
 }
 
 function applyRowQ(row, val){
-  const n=parts.length;
-  const cols=n+2; // +TM +JB
-  for(let j=0;j<cols;j++){
-    if(j===row) continue;
-    const inp=document.getElementById(`q_${row}_${j}`);
+  // row = musician index, cols = nm+3 (musicians + TM + JB + HUB)
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const nm=parts.filter(p=>!isSpecial(p)).length;
+  for(let ci=0;ci<nm+3;ci++){
+    if(ci===row) continue;
+    const inp=document.getElementById(`q_${row}_${ci}`);
     if(inp) inp.value=val;
   }
 }
@@ -1656,35 +1776,194 @@ function showRowQPicker(rowIdx, name){
 }
 
 function renderQmat(){
-  const n=parts.length;
   const el=document.getElementById('qmat');
-  if(n===0){el.innerHTML='';return;}
-  const names=parts.map(p=>{const ep=EPS.find(e=>e.mac===p.mac);return ep?(ep.player||ep.name).slice(0,3):p.name.slice(0,3);});
-  const cols=[...names,'TM','JB'];
+  // Musicians only (not TM/JB)
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const mus=parts.filter(p=>!isSpecial(p));
+  const nm=mus.length;
+  if(nm===0){el.innerHTML='';return;}
+  const hasTM=!!sess.tmEp||parts.some(p=>(p.roles_active||[p.role]).includes('tonmeister'));
+  const hasJB=!!sess.jbEp||parts.some(p=>(p.roles_active||[p.role]).includes('hub'));
 
-  // Matrix — row header is clickable for bulk row edit
-  let h='';
-  h+='<table><tr><th></th>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
-  for(let i=0;i<n;i++){
-    h+=`<tr><th style="cursor:pointer;color:#45e68f;text-decoration:underline dotted;text-underline-offset:3px" onclick="showRowQPicker(${i},'${names[i]}')" title="Klik: alle inkomende q-sizes voor ${names[i]}">${names[i]}</th>`;
-    for(let j=0;j<cols.length;j++){
-      if(j===i){h+=`<td class="dx">X</td>`;}
-      else{const d=j>=n?(j===n?38:4):8;h+=`<td><input type="number" min="1" max="50" value="${d}" id="q_${i}_${j}" style="font-size:10px"></td>`;}
+  // Column headers: musicians + TM + JB + HUB
+  const colNames=[...mus.map(p=>{const ep=EPS.find(e=>e.mac===p.mac)||p;return (ep.player||p.name).slice(0,3);}),'TM','JB','HUB'];
+  const nc=nm+3; // musicians + TM + JB + HUB
+
+  // Defaults:
+  // - musician cols = masterQ (peer connections)
+  // - TM col (nm) = masterQ (traffic FROM TM to musician, same as peer)
+  // - JB col (nm+1), HUB col (nm+2) = 4
+  // masterTMQ only applies to Qsize_T row (TM's inbound buffer from musicians)
+  const defQ=(mi,ci)=>{
+    if(ci===nm+2) return 4;  // HUB default = 4
+    if(ci===nm+1) return 4;  // JB default = 4 (JB always on good connection)
+    if(ci===nm)   return 8;  // TM col = masterQ
+    return 8;               // musician peer connections
+  };
+
+  let h='<table>';
+  // Header
+  h+='<tr><th style="font-size:8px;color:rgba(255,255,255,.3);font-family:var(--mono);padding:0 4px 4px 0;text-align:right">van→</th>';
+  colNames.forEach((c,ci)=>{
+    const isSpec=ci>=nm;
+    const color=isSpec?'rgba(255,255,255,.4)':'rgba(255,255,255,.6)';
+    h+=`<th style="font-size:8px;color:${color};font-family:var(--mono);padding:2px 4px;text-align:center">${c}</th>`;
+  });
+  h+='</tr>';
+
+  // Musician rows (clickable row header for bulk)
+  for(let mi=0;mi<nm;mi++){
+    const ep=EPS.find(e=>e.mac===mus[mi].mac)||mus[mi];
+    const rowName=(ep.player||mus[mi].name).slice(0,3);
+    h+=`<tr><th style="font-size:8px;color:#45e68f;font-family:var(--mono);padding:2px 4px 2px 0;text-align:right;cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px" onclick="showRowQPicker(${mi},'${rowName}')">${rowName}</th>`;
+    for(let ci=0;ci<nc;ci++){
+      if(ci===mi){
+        h+=`<td style="text-align:center;color:rgba(255,255,255,.15);font-size:10px;padding:2px 4px">X</td>`;
+      } else {
+        const def=defQ(mi,ci);
+        const bg=ci>=nm?'rgba(255,255,255,.04)':'transparent';
+        h+=`<td style="padding:1px 2px;background:${bg}"><input type="number" min="1" max="99" value="${def}" id="q_${mi}_${ci}" style="font-size:10px;width:36px;padding:2px 3px;background:var(--bg2);border:1px solid rgba(255,255,255,.15);border-radius:3px;color:#fff;text-align:center"></td>`;
+      }
     }
     h+='</tr>';
   }
-  el.innerHTML=h+'</table>';
+
+  // Qsize_T row (read-only display, using masterTMQ)
+  h+=`<tr><th style="font-size:8px;color:rgba(255,255,255,.4);font-family:var(--mono);padding:2px 4px 2px 0;text-align:right">TM</th>`;
+  for(let ci=0;ci<nc;ci++){
+    if(ci>=nm){ h+=`<td style="text-align:center;color:rgba(255,255,255,.15);font-size:10px;padding:2px 4px">X</td>`; }
+    else { h+=`<td id="qt_${ci}" style="text-align:center;font-size:9px;color:rgba(255,255,255,.35);padding:2px 4px">38</td>`; }
+  }
+  h+='</tr>';
+
+  // Qsize_J row
+  if(hasJB){
+    h+=`<tr><th style="font-size:8px;color:rgba(255,255,255,.4);font-family:var(--mono);padding:2px 4px 2px 0;text-align:right">JB</th>`;
+    for(let ci=0;ci<nc;ci++){
+      if(ci>=nm){ h+=`<td style="text-align:center;color:rgba(255,255,255,.15);font-size:10px;padding:2px 4px">X</td>`; }
+      else { h+=`<td style="text-align:center;font-size:9px;color:rgba(255,255,255,.35);padding:2px 4px">4</td>`; }
+    }
+    h+='</tr>';
+  }
+
+  h+='</table>';
+  el.innerHTML=h;
+
+  // Update TM row from mastertmq-sel
+  const tmq=parseInt(document.getElementById('mastertmq-sel')?.value||38);
+  for(let ci=0;ci<nm;ci++){
+    const td=document.getElementById('qt_'+ci);
+    if(td) td.textContent=tmq;
+  }
+}
+
+
+function showRowRedunPicker(rowIdx, name){
+  const existing=document.getElementById('row-redun-picker');
+  if(existing){existing.remove();return;}
+  const div=document.createElement('div');
+  div.id='row-redun-picker';
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.innerHTML=`<div style="background:#1a0836;border:1px solid rgba(138,54,236,.5);border-radius:10px;padding:18px;width:100%;max-width:280px">
+    <div style="font-size:10px;color:rgba(255,255,255,.5);font-family:var(--mono);margin-bottom:4px">UITGAANDE REDUNDANTIE VAN</div>
+    <div style="font-size:15px;font-weight:600;color:#45e68f;margin-bottom:14px">${name}</div>
+    <select id="row-redun-val" class="fs" style="margin-bottom:12px">
+      <option value="1">1 — geen redundantie</option>
+      <option value="2">2 — dubbel</option>
+      <option value="3">3 — drievoudig</option>
+    </select>
+    <div style="display:flex;gap:8px">
+      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('row-redun-picker').remove()">Annuleren</button>
+      <button class="btn btp" style="margin:0;flex:2" onclick="applyRowRedun(${rowIdx},parseInt(document.getElementById('row-redun-val').value));document.getElementById('row-redun-picker').remove()">Toepassen</button>
+    </div>
+  </div>`;
+  document.querySelector('.app').appendChild(div);
+}
+
+function applyRowRedun(rowIdx, val){
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const mus=parts.filter(p=>!isSpecial(p));
+  const nc=mus.length+3;
+  for(let ci=0;ci<nc;ci++){
+    if(ci===rowIdx) continue;
+    const inp=document.getElementById(`r_${rowIdx}_${ci}`);
+    if(inp) inp.value=val;
+  }
+}
+
+function renderRedunmat(){
+  const el=document.getElementById('redunmat');
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const mus=parts.filter(p=>!isSpecial(p));
+  const nm=mus.length;
+  if(nm===0){el.innerHTML='';return;}
+  const nc=nm+3;
+  const colNames=[...mus.map(p=>{const ep=EPS.find(e=>e.mac===p.mac)||p;return (ep.player||p.name).slice(0,3);}),'TM','JB','HUB'];
+
+  const defR=(ri,ci)=>{
+    if(ci===ri) return 'X';
+    if(ci===nm) return 2;   // TM col = 2
+    return 1;
+  };
+
+  let h='<table>';
+  // Header: direction indicator + destination names
+  h+=`<tr><th style="font-size:8px;color:rgba(255,255,255,.3);font-family:var(--mono);padding:0 4px 4px 0;text-align:right">van &#8594;</th>`;
+  colNames.forEach((c,ci)=>{
+    // Kolom = zender → gekleurd: musici groen, TM paars, JB/HUB dim
+    const colColor=ci===nm?'#b06af5':ci>nm?'rgba(69,230,143,.4)':'#45e68f';
+    const clickable=ci<nm+2;
+    const style=clickable?'cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px':'';
+    const click=clickable?`onclick="showColRedunPicker(${ci},'${c}')" title="Klik: alle bestemmingen voor ${c}"`:'';
+    h+=`<th ${click} style="font-size:8px;color:${colColor};font-family:var(--mono);padding:2px 4px;text-align:center;${style}">${c}</th>`;
+  });
+  h+='</tr>';
+
+  // Row = bestemming (destination) → white
+  for(let ri=0;ri<nm;ri++){
+    const ep=EPS.find(e=>e.mac===mus[ri].mac)||mus[ri];
+    const rowName=(ep.player||mus[ri].name).slice(0,3);
+    h+=`<tr><th style="font-size:8px;color:rgba(255,255,255,.55);font-family:var(--mono);padding:2px 4px 2px 0;text-align:right">${rowName}</th>`;
+    for(let ci=0;ci<nc;ci++){
+      if(ci===ri){
+        h+=`<td style="text-align:center;color:rgba(255,255,255,.15);font-size:10px;padding:2px 4px">X</td>`;
+      } else {
+        const def=defR(ri,ci);
+        const bg=ci>=nm?'rgba(255,255,255,.04)':'transparent';
+        h+=`<td style="padding:1px 2px;background:${bg}"><input type="number" min="1" max="4" value="${def}" id="r_${ri}_${ci}" style="font-size:10px;width:30px;padding:2px 3px;background:var(--bg2);border:1px solid rgba(255,255,255,.15);border-radius:3px;color:#fff;text-align:center"></td>`;
+      }
+    }
+    h+='</tr>';
+  }
+  // Redun_T and Redun_J rows (TM/JB as destinations → white)
+  ['TM','JB'].forEach(label=>{
+    h+=`<tr><th style="font-size:8px;color:rgba(255,255,255,.35);font-family:var(--mono);padding:2px 4px 2px 0;text-align:right">${label}</th>`;
+    for(let ci=0;ci<nc;ci++){
+      if(ci>=nm){ h+=`<td style="text-align:center;color:rgba(255,255,255,.15);font-size:10px;padding:2px 4px">X</td>`; }
+      else { h+=`<td style="text-align:center;font-size:9px;color:rgba(255,255,255,.3);padding:2px 4px">1</td>`; }
+    }
+    h+='</tr>';
+  });
+
+  h+='</table>';
+  el.innerHTML=h;
 }
 
 function renderTTBmat(){
-  const n=parts.length;
   const el=document.getElementById('ttbmat');
-  if(n===0){el.innerHTML='';return;}
-  const names=parts.map(p=>p.name.slice(0,4));
+  if(parts.length===0){el.innerHTML='';return;}
 
-  // Initialize ttb routing state if not set
-  parts.forEach((p,i)=>{
-    if(!p.ttbRoutes) p.ttbRoutes=parts.map((_,j)=>j!==i);
+  // TTB: only musicians + optionally TM — never JB
+  const isJB=p=>(p.roles_active||[p.role]).includes('hub');
+  const isTM=p=>(p.roles_active||[p.role]).includes('tonmeister');
+  const ttbParts=parts.filter(p=>!isJB(p)); // musicians + conductor + TM
+  const n=ttbParts.length;
+  const names=ttbParts.map(p=>p.name.slice(0,4));
+
+  // Initialize ttb routing state if not set (index in ttbParts)
+  ttbParts.forEach((p,i)=>{
+    if(!p.ttbRoutes) p.ttbRoutes=ttbParts.map((_,j)=>j!==i);
+    if(p.ttbRoutes.length!==n) p.ttbRoutes=ttbParts.map((_,j)=>j!==i);
   });
 
   // TTB matrix: columns = SOURCE (top/boven), rows = DESTINATION (left/links)
@@ -1702,28 +1981,26 @@ function renderTTBmat(){
     <td style="font-size:8px;color:rgba(255,255,255,.35);font-family:var(--mono);padding:0 6px 4px 0;text-align:right;vertical-align:bottom;white-space:nowrap">BESTEMMING →</td>`;
   names.forEach((name,idx)=>{
     const bronLabel=idx===0?`<div style="font-size:8px;color:rgba(255,255,255,.5);margin-bottom:2px">BRON ↓</div>`:'';
-    const srcHasTTB=parts[idx]&&parts[idx].ttb;
-    const isJBsrc=parts[idx]&&(parts[idx].role==='hub'||(parts[idx].roles_active&&parts[idx].roles_active.includes('hub')));
+    const srcHasTTB=ttbParts[idx]&&ttbParts[idx].ttb;
+    const isJBsrc=false; // JB already filtered out
     const colColor=isJBsrc?'rgba(255,255,255,.15)':srcHasTTB?'#45e68f':'rgba(255,255,255,.3)';
     h+=`<th style="font-size:9px;color:${colColor};font-family:var(--mono);padding:2px 6px;text-align:center;font-weight:600;vertical-align:bottom">${bronLabel}${name}</th>`;
   });
   h+='</tr>';
 
   // Data rows: row = destination, col = source
-  parts.forEach((dest,i)=>{
+  ttbParts.forEach((dest,i)=>{
     h+=`<tr>`;
-    // Row label = destination — white always (anyone can receive)
-    const isJBdest=dest.role==='hub'||(dest.roles_active&&dest.roles_active.includes('hub'));
-    const destColor=isJBdest?'rgba(255,255,255,.2)':'rgba(255,255,255,.7)';
-    h+=`<th style="font-size:9px;color:${destColor};font-family:var(--mono);padding:2px 6px 2px 0;text-align:right;font-weight:600;white-space:nowrap">${names[i]}</th>`;
-    parts.forEach((src,j)=>{
+    const isTMdest=isTM(dest);
+    const destColor=isTMdest?'rgba(255,255,255,.5)':'rgba(255,255,255,.7)';
+    h+=`<th style="font-size:9px;color:${destColor};font-family:var(--mono);padding:2px 6px 2px 0;text-align:right;font-weight:600;white-space:nowrap">${names[i]}${isTMdest?' (TM)':''}</th>`;
+    ttbParts.forEach((src,j)=>{
       if(i===j){
         h+=`<td style="text-align:center;padding:3px;color:rgba(255,255,255,.15);font-size:11px">—</td>`;
       } else {
-        const on=(parts[j].ttbRoutes?parts[j].ttbRoutes[i]!==false:true);
-        const srcHasTTB=parts[j].ttb;
-        // Only clickable if source has TTB
-        const clickable=srcHasTTB&&!isJBdest;
+        const on=(ttbParts[j].ttbRoutes?ttbParts[j].ttbRoutes[i]!==false:true);
+        const srcHasTTB=ttbParts[j].ttb;
+        const clickable=srcHasTTB;
         // Dest green if receiving (on=true and src has TTB)
         const isActive=on&&srcHasTTB;
         const boxBorder=isActive?'#45e68f':clickable?'rgba(255,255,255,.2)':'rgba(255,255,255,.08)';
@@ -1731,7 +2008,7 @@ function renderTTBmat(){
         const boxColor=isActive?'#45e68f':clickable?'rgba(255,255,255,.25)':'rgba(255,255,255,.08)';
         const cursor=clickable?'pointer':'default';
         h+=`<td style="text-align:center;padding:3px">
-          <div ${clickable?`onclick="toggleTTB(${j},${i})"`:''}
+          <div ${clickable?`onclick="toggleTTBp(${j},${i})"`:''}
             style="width:22px;height:22px;border-radius:4px;border:1px solid ${boxBorder};background:${boxBg};display:flex;align-items:center;justify-content:center;cursor:${cursor};margin:0 auto;font-size:13px;color:${boxColor}">
             ${isActive?'✓':''}
           </div>
@@ -1743,6 +2020,17 @@ function renderTTBmat(){
 
   h+='</table>';
   el.innerHTML=h;
+}
+
+function toggleTTBp(i,j){
+  // i,j are indices in ttbParts (no JB)
+  const isJB=p=>(p.roles_active||[p.role]).includes('hub');
+  const ttbParts=parts.filter(p=>!isJB(p));
+  const p=ttbParts[i];
+  if(!p) return;
+  if(!p.ttbRoutes||p.ttbRoutes.length!==ttbParts.length) p.ttbRoutes=ttbParts.map((_,k)=>k!==i);
+  p.ttbRoutes[j]=!p.ttbRoutes[j];
+  renderTTBmat();
 }
 
 function toggleTTB(i,j){
@@ -1783,7 +2071,7 @@ function openEdit(i){
   avEl.className='av '+(p.av||'av-mac');
   avEl.style.cssText='width:38px;height:38px;font-size:11px;font-weight:700;letter-spacing:-0.5px';
   avEl.textContent=init2(p.name);
-  document.getElementById('edit-name').textContent=p.name;
+  document.getElementById('edit-name').textContent=ep.display||p.name;
   document.getElementById('edit-loc').textContent=(p.loc||p.location||'')+(p.isp?' · '+p.isp:'');
 
   // Roles — multiple selection possible
@@ -1884,7 +2172,7 @@ function openEdit(i){
     applyRowState('ttb','grey');
     applyRowState('lbw','grey');
     applyRowState('str2t','grey');   // hij IS de TM
-    applyRowState('noctcast','on');  // TM kan wel naar NSC
+    applyRowState('noctcast','warn'); // TM heeft geen eigen mic naar NSC — routing via JackMixer nog te bouwen
   }
   // CONDUCTOR (pure)
   else if(isPureCond){
@@ -1927,6 +2215,16 @@ function closeEdit(){
   if(p.roles_active&&p.roles_active.length>0) p.role=p.roles_active[0];
   // Remember stable settings per MAC
   rememberEp(p.mac,{mics:p.mics,lbw:p.lbw,mixer:p.mixer,tune:p.tune,roles_active:p.roles_active});
+  // LBW + multiple mics + str2T warning
+  if(p.lbw && (p.mics||1)>1 && p.str2t!==false && sess.tm){
+    setTimeout(()=>alert(
+      lang==='nl'
+        ?`Let op: ${ep.display||p.name} heeft lbw én ${p.mics} mics én streamt naar Tonmeister. Dit verbruikt veel bandbreedte — overweeg minder mics of geen TM-stream.`
+        :`Warning: ${ep.display||p.name} has lbw + ${p.mics} mics + TM stream. This uses significant bandwidth.`
+    ), 100);
+  }
+  // Bottom-up TTB sync: if any musician has TTB, turn on sess.ttbsess
+  sess.ttbsess=parts.some(p=>p.ttb);
   editIdx=-1;
   document.getElementById('ep-edit').classList.remove('open');
   renderBuilder();
@@ -2041,8 +2339,9 @@ function editTog(k){
   }
   // TM warnings
   if(isPureTM){
-    if(k==='mixer') { alert('Functie nog niet beschikbaar — routing JackMixer naar Headphone Mix moet nog gemaakt worden.'); return; }
-    if(k==='rec')   { alert('Functie nog niet beschikbaar — routing JackMixer naar lokale opname moet nog gemaakt worden.'); return; }
+    if(k==='mixer')    { alert('Functie nog niet beschikbaar — routing JackMixer naar Headphone Mix moet nog gemaakt worden.'); return; }
+    if(k==='rec')      { alert('Functie nog niet beschikbaar — routing JackMixer naar lokale opname moet nog gemaakt worden.'); return; }
+    if(k==='noctcast') { alert('Functie nog niet beschikbaar — Tonmeister heeft geen eigen microfoon naar NSC. Routing via JackMixer moet nog gemaakt worden.'); return; }
     return;
   }
 
@@ -2114,157 +2413,162 @@ function removeFromEdit(){
 
 function generateBash(name){
   const today=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
-  const mode=document.getElementById('b-mode').value.split(' ')[0];
+  const modeEl=document.getElementById('b-mode');
+  const mode=(modeEl?modeEl.value:'MESH').split(' ')[0];
 
-  // Split parts into roles
-  const isMusician=p=>!(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
-  const musicians=parts.filter(isMusician);
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const musicians=parts.filter(p=>!isSpecial(p));
+  const nm=musicians.length;
   const tmPart=parts.find(p=>(p.roles_active||[p.role]).includes('tonmeister'));
   const jbPart=parts.find(p=>(p.roles_active||[p.role]).includes('hub'));
-  const nm=musicians.length;
-
   const jbEp=sess.jbEp||(jbPart&&jbPart.mac)||'';
   const tmEp=sess.tmEp||(tmPart&&tmPart.mac)||'';
+  const nc=nm+3;
 
-  // Q-matrix from DOM — only musician rows/cols, last two cols = TM, JB
-  const qmat=[];
-  for(let i=0;i<parts.length;i++){
-    const mi=musicians.indexOf(parts[i]);
-    if(mi<0) continue; // skip TM/JB rows
-    const row=[];
-    for(let j=0;j<parts.length+2;j++){
-      const mj=j<parts.length?musicians.indexOf(parts[j]):-1;
-      if(j===i){row.push('X');continue;}
-      const inp=document.getElementById(`q_${i}_${j}`);
-      const val=inp?inp.value:(j>=parts.length?'4':'8');
-      row.push(val);
-    }
-    qmat.push(row);
-  }
-
-  const pad=(v,w=2)=>String(v).padStart(w);
-  const ba=(arr,key,def=0)=>arr.map(p=>p[key]!==undefined?(p[key]?1:0):def).join('  ');
-
-  let lines=[];
-  lines.push(`# ${name}`);
-  lines.push(`# Gegenereerd door TERMINAL Web Interface op ${today}`);
-  lines.push(`# CONFIGv1.3`);
-  lines.push(`#`);
-  lines.push(`# Lots of parameters are booleans, where "1" should be read as "Yes" and "0" as "No".`);
-  lines.push(`#`);
-  // Endpoint comment block
-  lines.push(`# Deelnemers:`);
-  musicians.forEach(p=>{ const ep=EPS.find(e=>e.mac===p.mac)||p; lines.push(`# ${ep.display||p.name}\t${p.mac}\t${p.isp||''}`); });
-  if(tmPart){ const ep=EPS.find(e=>e.mac===tmPart.mac)||tmPart; lines.push(`# Tonmeister: ${ep.display||tmPart.name}\t${tmPart.mac}`); }
-  if(jbPart){ const ep=EPS.find(e=>e.mac===jbPart.mac)||jbPart; lines.push(`# Junctionbox: ${ep.display||jbPart.name}\t${jbPart.mac}`); }
-  lines.push(``);
-
-  lines.push(`soundcloud_mode=${mode}`);
-  lines.push(`UDP_hole_punching=${sess.udp?1:0}`);
-  lines.push(``);
-
-  if(sess.tm&&tmEp) lines.push(`Tonmeister=(\t${tmEp})\t# Tonmeister MAC`);
-  if(sess.jb&&jbEp) lines.push(`Junctionbox=(\t${jbEp})\t# Junctionbox MAC`);
-  lines.push(`external_mixer=${sess.extmix?1:0}`);
-  lines.push(``);
-
-  // Only musicians in endpoints/participants
-  const epList=musicians.map(p=>p.mac).join(' \\\n\t\t');
-  const pList=musicians.map(p=>{ const ep=EPS.find(e=>e.mac===p.mac)||p; return ep.player||p.name; }).join(' \\\n\t\t');
-  lines.push(`endpoints=(\t${epList})`);
-  lines.push(``);
-  lines.push(`participants=(\t${pList})`);
-  lines.push(``);
-
-  // lbw array — musicians only
-  lines.push(`lbw_endpoint=(\t${musicians.map(p=>p.lbw?'1':'0').join('\t')})\t# low bandwidth connection?`);
-  lines.push(``);
-
-  // Per-endpoint arrays — musicians only
-  lines.push(`#                    E N D P O I N T   C O N F I G U R A T I O N`);
-  const hdr='#             '+musicians.map((_,i)=>pad(i+1)).join('  ');
-  lines.push(hdr);
-  lines.push(`no_of_mics=(  ${musicians.map(p=>pad(p.mics||1,1)).join('  ')})\t# number of microphones`);
-  lines.push(`mixer=(       ${ba(musicians,'mixer',1)})\t# headphone mix required?`);
-  lines.push(`str2T=(       ${musicians.map(p=>sess.tm&&p.str2t!==false?'1':'0').join('  ')})\t# stream to Tonmeister?`);
-  lines.push(`str2I=(       ${musicians.map(p=>p.noctcast&&sess.noctcast?'1':'0').join('  ')})\t# stream to NoSleepCast?`);
-  lines.push(`ttb=(         ${ba(musicians,'ttb',0)})\t# TTB-device in use?`);
-  lines.push(`in_test=(     ${musicians.map(()=>sess.test?'1':'0').join('  ')})\t# endpoint in test?`);
-  if(sess.rec) lines.push(`record=(      ${musicians.map(p=>p.rec?'1':'0').join('  ')})\t# make local recording?`);
-  // Conductor
-  const condMusicians=musicians.filter(p=>(p.roles_active||[]).includes('conductor')||(p.roles_active||[]).includes('normal')&&p.mac===sess.condEp);
-  if(sess.cond) lines.push(`conductor=(   ${musicians.map(p=>p.mac===sess.condEp?'1':'0').join('  ')})\t# conductor endpoint?`);
-  lines.push(``);
-  lines.push(`tune=(\t${musicians.map(p=>p.tune||'viola.mp3').join(' \\\n\t')})`);
-  lines.push(``);
-
-  lines.push(`########################## SETTINGS BEYOND THIS LINE ARE EXPERT-MODE #################################`);
-  lines.push(``);
-
-  // Q-matrices — musicians only, last 2 cols = TM, JB
-  const colHdr='# inbound from: '+musicians.map((_,i)=>pad(i+1)).join('  ')+' TM  JB';
-  lines.push(`# Jacktrip (jitter-buffer) Qsize-matrices.`);
-  lines.push(`# Rows = receiving endpoint, Columns = sending endpoint`);
-  lines.push(colHdr);
-  for(let i=0;i<nm;i++){
-    const row=qmat[i]||[];
-    lines.push(`declare -a Qsize_${i}=(${row.map(v=>pad(v)).join('  ')})`);
-  }
-  // TM and JB inbound rows — use master Q values
   const masterQ=parseInt(document.getElementById('masterq-sel')?.value||8);
   const masterTMQ=parseInt(document.getElementById('mastertmq-sel')?.value||38);
-  lines.push(`declare -a Qsize_T=(${musicians.map(()=>pad(masterTMQ)).join('  ')}  X   X   X)\t# in-queue @Tonmeister`);
-  if(sess.jb) lines.push(`declare -a Qsize_J=(${musicians.map(()=>pad(4)).join('  ')}  X   X   X)\t# in-queue @Junctionbox`);
-  lines.push(``);
 
-  // BQsize — broadcast lines, always 50
-  for(let i=0;i<nm;i++){
-    const row=[...musicians.map((_,j)=>j===i?' X':'50'),'50','50'].map(v=>pad(v)).join('  ');
-    lines.push(`declare -a BQsize_${i}=(${row})`);
+  // Matrix value: from DOM or defaults
+  const getQ=(mi,ci)=>{
+    if(ci===mi) return 'X';
+    const inp=document.getElementById(`q_${mi}_${ci}`);
+    if(inp) return inp.value;
+    if(ci===nm)   return masterQ;  // TM col default = masterQ
+    if(ci===nm+1) return 4;        // JB col default = 4 (JB always on good connection)
+    if(ci===nm+2) return 4;        // HUB col default = 4
+    return masterQ;
+  };
+
+  // Padding: right-align in 2 chars (matches Christiaan's format)
+  const p2=v=>String(v).padStart(2);
+  // Tab-separated array values (matches original format)
+  const tabArr=arr=>arr.join('\t');
+
+  let L=[];
+
+  // ── Header ──────────────────────────────────────────────────
+  L.push(`# ${name}`);
+  L.push(`# Gegenereerd door TERMINAL Web Interface op ${today}`);
+  L.push(`# Version:\t1.0`);
+  L.push(`#`);
+  L.push(`# Lots of parameters are booleans, where "1" should be read as "Yes" and "0" as "No".`);
+  L.push(`#`);
+  musicians.forEach(p=>{ const ep=EPS.find(e=>e.mac===p.mac)||p; L.push(`# ${ep.display||p.name}\t${p.mac}\t${p.isp||''}`); });
+  if(tmPart){ const ep=EPS.find(e=>e.mac===tmPart.mac)||tmPart; L.push(`# Tonmeister:\t${ep.display||tmPart.name}\t${tmPart.mac}`); }
+  if(jbPart){ const ep=EPS.find(e=>e.mac===jbPart.mac)||jbPart; L.push(`# Junctionbox:\t${ep.display||jbPart.name}\t${jbPart.mac}`); }
+  L.push(``);
+
+  // ── Session settings ─────────────────────────────────────────
+  L.push(`soundcloud_mode=${mode}\t# TERMINAL can operate in MESH- and in HUB-mode`);
+  L.push(``);
+  L.push(`UDP_hole_punching=${sess.udp?1:0}\t# "1" if ALL endpoints support UDP hole punching`);
+  L.push(``);
+  if(sess.tm&&tmEp) L.push(`Tonmeister=(\t${tmEp})\t# Tonmeister macID`);
+  if(sess.jb&&jbEp) L.push(`Junctionbox=(\t${jbEp})\t# Junctionbox macID`);
+  L.push(``);
+  L.push(`external_mixer=${sess.extmix?1:0}\t\t\t# external mixer at "Tonmeister"?`);
+  L.push(``);
+
+  // ── Endpoint lists ───────────────────────────────────────────
+  L.push(`# List of participating musicians' endpoints`);
+  L.push(`endpoints=(\t${musicians.map(p=>p.mac).join(' \\\n\t\t')})`);
+  L.push(``);
+  L.push(`participants=(\t${musicians.map(p=>{ const ep=EPS.find(e=>e.mac===p.mac)||p; return ep.player||p.name; }).join(' \\\n\t\t')})`);
+  L.push(``);
+  L.push(`lbw_endpoint=(\t${tabArr(musicians.map(p=>p.lbw?'1':'0'))})\t# low bandwidth connection?`);
+  L.push(``);
+
+  // ── Per-endpoint arrays (tab-separated, Christiaan style) ────
+  L.push(`no_of_mics=(\t${tabArr(musicians.map(p=>p.mics||1))})\t# number of microphones at endpoint[i]`);
+  L.push(`mixer=(\t\t${tabArr(musicians.map(p=>p.mixer!==false?1:0))})\t# mixer present at endpoint[i]?`);
+  L.push(`ttb=(\t\t${tabArr(musicians.map(p=>p.ttb?1:0))})\t# TTB-device in use at endpoint[i]?`);
+  L.push(`str2T=(\t\t${tabArr(musicians.map(p=>sess.tm&&p.str2t!==false?1:0))})\t# stream audio to Tonmeister?`);
+  L.push(`str2I=(\t\t${tabArr(musicians.map(p=>p.noctcast&&sess.noctcast?1:0))})\t# stream audio to NoSleepCast?`);
+  if(sess.cond) L.push(`conductor=(\t${tabArr(musicians.map(p=>p.mac===sess.condEp?1:0))})\t# conductor endpoint?`);
+  L.push(`in_test=(\t${tabArr(musicians.map(()=>sess.test?1:0))})\t# endpoint in test?`);
+  L.push(``);
+  L.push(`tune=(\t${musicians.map(p=>p.tune||'viola.mp3').join(' \\\n\t')})`);
+  L.push(``);
+
+  // ── Q matrices ───────────────────────────────────────────────
+  L.push(`# Jacktrip (jitter-buffer) Qsize-matrices.`);
+  L.push(`# Row i = inbound at endpoint i. Last 3 cols = from Tonmeister / Junctionbox / HUB.`);
+  L.push(``);
+  L.push(`# inbound from HUB-server  ─────────── (HUB mode)`);
+  L.push(`# inbound from Junctionbox ────────  |`);
+  L.push(`# inbound from Tonmeister  ────────  |  |`);
+  L.push(`#                               v  v  v`);
+
+  for(let mi=0;mi<nm;mi++){
+    const vals=Array.from({length:nc},(_,ci)=>p2(getQ(mi,ci)));
+    L.push(`declare -a Qsize_${mi}=(${vals.join('  ')})`);
   }
-  lines.push(`declare -a BQsize_T=(${musicians.map(()=>pad(50)).join('  ')}  X   X   X)\t# broadcast @Tonmeister`);
-  if(sess.jb) lines.push(`declare -a BQsize_J=(${musicians.map(()=>pad(50)).join('  ')}  X   X   X)\t# broadcast @Junctionbox`);
-  lines.push(``);
+  L.push(`declare -a Qsize_T=(${musicians.map(()=>p2(masterTMQ)).join('  ')}  X   X   X)\t# inbound queue at "Tonmeister"`);
+  if(sess.jb) L.push(`declare -a Qsize_J=(${musicians.map(()=>p2(4)).join('  ')}  X   X   X)\t# inbound queue at "Junctionbox"`);
+  L.push(``);
 
-  // Redundancy — default 1, TM gets 2
-  for(let i=0;i<nm;i++){
-    const row=[...musicians.map((_,j)=>j===i?'X':'1'),'2','1'].map(v=>pad(v)).join('  ');
-    lines.push(`declare -a Redun_${i}=(${row})\t# 2x redundancy to TM`);
+  for(let mi=0;mi<nm;mi++){
+    const vals=Array.from({length:nc},(_,ci)=>p2(ci===mi?'X':50));
+    L.push(`declare -a BQsize_${mi}=(${vals.join('  ')})`);
   }
-  lines.push(`declare -a Redun_T=(${musicians.map(()=>pad(1)).join('  ')}  X   X   X)`);
-  if(sess.jb) lines.push(`declare -a Redun_J=(${musicians.map(()=>pad(1)).join('  ')}  X   X   X)`);
-  lines.push(``);
+  L.push(`declare -a BQsize_T=(${musicians.map(()=>p2(50)).join('  ')}  X   X   X)\t# inbound queue at "Tonmeister"`);
+  if(sess.jb) L.push(`declare -a BQsize_J=(${musicians.map(()=>p2(50)).join('  ')}  X   X   X)\t# inbound queue at "Junctionbox"`);
+  L.push(``);
 
-  // TTB matrix — musicians only
+  L.push(`# outbound to HUB-server  ─────────── (HUB mode)`);
+  L.push(`# outbound to Junctionbox ────────  |`);
+  L.push(`# outbound to Tonmeister  ────────  |  |`);
+  L.push(`#                               v  v  v`);
+  for(let mi=0;mi<nm;mi++){
+    const vals=Array.from({length:nc},(_,ci)=>{
+      if(ci===mi)   return p2('X');
+      if(ci===nm)   return p2(2);   // TM: double redundancy
+      return p2(1);
+    });
+    L.push(`declare -a Redun_${mi}=(${vals.join('  ')})`);
+  }
+  L.push(`declare -a Redun_T=(${musicians.map(()=>p2(1)).join('  ')}  X   X   X)`);
+  if(sess.jb) L.push(`declare -a Redun_J=(${musicians.map(()=>p2(1)).join('  ')}  X   X   X)`);
+  L.push(``);
+
+  // ── TTB matrix ───────────────────────────────────────────────
   const ttbMusicians=musicians.filter(p=>p.ttb);
   if(ttbMusicians.length>0){
-    lines.push(`# TapTapBoom routing-matrix.`);
-    for(let i=0;i<nm;i++){
-      const row=musicians.map((_,j)=>{
-        if(j===i) return 'X';
-        return (musicians[i].ttbRoutes&&musicians[i].ttbRoutes[j]!==false)?'1':'0';
-      }).join('  ');
-      lines.push(`declare -a ttb_${i}=( ${row})`);
+    L.push(`# TapTapBoom routing-matrix.`);
+    L.push(`# Routing from the TTB at any endpoint to others is "1" in the respective column.`);
+    for(let mi=0;mi<nm;mi++){
+      const row=musicians.map((_,mj)=>{
+        if(mj===mi) return 'X';
+        return (musicians[mi].ttbRoutes&&musicians[mi].ttbRoutes[mj]!==false)?'1':'0';
+      }).join(' ');
+      const comment=mi===0?`\t# routing from 1st endpoint`:'';
+      L.push(`declare -a ttb_${mi}=(${row})${comment}`);
     }
-    lines.push(``);
+    L.push(``);
   }
 
-  // Device params
-  lines.push(`HUB_Qsize=4\t\t# HUBserver incoming Qsize`);
-  lines.push(`HUB_BQsize=50\t\t# HUBserver broadcast Qsize`);
-  lines.push(`HUB_Redun=1\t\t# HUBserver redundancy`);
-  lines.push(`HUB_Port=60`);
-  lines.push(`HUB_UDPbaseport=61001`);
-  lines.push(`BAB_Qsize=25\t\t# Babbelbox incoming Qsize`);
-  lines.push(`BAB_BQsize=50\t\t# Babbelbox broadcast Qsize`);
-  lines.push(`BAB_Redun=1`);
-  lines.push(``);
-  lines.push(`sample_rate=${getSys('samplerate')}\t# sample rate`);
-  lines.push(`fps=${getSys('fps')}\t\t\t# audio-samples per frame`);
-  lines.push(`bitres=16\t\t# Audio Bit Rate Resolution`);
-  lines.push(`USB_bufsize=${getSys('usbbuffer')}\t\t# USB buffer size`);
+  // ── Device params ────────────────────────────────────────────
+  L.push(`# Some device-specific Qsizes, rarely to be modified`);
+  L.push(`#`);
+  L.push(`HUB_Qsize=4\t\t# HUBserver@Junctionbox incoming connections Qsize`);
+  L.push(`HUB_BQsize=50\t\t# HUBserver@Junctionbox broadcast-line Qsize`);
+  L.push(`HUB_Redun=1\t\t# redundancy-factor`);
+  const babQs=document.getElementById('bab-qsize')?.value||'25';
+  const babBQs=document.getElementById('bab-bqsize')?.value||'50';
+  const babR=document.getElementById('bab-redun')?.value||'1';
+  const bitres=document.getElementById('sys-bitres-b')?.value||'16';
+  L.push(`BAB_Qsize=${babQs}\t\t# Babbelbox@Junctionbox incoming connections Qsize`);
+  L.push(`BAB_BQsize=${babBQs}\t\t# Babbelbox@Junctionbox broadcast-line Qsize`);
+  L.push(`BAB_Redun=${babR}\t\t# redundancy-factor`);
+  L.push(``);
+  L.push(`# Jackd (audio-interface) configuration parameters`);
+  L.push(`#`);
+  L.push(`sample_rate=${getSys('samplerate')}\t# 48Khz meaning CD-quality`);
+  L.push(`fps=${getSys('fps')}\t\t\t# audio-samples per frame`);
+  L.push(`bitres=${bitres}\t\t# Audio Bit Rate Resolutions (8, 16, 24, 32)`);
+  L.push(`USB_bufsize=${getSys('usbbuffer')}\t\t# recommended buffersize for USB audio-interfaces`);
 
-  return lines.join('\n');
+  return L.join('\n');
 }
 
 function onSiEpChange(role, mac){
@@ -2387,8 +2691,8 @@ function filterPicker(q){
   const filtered=EPS.filter(e=>!already.has(e.mac)&&(e.name.toLowerCase().includes(q.toLowerCase())||(e.loc||'').toLowerCase().includes(q.toLowerCase())));
   document.getElementById('picker-list').innerHTML=filtered.map(ep=>`
     <div class="cr" style="border-radius:6px;margin-bottom:3px;background:var(--bg3)" onclick="addPart('${ep.mac}')">
-      <div class="av ${ep.av}" style="width:28px;height:28px;font-size:9px">${init2(ep.name)}</div>
-      <div class="ri"><div class="rn" style="font-size:12px">${ep.name}</div><div class="rs">${ep.loc||''} · ${ep.isp||''}${ep.lbw?' · '+t('lbw'):''}</div></div>
+      <div class="av ${ep.av}" style="width:28px;height:28px;font-size:9px">${init2(ep.name,ep.player)}</div>
+      <div class="ri"><div class="rn" style="font-size:12px">${ep.display||ep.name}</div><div class="rs">${ep.loc||''} · ${ep.isp||''}${ep.lbw?' · '+t('lbw'):''}</div></div>
       <span class="bdg ${roleCls(ep.roles[0])}">${roleLbl(ep.roles[0])}</span>
     </div>`).join('')||`<div class="nf">${t('no_ep')}</div>`;
 }
