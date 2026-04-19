@@ -2356,13 +2356,14 @@ function openEdit(i){
     // tune already hidden if test mode off
   }
   // TONMEISTER (pure)
+  // Routing via JackMixer (ext mixer uit) of DAW/hardware (ext mixer aan)
   else if(isPureTM){
-    applyRowState('mixer','warn');   // JackMixer→NSC nog niet beschikbaar
-    applyRowState('rec','warn');     // opname via JackMixer nog niet beschikbaar
+    applyRowState('mixer','on');     // via JackMixer of DAW
+    applyRowState('rec','on');       // via JackMixer of DAW
+    applyRowState('noctcast','on');  // via JackMixer→stereo of DAW
     applyRowState('ttb','grey');
     applyRowState('lbw','grey');
     applyRowState('str2t','grey');   // hij IS de TM
-    applyRowState('noctcast','warn'); // TM heeft geen eigen mic naar NSC — routing via JackMixer nog te bouwen
   }
   // CONDUCTOR (pure)
   else if(isPureCond){
@@ -2527,11 +2528,29 @@ function editTog(k){
     if(k==='rec')   { alert('Kies lokale opname bij de bron, niet bij de Junctionbox!'); return; }
     return;
   }
-  // TM warnings
+  // TM: routing depends on external mixer setting
   if(isPureTM){
-    if(k==='mixer')    { alert('Functie nog niet beschikbaar — routing JackMixer naar Headphone Mix moet nog gemaakt worden.'); return; }
-    if(k==='rec')      { alert('Functie nog niet beschikbaar — routing JackMixer naar lokale opname moet nog gemaakt worden.'); return; }
-    if(k==='noctcast') { alert('Functie nog niet beschikbaar — Tonmeister heeft geen eigen microfoon naar NSC. Routing via JackMixer moet nog gemaakt worden.'); return; }
+    if(k==='mixer'){
+      const route=sess.extmix
+        ?'Via DAW of externe mixer op Tonmeister — verbinding handmatig maken.'
+        :'Via JackMixer op Tonmeister naar headphone output.';
+      alert(route);
+      return;
+    }
+    if(k==='rec'){
+      const route=sess.extmix
+        ?'Via DAW of externe mixer op Tonmeister — opname handmatig starten.'
+        :'Via JackMixer op Tonmeister — lokale opname mogelijk.';
+      alert(route);
+      return;
+    }
+    if(k==='noctcast'){
+      const route=sess.extmix
+        ?'Via DAW of externe mixer — Tonmeister stuurt stereo naar Icecast.'
+        :'Via JackMixer → stereo naar NoSleepCast. Vraag: is JackMixer al geconfigureerd in GoI?';
+      alert(route);
+      return;
+    }
     return;
   }
 
