@@ -321,7 +321,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       <div class="rr"><span class="bdg bgr" data-nl="concept" data-en="draft">concept</span><span class="chev">›</span></div>
     </div>
   </div>
-  <button class="btn btp" onclick="newSession()" data-nl="+ Nieuwe sessie" data-en="+ New session">+ Nieuwe sessie</button>
+  <button class="btn btp" onclick="newSession()" data-nl="+ Nieuwe sessie" data-en="+ New session" data-nl="+ Nieuwe sessie" data-en="+ New session">+ Nieuwe sessie</button>
 </div>
 
 <!-- BUILDER -->
@@ -349,21 +349,21 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
   </div>
 
   <!-- STAP 2: Deelnemers -->
-  <div class="sh">Spelers</div>
+  <div class="sh" id="sh-players" data-nl="Spelers" data-en="Players">Spelers</div>
   <div class="card" style="padding:8px 13px" id="b-parts">
     <div class="nf" style="color:rgba(255,255,255,.55)">Voeg spelers toe via de knop hieronder</div>
   </div>
-  <button class="btn bot" onclick="openPicker()">+ Speler toevoegen</button>
+  <button class="btn bot" onclick="openPicker()" data-nl="+ Speler toevoegen" data-en="+ Add player">+ Speler toevoegen</button>
 
   <!-- STAP 3: Sessie-instellingen -->
-  <div class="sh" style="margin-top:10px">Sessie-instellingen</div>
+  <div class="sh" style="margin-top:10px" data-nl="Sessie-instellingen" data-en="Session settings">Sessie-instellingen</div>
   <div class="card" style="padding:5px 13px">
 
     <!-- Tonmeister -->
     <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">Tonmeister</div>
-        <div class="tgl-s">Ontvangt alle audio-streams</div>
+        <div class="tgl-s" data-nl="Ontvangt alle audio-streams" data-en="Receives all audio streams">Ontvangt alle audio-streams</div>
       </div>
       <div class="tg" id="tg-tm" onclick="event.stopPropagation();togSess('tm')"></div>
     </div>
@@ -374,7 +374,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       <div class="tgr" style="padding:6px 0 0">
         <div class="tgi">
           <div class="tgl-l" style="font-size:11px">Externe mixer</div>
-          <div class="tgl-s">Fysieke mixer of DAW op Tonmeister</div>
+          <div class="tgl-s" data-nl="Fysieke mixer of DAW op Tonmeister" data-en="Physical mixer or DAW at Tonmeister">Fysieke mixer of DAW op Tonmeister</div>
         </div>
         <div class="tg" id="tg-extmix" onclick="togSess('extmix')"></div>
       </div>
@@ -384,7 +384,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">Junctionbox</div>
-        <div class="tgl-s">Vereist bij lbw-spelers of HUB</div>
+        <div class="tgl-s" data-nl="Vereist bij lbw-spelers of HUB" data-en="Required for lbw players or HUB">Vereist bij lbw-spelers of HUB</div>
       </div>
       <div class="tg" id="tg-jb" onclick="event.stopPropagation();togSess('jb')"></div>
     </div>
@@ -398,7 +398,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">Conductor</div>
-        <div class="tgl-s">Dirigent-visualisatie (Mac vereist)</div>
+        <div class="tgl-s" data-nl="Dirigent-visualisatie (Mac vereist)" data-en="Conductor visualisation (Mac required)">Dirigent-visualisatie (Mac vereist)</div>
       </div>
       <div class="tg" id="tg-cond" onclick="event.stopPropagation();togSess('cond')"></div>
     </div>
@@ -412,60 +412,74 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
         <div class="tgl-l">UDP hole punching</div>
-        <div class="tgl-s">Alle eindpunten ondersteunen dit</div>
+        <div class="tgl-s" data-nl="Alle eindpunten ondersteunen dit" data-en="All endpoints support this">Alle eindpunten ondersteunen dit</div>
       </div>
       <div class="tg on" id="tg-udp" onclick="event.stopPropagation();togSess('udp')"></div>
     </div>
 
     <!-- Test mode -->
-    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
+    <div class="tgr" style="cursor:pointer" onclick="handleRowClick('test')">
       <div class="tgi">
         <div class="tgl-l">Test mode</div>
-        <div class="tgl-s">Alle interfaces uitgeschakeld — tune speelt</div>
+        <div class="tgl-s" data-nl="Interfaces uitgeschakeld — tune speelt" data-en="Interfaces disabled — tune plays">Interfaces uitgeschakeld — tune speelt</div>
       </div>
       <div class="tg" id="tg-test" onclick="event.stopPropagation();togSess('test')"></div>
     </div>
+    <div id="sub-test" style="display:none;padding:4px 0 8px">
+      <div id="sub-eps-test" style="font-size:11px;color:rgba(255,255,255,.6)"></div>
+    </div>
 
-    <!-- Headphone Mix default -->
-    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
+    <!-- Headphone Mix -->
+    <div class="tgr" style="cursor:pointer" onclick="handleRowClick('hpm')">
       <div class="tgi">
         <div class="tgl-l">Headphone mix</div>
-        <div class="tgl-s">Default aan voor alle spelers</div>
+        <div class="tgl-s" data-nl="Monitormix per eindpunt instelbaar" data-en="Monitor mix per endpoint">Monitormix per eindpunt instelbaar</div>
       </div>
       <div class="tg on" id="tg-hpm" onclick="event.stopPropagation();togSess('hpm')"></div>
     </div>
+    <div id="sub-hpm" style="display:none;padding:4px 0 8px">
+      <div id="sub-eps-hpm" style="font-size:11px;color:rgba(255,255,255,.6)"></div>
+    </div>
 
     <!-- NoSleepCast -->
-    <div class="tgr" style="cursor:pointer" style="cursor:pointer">
+    <div class="tgr" style="cursor:pointer" onclick="handleRowClick('noctcast')">
       <div class="tgi">
         <div class="tgl-l">NoSleepCast</div>
-        <div class="tgl-s">Stream naar luisterserver</div>
+        <div class="tgl-s" data-nl="Stream naar luisterserver" data-en="Stream to listener server">Stream naar luisterserver</div>
       </div>
       <div class="tg" id="tg-noctcast" onclick="event.stopPropagation();togSess('noctcast')"></div>
+    </div>
+    <div id="sub-noctcast" style="display:none;padding:4px 0 8px">
+      <div id="sub-eps-noctcast" style="font-size:11px;color:rgba(255,255,255,.6)"></div>
     </div>
     <div id="row-noctcast" style="display:none;padding:4px 0 8px">
       <div class="tgr" style="padding:4px 0">
         <div class="tgi">
-          <div class="tgl-l" style="font-size:11px">Tonmeister-mix ook naar NoSleepCast</div>
+          <div class="tgl-l" style="font-size:11px" data-nl="Tonmeister-mix ook naar NoSleepCast" data-en="Tonmeister mix to NoSleepCast">Tonmeister-mix ook naar NoSleepCast</div>
         </div>
         <div class="tg" id="tg-noctmix" onclick="togSess('noctmix')"></div>
       </div>
     </div>
 
     <!-- TapTapBoom sessie-breed -->
-    <div class="tgr">
+    <div class="tgr" style="cursor:pointer" onclick="handleRowClick('ttbsess')">
       <div class="tgi">
         <div class="tgl-l">TapTapBoom</div>
-        <div class="tgl-s">MIDI-signaal per voetpedaal — routing in expert</div>
+        <div class="tgl-s" data-nl="MIDI-signaal per voetpedaal — routing in expert" data-en="MIDI signal per foot pedal — routing in expert">MIDI-signaal per voetpedaal — routing in expert</div>
       </div>
       <div class="tg" id="tg-ttbsess" onclick="event.stopPropagation();togSess('ttbsess')"></div>
     </div>
+    <div id="ttb-expert" style="display:none;padding:4px 0 8px">
+      <div class="etit" style="margin-bottom:6px">TAPTAPBOOM — ROUTING</div>
+      <div style="overflow-x:auto"><div class="mat" id="ttbmat"></div></div>
+      <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:5px;font-family:var(--mono)">Kolom = BRON · Rij = BESTEMMING</div>
+    </div>
 
     <!-- Lokale opname -->
-    <div class="tgr" style="border-bottom:none">
+    <div class="tgr" style="border-bottom:none;cursor:pointer" onclick="handleRowClick('rec')">
       <div class="tgi">
-        <div class="tgl-l">Lokale opname</div>
-        <div class="tgl-s">Per eindpunt instelbaar na activatie</div>
+        <div class="tgl-l" data-nl="Lokale opname" data-en="Local recording">Lokale opname</div>
+        <div class="tgl-s" id="rec-sub" data-nl="Per eindpunt instelbaar na activatie" data-en="Configurable per endpoint after activation">Per eindpunt instelbaar na activatie</div>
       </div>
       <div class="tg" id="tg-rec" onclick="event.stopPropagation();togSess('rec')"></div>
     </div>
@@ -475,11 +489,11 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
   </div>
 
   <!-- STAP 3b: Jitter buffer + systeem -->
-  <div class="sh" style="margin-top:10px">Jitter buffer</div>
+  <div class="sh" style="margin-top:10px" data-nl="Jitter buffer" data-en="Jitter buffer">Jitter buffer</div>
   <div class="card" style="padding:10px 13px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div>
-        <div class="tgl-l">Musici &lt;-&gt; Musici</div>
+        <div class="tgl-l" id="lbl-q-mm" data-nl="Musici ↔ Musici" data-en="Musicians ↔ Musicians">Musici ↔ Musici</div>
         <div class="tgl-s" id="masterq-sub">Standaard voor alle musici-verbindingen</div>
       </div>
       <select id="masterq-sel" class="fs" style="font-size:11px;width:120px;padding:4px 6px" onchange="applyMasterQ()">
@@ -497,8 +511,8 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div>
-        <div class="tgl-l">Musici -&gt; Tonmeister</div>
-        <div class="tgl-s" id="mastertmq-sub">Broadcast-lijnen naar Tonmeister</div>
+        <div class="tgl-l" id="lbl-q-mt" data-nl="Musici → Tonmeister" data-en="Musicians → Tonmeister">Musici → Tonmeister</div>
+        <div class="tgl-s" id="mastertmq-sub" data-nl="Broadcast-lijnen naar Tonmeister" data-en="Broadcast lines to Tonmeister">Broadcast-lijnen naar Tonmeister</div>
       </div>
       <select id="mastertmq-sel" class="fs" style="font-size:11px;width:120px;padding:4px 6px" onchange="applyMasterTMQ()">
         <option value="2">q=2 — 2.7ms</option>
@@ -532,16 +546,11 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
   </div>
 
   <!-- STAP 4: Expert -->
-  <div class="sh" style="margin-top:6px">Expert</div>
+  <div class="sh" style="margin-top:6px" data-nl="Expert" data-en="Expert">Expert</div>
   <div class="expert">
     <div class="etit">JITTER BUFFER — Q-MATRIX</div>
     <div style="overflow-x:auto"><div class="mat" id="qmat"></div></div>
     <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:5px;font-family:var(--mono)">Rij=ontvanger · Kolom=zender · TM · JB</div>
-  </div>
-  <div class="expert" id="ttb-expert" style="display:none;margin-top:8px">
-    <div class="etit">TAPTAPBOOM — ROUTING (✓ = signaal loopt van bron naar bestemming)</div>
-    <div style="overflow-x:auto"><div class="mat" id="ttbmat"></div></div>
-    <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:5px;font-family:var(--mono)">Kolommen = BRON (↓) · Rijen = BESTEMMING (→)</div>
   </div>
 
   <!-- Redundancy matrix (Expert) -->
@@ -621,7 +630,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     </div>
   </div>
 
-  <button class="btn btp" style="margin-top:14px" onclick="saveAndGo()">Sessie opslaan en versturen</button>
+  <button class="btn btp" style="margin-top:14px" onclick="saveAndGo()" data-nl="Sessie opslaan en versturen" data-en="Save &amp; send session">Sessie opslaan en versturen</button>
 </div>
 
 <!-- MONITOR -->
@@ -657,7 +666,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
 <div class="screen" id="sc-eps">
   <input class="si" type="search" id="ep-search" oninput="filterEps(this.value)">
   <div id="ep-list"></div>
-  <button class="btn bot" onclick="alert(lang==='nl'?'Functie beschikbaar in live versie':'Feature available in live version')" data-nl="+ Nieuw eindpunt registreren" data-en="+ Register new endpoint">+ Nieuw eindpunt registreren</button>
+  <button class="btn bot" onclick="alert(lang==='nl'?'Functie beschikbaar in live versie':'Feature available in live version')" data-nl="+ Nieuw eindpunt registreren" data-en="+ Register new endpoint" data-nl="+ Nieuw eindpunt registreren" data-en="+ Register new endpoint">+ Nieuw eindpunt registreren</button>
 </div>
 
 
@@ -701,7 +710,10 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     <div class="mtit" data-nl="Eindpunt toevoegen" data-en="Add endpoint">Eindpunt toevoegen</div>
     <input class="si" id="picker-search" type="search" oninput="filterPicker(this.value)">
     <div id="picker-list" style="max-height:240px;overflow-y:auto"></div>
-    <button class="btn bot" style="margin-top:8px" onclick="closePicker()" data-nl="Annuleren" data-en="Cancel">Annuleren</button>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn bot" style="margin:0;flex:1" onclick="closePicker();pickerSelected.clear()" data-nl="Annuleren" data-en="Cancel" data-nl="Annuleren" data-en="Cancel">Annuleren</button>
+      <button id="picker-add-btn" class="btn btp" style="margin:0;flex:2;display:none" onclick="addAllSelected()" data-nl="Toevoegen" data-en="Add">Toevoegen</button>
+    </div>
   </div>
 </div>
 
@@ -762,7 +774,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       </div>
       <div class="tgr" id="edit-row-rec">
         <div class="tgi">
-          <div class="tgl-l" id="edit-lbl-rec">Lokale opname</div>
+          <div class="tgl-l" id="edit-lbl-rec" data-nl="Lokale opname" data-en="Local recording">Lokale opname</div>
         </div>
         <div class="tg" id="edit-tg-rec" onclick="event.stopPropagation();editTog('rec')"></div>
       </div>
@@ -779,8 +791,8 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     </div>
 
     <div style="display:flex;gap:8px">
-      <button class="btn bdanger" style="margin-top:0;flex:1" onclick="removeFromEdit()" id="edit-remove">Verwijderen</button>
-      <button class="btn btp" style="margin-top:0;flex:2" onclick="closeEdit()" id="edit-save">Opslaan</button>
+      <button class="btn bdanger" style="margin-top:0;flex:1" onclick="removeFromEdit()" id="edit-remove" data-nl="Verwijderen" data-en="Delete">Verwijderen</button>
+      <button class="btn btp" style="margin-top:0;flex:2" onclick="closeEdit()" id="edit-save" data-nl="Opslaan" data-en="Save">Opslaan</button>
     </div>
   </div>
 </div>
@@ -796,7 +808,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     </div>
     <div style="padding:10px 14px;border-top:1px solid rgba(138,54,236,.2);display:flex;gap:8px;flex-shrink:0">
       <button class="btn bot" style="margin:0;flex:1" onclick="downloadBash()">&#8595; Download</button>
-      <button class="btn btp" style="margin:0;flex:2" onclick="closeBashPreview()">Versturen &amp; naar monitor ›</button>
+      <button class="btn btp" style="margin:0;flex:2" onclick="closeBashPreview()" data-nl="Versturen &amp; naar monitor ›" data-en="Send &amp; go to monitor ›">Versturen &amp; naar monitor ›</button>
     </div>
   </div>
 </div>
@@ -809,44 +821,56 @@ let lang='nl';
 
 const T={
   nl:{
-    search:'Zoek naam of locatie...',
-    picker_search:'Zoek eindpunt...',
-    no_ep:'Geen eindpunten gevonden',
-    no_wr:'Geen eindpunten in waiting room',
-    online:'online',
-    no_ai:'Geen audio-interface gedetecteerd',
-    ttb:'TapTapBoom aanwezig',
-    all_part:'Alle deelnemers',
+    search:'Zoek naam of locatie...',picker_search:'Zoek speler...',
+    no_ep:'Geen eindpunten gevonden',no_wr:'Geen eindpunten in waiting room',
+    online:'online',no_ai:'Geen audio-interface gedetecteerd',
+    ttb:'TapTapBoom aanwezig',all_part:'Alle deelnemers',
     confirm_cmd:(cmd,tgt)=>`${cmd} versturen naar: ${tgt}?`,
     saved:(name)=>`Sessie "${name}" opgeslagen!\nBash-configuratie aangemaakt.`,
-    no_name:'Voer een sessienaam in',
-    no_parts:'Voeg minimaal één deelnemer toe',
-    mac_mac:'Mac Mini - macOS',
-    linux:'Linux mini-PC',
-    special:'Speciale eindpunten',
+    no_name:'Voer een sessienaam in',no_parts:'Voeg minimaal één deelnemer toe',
+    mac_mac:'Mac Mini - macOS',linux:'Linux mini-PC',special:'Speciale eindpunten',
     sub:(n)=>`${n} eindpunt${n!==1?'en':''} aangemeld`,
-    lbw:'lbw',normal:'normaal',tm:'TM',hub:'HUB',dir:'DIR',concept:'concept',live:'live',
+    lbw:'lbw',normal:'Muzikant',tm:'TM',hub:'HUB',dir:'DIR',concept:'concept',live:'live',
     session_ph:'Naam van de sessie',
+    // Builder
+    s_players:'Spelers',s_settings:'Sessie-instellingen',s_jitter:'Jitter buffer',s_expert:'Expert',
+    add_player:'+ Speler toevoegen',save_send:'Sessie opslaan en versturen',
+    btn_add:'Toevoegen',btn_save:'Opslaan',btn_cancel:'Annuleren',btn_delete:'Verwijderen',
+    btn_send:'Versturen & naar monitor ›',btn_new_sess:'+ Nieuwe sessie',btn_new_ep:'+ Nieuw eindpunt registreren',
+    // Toggle sub-labels
+    s_tm:'Ontvangt alle audio-streams',s_jb:'Vereist bij lbw-spelers of HUB',
+    s_cond:'Dirigent-visualisatie (Mac vereist)',s_udp:'Alle eindpunten ondersteunen dit',
+    s_test:'Interfaces uitgeschakeld — tune speelt',s_hpm:'Monitormix per eindpunt instelbaar',
+    s_nsc:'Stream naar luisterserver',s_ttb:'MIDI-signaal per voetpedaal — routing in expert',
+    s_rec:'Per eindpunt instelbaar na activatie',s_extmix:'Fysieke mixer of DAW op Tonmeister',
+    s_noctmix:'Tonmeister-mix ook naar NoSleepCast',
+    q_mm:'Musici ↔ Musici',q_mt:'Musici → Tonmeister',q_bcast:'Broadcast-lijnen naar Tonmeister',
   },
   en:{
-    search:'Search name or location...',
-    picker_search:'Search endpoint...',
-    no_ep:'No endpoints found',
-    no_wr:'No endpoints in waiting room',
-    online:'online',
-    no_ai:'No audio interface detected',
-    ttb:'TapTapBoom present',
-    all_part:'All participants',
+    search:'Search name or location...',picker_search:'Search player...',
+    no_ep:'No endpoints found',no_wr:'No endpoints in waiting room',
+    online:'online',no_ai:'No audio interface detected',
+    ttb:'TapTapBoom present',all_part:'All participants',
     confirm_cmd:(cmd,tgt)=>`Send ${cmd} to: ${tgt}?`,
     saved:(name)=>`Session "${name}" saved!\nBash config generated.`,
-    no_name:'Enter a session name',
-    no_parts:'Add at least one participant',
-    mac_mac:'Mac Mini - macOS',
-    linux:'Linux mini-PC',
-    special:'Special endpoints',
+    no_name:'Enter a session name',no_parts:'Add at least one participant',
+    mac_mac:'Mac Mini - macOS',linux:'Linux mini-PC',special:'Special endpoints',
     sub:(n)=>`${n} endpoint${n!==1?'s':''} registered`,
-    lbw:'lbw',normal:'normal',tm:'TM',hub:'HUB',dir:'DIR',concept:'draft',live:'live',
+    lbw:'lbw',normal:'Musician',tm:'TM',hub:'HUB',dir:'DIR',concept:'draft',live:'live',
     session_ph:'Session name',
+    // Builder
+    s_players:'Players',s_settings:'Session settings',s_jitter:'Jitter buffer',s_expert:'Expert',
+    add_player:'+ Add player',save_send:'Save & send session',
+    btn_add:'Add',btn_save:'Save',btn_cancel:'Cancel',btn_delete:'Delete',
+    btn_send:'Send & go to monitor ›',btn_new_sess:'+ New session',btn_new_ep:'+ Register new endpoint',
+    // Toggle sub-labels
+    s_tm:'Receives all audio streams',s_jb:'Required for lbw players or HUB',
+    s_cond:'Conductor visualisation (Mac required)',s_udp:'All endpoints support this',
+    s_test:'Interfaces disabled — tune plays',s_hpm:'Monitor mix per endpoint',
+    s_nsc:'Stream to listener server',s_ttb:'MIDI signal per foot pedal — routing in expert',
+    s_rec:'Configurable per endpoint after activation',s_extmix:'Physical mixer or DAW at Tonmeister',
+    s_noctmix:'Tonmeister mix to NoSleepCast',
+    q_mm:'Musicians ↔ Musicians',q_mt:'Musicians → Tonmeister',q_bcast:'Broadcast lines to Tonmeister',
   }
 };
 function t(k,...a){const fn=T[lang][k];return typeof fn==='function'?fn(...a):fn||k;}
@@ -861,6 +885,16 @@ function setLang(l){
     else el.textContent=v;
   });
   document.getElementById('ep-search').placeholder=t('search');
+  // Update t()-based elements
+  const shMap={
+    'sh-players':t('s_players'),'sh-settings':t('s_settings'),
+    'sh-jitter':t('s_jitter'),'sh-expert':t('s_expert'),
+  };
+  Object.entries(shMap).forEach(([id,txt])=>{const el=document.getElementById(id);if(el)el.textContent=txt;});
+  // Q-matrix labels
+  const qmm=document.getElementById('lbl-q-mm');if(qmm)qmm.textContent=t('q_mm');
+  const qmt=document.getElementById('lbl-q-mt');if(qmt)qmt.textContent=t('q_mt');
+  const qbc=document.getElementById('lbl-q-bcast');if(qbc)qbc.textContent=t('q_bcast');
   const ps=document.getElementById('picker-search');
   if(ps) ps.placeholder=t('picker_search');
   const bn=document.getElementById('b-name');
@@ -883,6 +917,8 @@ document.addEventListener('click', function(e){
   const tgr = e.target.closest('.tgr');
   if(!tgr) return;
   if(e.target.closest('.tg,.fs,.fi,button,select,input')) return;
+  // Skip if tgr has its own onclick — it handles itself
+  if(tgr.getAttribute('onclick')) return;
   const tg = tgr.querySelector('.tg');
   if(tg) tg.click();
 });
@@ -1006,7 +1042,7 @@ function showModeUnlock(targetMode){
     <input id="mode-pw" type="password" class="fi" placeholder="Toegangscode..." style="margin-bottom:12px">
     <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:14px">3× tikken op de modusnaam om te wisselen</div>
     <div style="display:flex;gap:8px">
-      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('mode-unlock-modal').remove()">Annuleren</button>
+      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('mode-unlock-modal').remove()" data-nl="Annuleren" data-en="Cancel">Annuleren</button>
       <button class="btn btp" style="margin:0;flex:2" onclick="tryModeUnlock()">Ontgrendelen</button>
     </div>
   </div>`;
@@ -1056,7 +1092,7 @@ function applyFeatureVisibility(){
 
   // Grey out features not accessible in current mode
   const features={
-    'tg-cond':'conductor','tg-noctcast':'nosleepcast','tg-ttbsess':'ttb',
+    'tg-cond':'conductor','tg-noctcast':'nosleepcast',
     'row-cond-ep':'conductor','row-noctcast':'nosleepcast',
     'tg-extmix':'extmix'
   };
@@ -1203,7 +1239,7 @@ function renderTouchLabPanel(){
       <div style="font-size:10px;color:#f0b93a;margin-bottom:6px">Nocturne toegangscode</div>
       <div style="display:flex;gap:6px">
         <input id="set-nocturne-pw" type="text" class="fi" placeholder="Nieuwe code..." style="font-size:12px;flex:1">
-        <button onclick="const v=document.getElementById('set-nocturne-pw').value.trim();if(v.length>=3){localStorage.setItem('terminal_nocturne_pw',v);alert('Code ingesteld: '+v);}" style="background:rgba(138,54,236,.3);border:1px solid rgba(138,54,236,.5);color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px">Opslaan</button>
+        <button onclick="const v=document.getElementById('set-nocturne-pw').value.trim();if(v.length>=3){localStorage.setItem('terminal_nocturne_pw',v);alert('Code ingesteld: '+v);}" style="background:rgba(138,54,236,.3);border:1px solid rgba(138,54,236,.5);color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px" data-nl="Opslaan" data-en="Save">Opslaan</button>
       </div>
       <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:4px">Huidige code: ${localStorage.getItem('terminal_nocturne_pw')?'••••••':'(niet ingesteld)'}</div>
     </div>
@@ -1215,7 +1251,7 @@ function renderTouchLabPanel(){
       <div style="font-size:10px;color:#f0b93a;margin-bottom:6px">Nocturne toegangscode</div>
       <div style="display:flex;gap:6px">
         <input id="set-nocturne-pw" type="text" class="fi" placeholder="Nieuwe code..." style="font-size:12px;flex:1">
-        <button onclick="const v=document.getElementById('set-nocturne-pw').value.trim();if(v.length>=3){localStorage.setItem('terminal_nocturne_pw',v);alert('Code ingesteld: '+v);}" style="background:rgba(138,54,236,.3);border:1px solid rgba(138,54,236,.5);color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px">Opslaan</button>
+        <button onclick="const v=document.getElementById('set-nocturne-pw').value.trim();if(v.length>=3){localStorage.setItem('terminal_nocturne_pw',v);alert('Code ingesteld: '+v);}" style="background:rgba(138,54,236,.3);border:1px solid rgba(138,54,236,.5);color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px" data-nl="Opslaan" data-en="Save">Opslaan</button>
       </div>
       <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:4px">Huidige code: ${localStorage.getItem('terminal_nocturne_pw')?'●●●●●●':'(niet ingesteld)'}</div>
     </div>`;
@@ -1284,9 +1320,8 @@ function avClass(ep){
 function avC(n){return 'av-mac';}
 function init2(n,player){
   if(player){
-    // Person: initials from name (up to 2 chars)
-    const initials=player.split(/[\s]+/).map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
-    return initials||player[0].toUpperCase();
+    // Person: first 3 chars of first name
+    return player.split(/[\s]+/)[0].slice(0,3);
   }
   // Machine code: use short name directly (up to 3 chars)
   return n.replace('TouchLab-','').slice(0,3).toUpperCase();
@@ -1479,7 +1514,8 @@ function renderBuilder(){
 
   // Record sub-row — default all on when first activated
   const rrow=document.getElementById('row-rec');
-  if(rrow) rrow.style.display=sess.rec?'block':'none';
+  if(rrow&&!sess.rec) rrow.style.display='none';
+  // Note: togSess handles showing, dblclick handles manual hide
   if(sess.rec){
     // Default all parts to rec=true if not yet set
     parts.filter(p=>p.role!=='hub'&&!(p.roles_active&&p.roles_active.includes('hub'))).forEach(p=>{if(p.rec===undefined||p.rec===false&&!p._recTouched)p.rec=true;});
@@ -1532,9 +1568,35 @@ function renderBuilder(){
       pel.innerHTML=parts.map((p,i)=>`<div class="pr pr-clickable" onclick="openEdit(${i})"><span style="color:#f0b93a">${p.name||'?'} (${(p.roles_active||[p.role||'?']).join(',')})</span></div>`).join('');
     }
   }
+  const ttbRow=document.getElementById('ttb-expert');
+  if(ttbRow&&!sess.ttbsess) ttbRow.style.display='none';
+  // Note: togSess handles showing, dblclick handles manual hide
   const hasTTB=sess.ttbsess||parts.some(p=>p.ttb);
-  const ttbEx=document.getElementById('ttb-expert');
-  if(ttbEx) ttbEx.style.display=hasTTB?'block':'none';
+
+  // Sub-lists for HPM, Test, NSC — same pattern as rec
+  ['hpm','test','noctcast'].forEach(key=>{
+    const subRow=document.getElementById('sub-'+key);
+    const subEl=document.getElementById('sub-eps-'+key);
+    if(!subEl) return;
+    const sessKey=key==='hpm'?'hpm':key==='test'?'test':'noctcast';
+    const isOn=sess[sessKey];
+    if(subRow){
+      // Only hide when turned off — never force-show (togSess handles showing)
+      if(!isOn) subRow.style.display='none';
+    }
+    if(isOn){
+      const mus=parts.filter(p=>!(p.roles_active||[p.role]).some(r=>r==='hub'));
+      subEl.innerHTML=mus.map(p=>{
+        const pi=parts.indexOf(p);
+        const ep=EPS.find(e=>e.mac===p.mac)||p;
+        const val=key==='hpm'?p.mixer!==false:key==='test'?!!p.inTest:!!p.noctcast;
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+          <span style="color:#45e68f;font-size:11px">${ep.display||p.name}</span>
+          <div class="tg${val?' on':''}" style="width:28px;height:16px" onclick="${key==='hpm'?`parts[${pi}].mixer=!parts[${pi}].mixer;parts[${pi}]._mixerTouched=true`:key==='test'?`parts[${pi}].inTest=!parts[${pi}].inTest`:`parts[${pi}].noctcast=!parts[${pi}].noctcast`};renderBuilder()"></div>
+        </div>`;
+      }).join('');
+    }
+  });
 
   renderQmat();
   renderRedunmat();
@@ -1542,16 +1604,75 @@ function renderBuilder(){
   applyFeatureVisibility();
 }
 
+let _rowClickTimer=null;
+function handleRowClick(key){
+  if(_rowClickTimer){
+    // Double click → expand/collapse only, no state change
+    clearTimeout(_rowClickTimer);
+    _rowClickTimer=null;
+    if(key==='rec') toggleRecExpand();
+    else if(key==='ttbsess') toggleTTBExpand();
+    else toggleSubExpand(key);
+  } else {
+    _rowClickTimer=setTimeout(()=>{
+      _rowClickTimer=null;
+      // Single click on row: only turn ON if currently off
+      // Turning off is done via the toggle itself
+      const sessKey=key==='ttbsess'?'ttbsess':key;
+      if(!sess[sessKey]) togSess(key);
+    }, 280);
+  }
+}
+
+function toggleSubExpand(key){
+  const row=document.getElementById('sub-'+key);
+  if(!row) return;
+  row.style.display=row.style.display==='none'?'block':'none';
+}
+
+function renderSubList(key, getter, setter){
+  // getter(p) = current value, setter(p, val) = set value
+  const el=document.getElementById('sub-eps-'+key);
+  if(!el) return;
+  const mus=parts.filter(p=>!(p.roles_active||[p.role]).some(r=>r==='hub'));
+  el.innerHTML=mus.map(p=>{
+    const pi=parts.indexOf(p);
+    const ep=EPS.find(e=>e.mac===p.mac)||p;
+    const val=getter(p);
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+      <span style="color:#45e68f;font-size:11px">${ep.display||p.name}</span>
+      <div class="tg${val?' on':''}" style="width:28px;height:16px" onclick="parts[${pi}]['${key}_override']=!parts[${pi}]['${key}_override'];renderBuilder()"></div>
+    </div>`;
+  }).join('');
+}
+
+function toggleRecExpand(){
+  // Only show/hide sub-list, never change sess.rec state
+  const row=document.getElementById('row-rec');
+  if(!row) return;
+  row.style.display=row.style.display==='none'?'block':'none';
+}
+
+function toggleTTBExpand(){
+  const row=document.getElementById('ttb-expert');
+  if(!row) return;
+  row.style.display=row.style.display==='none'?'block':'none';
+}
+
 function togSess(k){
   // ── Headphone Mix ───────────────────────────────────────────
   if(k==='hpm'){
-    const turning=!sess.hpm;
-    const msg=turning
-      ? (lang==='nl'?'Dit zet de headphone mix voor alle spelers aan. Weet je het zeker?':'This enables headphone mix for all players. Are you sure?')
-      : (lang==='nl'?'Dit zet de headphone mix voor alle spelers uit. Weet je het zeker?':'This disables headphone mix for all players. Are you sure?');
-    if(!confirm(msg)) return;
-    sess.hpm=turning;
-    parts.forEach(p=>p.mixer=turning);
+    sess.hpm=!sess.hpm;
+    parts.forEach(p=>{ if(p.mixer===undefined||!p._mixerTouched) p.mixer=sess.hpm; });
+    if(sess.hpm){ const s=document.getElementById('sub-hpm'); if(s) s.style.display='block'; }
+    renderBuilder();
+    return;
+  }
+
+  // ── Lokale opname ───────────────────────────────────────────────
+  if(k==='rec'){
+    sess.rec=!sess.rec;
+    if(sess.rec){ const s=document.getElementById('row-rec'); if(s) s.style.display='block'; }
     renderBuilder();
     return;
   }
@@ -1560,6 +1681,7 @@ function togSess(k){
   if(k==='noctcast'){
     sess.noctcast=!sess.noctcast;
     parts.forEach(p=>p.noctcast=sess.noctcast);
+    if(sess.noctcast){ const s=document.getElementById('sub-noctcast'); if(s) s.style.display='block'; }
     renderBuilder();
     return;
   }
@@ -1634,7 +1756,6 @@ function togSess(k){
           tmRow.style.display='flex';
           tmRow.style.flexDirection='column';
           tmRow.scrollIntoView({behavior:'smooth',block:'center'});
-          // Flash green highlight
           tmRow.style.background='rgba(69,230,143,.12)';
           setTimeout(()=>tmRow.style.background='',1800);
         }
@@ -1642,7 +1763,18 @@ function togSess(k){
       },200);
       return;
     }
+    if(!sess.noctmix){
+      // Warn: TM mix → NSC not yet implemented
+      alert(lang==='nl'
+        ?'Let op: Tonmeister-mix naar NoSleepCast is nog niet beschikbaar. De routing via JackMixer moet nog gebouwd worden. Je kunt deze instelling alvast opslaan.'
+        :'Note: Tonmeister mix to NoSleepCast is not yet available. JackMixer routing still needs to be built. You can save this setting for later.');
+    }
     sess.noctmix=!sess.noctmix;
+  } else if(k==='ttbsess'){
+    sess.ttbsess=!sess.ttbsess;
+    if(sess.ttbsess){ const s=document.getElementById('ttb-expert'); if(s) s.style.display='block'; }
+    renderBuilder();
+    return;
   } else {
     sess[k]=!sess[k];
   }
@@ -1768,7 +1900,7 @@ function showRowQPicker(rowIdx, name){
     <div style="font-size:15px;font-weight:600;color:#45e68f;margin-bottom:14px">${name}</div>
     <select id="row-q-val" class="fs" style="margin-bottom:12px">${opts}</select>
     <div style="display:flex;gap:8px">
-      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('row-q-picker').remove()">Annuleren</button>
+      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('row-q-picker').remove()" data-nl="Annuleren" data-en="Cancel">Annuleren</button>
       <button class="btn btp" style="margin:0;flex:2" onclick="applyRowQ(${rowIdx},parseInt(document.getElementById('row-q-val').value));document.getElementById('row-q-picker').remove()">Toepassen</button>
     </div>
   </div>`;
@@ -1858,6 +1990,42 @@ function renderQmat(){
 }
 
 
+function showColRedunPicker(colIdx, name){
+  const existing=document.getElementById('col-redun-picker');
+  if(existing){existing.remove();return;}
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const nm=parts.filter(p=>!isSpecial(p)).length;
+  const isTM=colIdx===nm;
+  const color=isTM?'#b06af5':'#45e68f';
+  const div=document.createElement('div');
+  div.id='col-redun-picker';
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.innerHTML=`<div style="background:#1a0836;border:1px solid rgba(138,54,236,.5);border-radius:10px;padding:18px;width:100%;max-width:280px">
+    <div style="font-size:10px;color:rgba(255,255,255,.5);font-family:var(--mono);margin-bottom:4px">REDUNDANTIE NAAR</div>
+    <div style="font-size:15px;font-weight:600;color:${color};margin-bottom:14px">${name}</div>
+    <select id="col-redun-val" class="fs" style="margin-bottom:12px">
+      <option value="1">1 — geen redundantie</option>
+      <option value="2"${isTM?' selected':''}>2 — dubbel</option>
+      <option value="3">3 — drievoudig</option>
+    </select>
+    <div style="display:flex;gap:8px">
+      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('col-redun-picker').remove()" data-nl="Annuleren" data-en="Cancel">Annuleren</button>
+      <button class="btn btp" style="margin:0;flex:2" onclick="applyColRedun(${colIdx},parseInt(document.getElementById('col-redun-val').value));document.getElementById('col-redun-picker').remove()">Toepassen</button>
+    </div>
+  </div>`;
+  document.querySelector('.app').appendChild(div);
+}
+
+function applyColRedun(colIdx, val){
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const nm=parts.filter(p=>!isSpecial(p)).length;
+  for(let ri=0;ri<nm;ri++){
+    if(ri===colIdx) continue;
+    const inp=document.getElementById(`r_${ri}_${colIdx}`);
+    if(inp) inp.value=val;
+  }
+}
+
 function showRowRedunPicker(rowIdx, name){
   const existing=document.getElementById('row-redun-picker');
   if(existing){existing.remove();return;}
@@ -1873,7 +2041,7 @@ function showRowRedunPicker(rowIdx, name){
       <option value="3">3 — drievoudig</option>
     </select>
     <div style="display:flex;gap:8px">
-      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('row-redun-picker').remove()">Annuleren</button>
+      <button class="btn bot" style="margin:0;flex:1" onclick="document.getElementById('row-redun-picker').remove()" data-nl="Annuleren" data-en="Cancel">Annuleren</button>
       <button class="btn btp" style="margin:0;flex:2" onclick="applyRowRedun(${rowIdx},parseInt(document.getElementById('row-redun-val').value));document.getElementById('row-redun-picker').remove()">Toepassen</button>
     </div>
   </div>`;
@@ -1958,7 +2126,7 @@ function renderTTBmat(){
   const isTM=p=>(p.roles_active||[p.role]).includes('tonmeister');
   const ttbParts=parts.filter(p=>!isJB(p)); // musicians + conductor + TM
   const n=ttbParts.length;
-  const names=ttbParts.map(p=>p.name.slice(0,4));
+  const names=ttbParts.map(p=>{const ep=EPS.find(e=>e.mac===p.mac)||p;return init2(ep.name,ep.player);});
 
   // Initialize ttb routing state if not set (index in ttbParts)
   ttbParts.forEach((p,i)=>{
@@ -1976,15 +2144,14 @@ function renderTTBmat(){
     <span>BRON</span><span style="font-size:14px">↓</span><span style="color:rgba(255,255,255,.3)">signaalflow</span>
   </div>`;
   h+=`<table style="border-collapse:collapse">`;
-  // Header row: empty corner + source names (columns = sources)
+  // Header row: col=sender=green (clickable to activate TTB)
   h+=`<tr>
-    <td style="font-size:8px;color:rgba(255,255,255,.35);font-family:var(--mono);padding:0 6px 4px 0;text-align:right;vertical-align:bottom;white-space:nowrap">BESTEMMING →</td>`;
+    <td style="font-size:8px;color:rgba(255,255,255,.35);font-family:var(--mono);padding:0 6px 4px 0;text-align:right;vertical-align:bottom;white-space:nowrap">naar →</td>`;
   names.forEach((name,idx)=>{
-    const bronLabel=idx===0?`<div style="font-size:8px;color:rgba(255,255,255,.5);margin-bottom:2px">BRON ↓</div>`:'';
     const srcHasTTB=ttbParts[idx]&&ttbParts[idx].ttb;
-    const isJBsrc=false; // JB already filtered out
-    const colColor=isJBsrc?'rgba(255,255,255,.15)':srcHasTTB?'#45e68f':'rgba(255,255,255,.3)';
-    h+=`<th style="font-size:9px;color:${colColor};font-family:var(--mono);padding:2px 6px;text-align:center;font-weight:600;vertical-align:bottom">${bronLabel}${name}</th>`;
+    const colColor=srcHasTTB?'#45e68f':'rgba(255,255,255,.35)';
+    const partIdx=parts.indexOf(ttbParts[idx]);
+    h+=`<th onclick="activateTTB(${partIdx})" style="font-size:9px;color:${colColor};font-family:var(--mono);padding:2px 6px;text-align:center;font-weight:600;vertical-align:bottom;cursor:pointer;text-decoration:${srcHasTTB?'none':'underline dotted'};text-underline-offset:2px" title="${srcHasTTB?'TTB actief':'Klik om TTB te activeren'}">${name}</th>`;
   });
   h+='</tr>';
 
@@ -2020,6 +2187,29 @@ function renderTTBmat(){
 
   h+='</table>';
   el.innerHTML=h;
+}
+
+function activateTTB(partIdx){
+  if(partIdx<0||partIdx>=parts.length) return;
+  const p=parts[partIdx];
+  // Toggle TTB on/off
+  p.ttb=!p.ttb;
+  p._recTouched=true;
+  // Sync sess.ttbsess
+  sess.ttbsess=parts.some(pl=>pl.ttb);
+  // Re-render
+  renderBuilder();
+  // Flash the endpoint in parts list as visual feedback
+  setTimeout(()=>{
+    const ep=EPS.find(e=>e.mac===p.mac)||p;
+    if(p.ttb){
+      // Also init ttbRoutes if not set
+      const isJB=pl=>(pl.roles_active||[pl.role]).includes('hub');
+      const ttbParts=parts.filter(pl=>!isJB(pl));
+      const ti=ttbParts.indexOf(p);
+      if(ti>=0&&!p.ttbRoutes) p.ttbRoutes=ttbParts.map((_,k)=>k!==ti);
+    }
+  },50);
 }
 
 function toggleTTBp(i,j){
@@ -2224,7 +2414,7 @@ function closeEdit(){
     ), 100);
   }
   // Bottom-up TTB sync: if any musician has TTB, turn on sess.ttbsess
-  sess.ttbsess=parts.some(p=>p.ttb);
+  if(parts.some(p=>p.ttb)) sess.ttbsess=true;
   editIdx=-1;
   document.getElementById('ep-edit').classList.remove('open');
   renderBuilder();
@@ -2485,7 +2675,7 @@ function generateBash(name){
   L.push(`str2T=(\t\t${tabArr(musicians.map(p=>sess.tm&&p.str2t!==false?1:0))})\t# stream audio to Tonmeister?`);
   L.push(`str2I=(\t\t${tabArr(musicians.map(p=>p.noctcast&&sess.noctcast?1:0))})\t# stream audio to NoSleepCast?`);
   if(sess.cond) L.push(`conductor=(\t${tabArr(musicians.map(p=>p.mac===sess.condEp?1:0))})\t# conductor endpoint?`);
-  L.push(`in_test=(\t${tabArr(musicians.map(()=>sess.test?1:0))})\t# endpoint in test?`);
+  L.push(`in_test=(\t${tabArr(musicians.map(p=>p.inTest?1:0))})\t# endpoint in test?`);
   L.push(``);
   L.push(`tune=(\t${musicians.map(p=>p.tune||'viola.mp3').join(' \\\n\t')})`);
   L.push(``);
@@ -2680,21 +2870,41 @@ function downloadBash(){
 }
 
 function openPicker(){
+  pickerSelected.clear();
   filterPicker('');
   document.getElementById('picker-search').value='';
   document.getElementById('picker-search').placeholder=t('picker_search');
   document.getElementById('picker').classList.add('open');
 }
 function closePicker(){document.getElementById('picker').classList.remove('open');}
+let pickerSelected=new Set();
+
+function togglePickerSelect(mac){
+  if(pickerSelected.has(mac)) pickerSelected.delete(mac);
+  else pickerSelected.add(mac);
+  filterPicker(document.getElementById('picker-search').value||'');
+}
+
+function addAllSelected(){
+  pickerSelected.forEach(mac=>addPart(mac));
+  pickerSelected.clear();
+  closePicker();
+  renderBuilder();
+}
+
 function filterPicker(q){
   const already=new Set(parts.map(p=>p.mac));
   const filtered=EPS.filter(e=>!already.has(e.mac)&&(e.name.toLowerCase().includes(q.toLowerCase())||(e.loc||'').toLowerCase().includes(q.toLowerCase())));
-  document.getElementById('picker-list').innerHTML=filtered.map(ep=>`
-    <div class="cr" style="border-radius:6px;margin-bottom:3px;background:var(--bg3)" onclick="addPart('${ep.mac}')">
-      <div class="av ${ep.av}" style="width:28px;height:28px;font-size:9px">${init2(ep.name,ep.player)}</div>
-      <div class="ri"><div class="rn" style="font-size:12px">${ep.display||ep.name}</div><div class="rs">${ep.loc||''} · ${ep.isp||''}${ep.lbw?' · '+t('lbw'):''}</div></div>
-      <span class="bdg ${roleCls(ep.roles[0])}">${roleLbl(ep.roles[0])}</span>
-    </div>`).join('')||`<div class="nf">${t('no_ep')}</div>`;
+  const addBtn=document.getElementById('picker-add-btn');
+  if(addBtn) addBtn.style.display=pickerSelected.size>0?'block':'none';
+  document.getElementById('picker-list').innerHTML=filtered.map(ep=>{
+    const sel=pickerSelected.has(ep.mac);
+    return `<div class="cr" style="border-radius:6px;margin-bottom:3px;background:${sel?'rgba(69,230,143,.15)':'var(--bg3)'};border:1px solid ${sel?'rgba(69,230,143,.3)':'transparent'}">
+      <div class="av ${ep.av}" style="width:28px;height:28px;font-size:9px;cursor:pointer;${sel?'border-color:#45e68f;background:rgba(69,230,143,.2)':''}" onclick="togglePickerSelect('${ep.mac}')">${init2(ep.name,ep.player)}</div>
+      <div class="ri" onclick="addPart('${ep.mac}')" style="cursor:pointer"><div class="rn" style="font-size:12px">${ep.display||ep.name}</div><div class="rs">${ep.loc||''} · ${ep.isp||''}${ep.lbw?' · '+t('lbw'):''}</div></div>
+      <span class="bdg ${roleCls(ep.roles[0])}" onclick="addPart('${ep.mac}')" style="cursor:pointer">${roleLbl(ep.roles[0])}</span>
+    </div>`;
+  }).join('')||`<div class="nf">${t('no_ep')}</div>`;
 }
 
 function addPart(mac){
@@ -2756,7 +2966,8 @@ Cancel = add as Musician`
     sess.condEp=mac;
   }
 
-  closePicker();renderBuilder();
+  if(pickerSelected.size===0) closePicker();
+  renderBuilder();
 }
 
 function renderEps(q){
@@ -2788,16 +2999,6 @@ setTimeout(function(){
   applyFeatureVisibility();
 }, 0);
 
-// Event delegation: clicking anywhere on a .tgr row triggers its toggle
-document.addEventListener('click', function(e){
-  const tgr = e.target.closest('.tgr');
-  if(!tgr) return;
-  // Don't double-fire if click was on the toggle itself or a select/button
-  if(e.target.closest('.tg,.fs,.fi,button,select,input')) return;
-  // Find the toggle in this row and click it
-  const tg = tgr.querySelector('.tg');
-  if(tg) tg.click();
-});
 renderMonitor();
 renderEps('');
 </script>
