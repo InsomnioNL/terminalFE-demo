@@ -1465,11 +1465,22 @@ function renderBuilder(){
       const prev=sess[k+'Ep'];
       sess[k+'Ep']=sel.value;
       // Revert previous holder's role
-      if(prev){const pidx=parts.findIndex(p=>p.mac===prev);if(pidx>=0&&parts[pidx].role===roleMap[k])parts[pidx].role='normal';}
+      if(prev){
+        const pidx=parts.findIndex(p=>p.mac===prev);
+        if(pidx>=0&&parts[pidx].role===roleMap[k]){
+          parts[pidx].role='normal';
+          parts[pidx].roles_active=['normal'];
+        }
+      }
       // Set new holder's role (only if they're a player)
       if(sel.value){
         const idx=parts.findIndex(p=>p.mac===sel.value);
-        if(idx>=0) parts[idx].role=roleMap[k];
+        if(idx>=0){
+          parts[idx].role=roleMap[k];
+          // Sync roles_active so player list pill updates immediately
+          const existing=(parts[idx].roles_active||[]).filter(r=>r!=='normal'&&r!==roleMap[k]);
+          parts[idx].roles_active=[roleMap[k],...existing];
+        }
         // JB lbw warning
         if(k==='jb'){
           const selectedPart=parts.find(p=>p.mac===sel.value);
