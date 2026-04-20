@@ -2997,8 +2997,15 @@ Cancel = add as Musician`
     sess.condEp=mac;
   }
 
-  if(pickerSelected.size===0) closePicker();
-  renderBuilder();
+  if(pickerSelected.size===0){
+    closePicker();
+    // Single add: open EI immediately
+    const newIdx=parts.length-1;
+    renderBuilder();
+    setTimeout(()=>openEdit(newIdx),50);
+  } else {
+    renderBuilder();
+  }
 }
 
 function renderEps(q){
