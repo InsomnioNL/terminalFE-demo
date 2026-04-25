@@ -924,16 +924,76 @@ document.addEventListener('click', function(e){
 });
 
 const EPS=[
+  // ── Musici INSOMNIO ─────────────────────────────────────────
   {mac:'m_64_0b_d7_aa_d1_96',player:'Uli',name:'N08',display:'Uli — N08',loc:'Muziekhuis Utrecht',isp:'KPN VDSL',lbw:false,mics:2,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'Focusrite Scarlett 2i2',conductor_capable:false},
   {mac:'m_00_23_24_55_0f_f1',player:'Siebe',name:'A6',display:'Siebe — A6',loc:'Thuis Rotterdam',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'Behringer UMC22',conductor_capable:false},
   {mac:'m_00_23_24_46_02_82',player:'Sabien',name:'A5',display:'Sabien — A5',loc:'Thuis',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
   {mac:'m_00_23_24_e3_22_be',player:'Pepe',name:'A0',display:'Pepe — A0',loc:'Muziekhuis Utrecht',isp:'Odido glasvezel',lbw:false,mics:2,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'Scarlett Solo',conductor_capable:false},
+  {mac:'m_00_e0_4c_68_52_df',player:'Christiaan',name:'CJR',display:'Christiaan — CJR',loc:'Thuis',isp:'KPN glasvezel',lbw:false,mics:1,roles:['normal'],machine:'MacBook',av:'aa',ai:'Apogee Duet',conductor_capable:true,notes:'USB3.0 Gigabit Lan adapter'},
+
+  // ── Speciale eindpunten ──────────────────────────────────────
+  {mac:'m_1c_f6_4c_40_83_88',player:null,name:'MX0',display:'MX0 — Tonmeister',loc:'TouchLab Hall',isp:'KPN zakelijk',lbw:false,mics:0,roles:['tonmeister'],machine:'Mac Mini M4',av:'agr',ai:'',conductor_capable:false,avb_bridge:true,notes:'AVB bridge → MOTU netwerk. Reaper multispeaker.'},
+  {mac:'m_d0_11_e5_82_b5_b3',player:'Uli',name:'MX1',display:'Uli — MX1',loc:'Bij jou',isp:'KPN glasvezel',lbw:false,mics:0,roles:['conductor'],machine:'Mac Mini',av:'aa',ai:'',conductor_capable:true,notes:'Conductor. Leap Motion, Max/MSP, Glover.'},
+  {mac:'m_00_23_24_55_10_9a',player:null,name:'Junctionbox',display:'Junctionbox',loc:'Thuis Christiaan',isp:'KPN glasvezel',lbw:false,mics:0,roles:['hub'],machine:'Linux mini-PC',av:'agr',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_46_6c_41',player:null,name:'CnC-server',display:'CnC-server',loc:'Thuis Christiaan',isp:'KPN glasvezel',lbw:false,mics:0,roles:['hub'],machine:'Linux mini-PC',av:'agr',ai:'',conductor_capable:false,notes:'cnc-server.tail247ab6.ts.net'},
+  {mac:'m_9c_58_84_1e_83_1f',player:'Christiaan',name:'CJR-WiFi',display:'Christiaan — CJR WiFi',loc:'Thuis',isp:'KPN glasvezel',lbw:true,mics:1,roles:['normal'],machine:'MacBook',av:'aa',ai:'',conductor_capable:true,notes:'WiFi — lbw'},
+
+  // ── TouchLab A-serie (Linux mini-PC) ─────────────────────────
+  {mac:'m_00_23_24_c7_c1_b7',player:null,name:'A1',display:'A1',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_d6_81_82',player:null,name:'A2',display:'A2',loc:'TouchLab',isp:'KPN zakelijk',lbw:false,mics:0,roles:['tonmeister'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false,notes:'Oude Tonmeister machine (A-serie)'},
+  {mac:'m_00_23_24_be_97_b7',player:null,name:'A3',display:'A3',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_54_d9_60',player:null,name:'A4',display:'A4',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_55_0d_d0',player:null,name:'A7',display:'A7',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_b0_0c_d1_6c_8a_72',player:null,name:'A8',display:'A8',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_c8_d3_ff_a1_71_ed',player:null,name:'A9',display:'A9',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+
+  // ── TouchLab B-serie (Linux mini-PC) ─────────────────────────
+  {mac:'m_00_23_24_55_06_a3',player:null,name:'B0',display:'B0',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_46_03_df',player:null,name:'B1',display:'B1',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_d6_97_35',player:null,name:'B2',display:'B2',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_c4_65_16_b5_34_3c',player:null,name:'B3',display:'B3',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_46_00_e6',player:null,name:'B4',display:'B4',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_46_02_2d',player:null,name:'B5',display:'B5',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_55_0c_5b',player:null,name:'B6',display:'B6',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_d6_97_08',player:null,name:'B7',display:'B7',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_c4_65_16_be_55_3f',player:null,name:'B8',display:'B8',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_80_e8_2c_0d_db_23',player:null,name:'B9',display:'B9',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+
+  // ── TouchLab C-serie (Linux mini-PC) ─────────────────────────
+  {mac:'m_00_23_24_46_02_a6',player:null,name:'C0',display:'C0',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_b5_7e_79',player:null,name:'C1',display:'C1',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_54_d8_a5',player:null,name:'C3',display:'C3',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_46_02_7b',player:null,name:'C4',display:'C4',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_e4_5f_01_33_77_77',player:null,name:'R1',display:'R1',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+
+  // ── TouchLab M-serie (Mac Mini) ──────────────────────────────
+  {mac:'m_00_8a_76_f0_56_f0',player:null,name:'M0',display:'M0',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_14_98_77_49_4e_24',player:null,name:'M1',display:'M1',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_14_98_77_39_7c_d6',player:null,name:'M2',display:'M2',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_00_8a_76_eb_8e_22',player:null,name:'M3',display:'M3',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_4c_20_b8_a9_34_ae',player:null,name:'M4',display:'M4',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+
+  // ── TouchLab N-serie (NUC / Mac Mini) ────────────────────────
+  {mac:'m_14_98_77_73_06_20',player:null,name:'N01',display:'N01',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_14_98_77_41_f4_ad',player:null,name:'N02',display:'N02',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
   {mac:'m_4c_20_b8_aa_b3_ad',player:null,name:'N03',display:'N03',loc:'Tivoli Vredenburg',isp:'KPN zakelijk',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'RME Fireface',conductor_capable:false},
   {mac:'m_14_98_77_46_64_d0',player:null,name:'N04',display:'N04',loc:'Tivoli Vredenburg',isp:'KPN zakelijk',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
-  {mac:'m_00_e0_4c_68_52_df',player:'Christiaan',name:'CJR',display:'Christiaan — CJR',loc:'Thuis',isp:'KPN glasvezel',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'aa',ai:'Apogee Duet',conductor_capable:false},
-  {mac:'m_00_23_24_d6_81_82',player:null,name:'MX0',display:'MX0',loc:'TouchLab Hall',isp:'KPN zakelijk',lbw:false,mics:0,roles:['tonmeister'],machine:'Mac Mini M4',av:'agr',ai:'',conductor_capable:false,avb_bridge:true,notes:'AVB bridge → MOTU netwerk. Reaper multispeaker.'},
-  {mac:'m_00_23_24_55_10_9a',player:null,name:'Junctionbox',display:'Junctionbox',loc:'Thuis Christiaan',isp:'KPN glasvezel',lbw:false,mics:0,roles:['hub'],machine:'Linux mini-PC',av:'agr',ai:'',conductor_capable:false},
-  {mac:'mx1_placeholder',player:'Uli',name:'MX1',display:'Uli — MX1',loc:'Bij jou',isp:'KPN glasvezel',lbw:false,mics:0,roles:['conductor'],machine:'Mac Mini',av:'aa',ai:'',conductor_capable:true,notes:'Conductor. Leap Motion, Max/MSP, Glover.'}
+  {mac:'m_4c_20_b8_e7_69_64',player:null,name:'N05',display:'N05',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_64_0b_d7_aa_ea_70',player:null,name:'N06',display:'N06',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_14_98_77_41_f5_5b',player:null,name:'N07',display:'N07',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_14_98_77_35_7e_44',player:null,name:'N09',display:'N09',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_4c_20_b8_df_e9_22',player:null,name:'N10',display:'N10',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_14_98_77_40_7e_5e',player:null,name:'N11',display:'N11',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+  {mac:'m_14_98_77_84_ec_e0',player:null,name:'N12',display:'N12',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'',conductor_capable:false},
+
+  // ── Testboxen ────────────────────────────────────────────────
+  {mac:'m_00_23_24_46_08_bd',player:null,name:'Testbox1',display:'Testbox1',loc:'Thuis Christiaan',isp:'KPN glasvezel',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_46_01_ba',player:null,name:'Testbox2',display:'Testbox2',loc:'Thuis Christiaan',isp:'KPN glasvezel',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_e4_5f_01_1f_55_29',player:null,name:'Testbox3',display:'Testbox3',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_40_16_7e_78_2d_2c',player:null,name:'Testbox4',display:'Testbox4',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_40_16_7e_78_32_e7',player:null,name:'Testbox5',display:'Testbox5',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_e4_5f_01_19_7c_78',player:null,name:'Testbox6',display:'Testbox6',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_e4_5f_01_32_7c_15',player:null,name:'Testbox7',display:'Testbox7',loc:'',isp:'',lbw:false,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
 ];
 
 const WR={
