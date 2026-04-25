@@ -2736,8 +2736,11 @@ function generateBash(name){
     Array.from({length:MAXEP},(_,i)=>i<nm?getVal(musicians[i],i):defVal);
 
   // Column numbers header: "  1  2  3...20"
-  const colNums=`#${Array.from({length:MAXEP},(_,i)=>String(i+1).padStart(3)).join('')}`;
-  const colBars=`#${Array.from({length:MAXEP},()=>'  |').join('')}`;
+  const colNums=`#           ${Array.from({length:MAXEP},(_,i)=>String(i+1).padStart(3)).join('')}`;
+  const colBars=`#           ${Array.from({length:MAXEP},()=>'  |').join('')}`;
+  // Expert section (lbw_endpoint=( = 14 chars → 2 more spaces in prefix)
+  const lbwColNums=`#             ${Array.from({length:MAXEP},(_,i)=>String(i+1).padStart(3)).join('')}`;
+  const lbwColBars=`#             ${Array.from({length:MAXEP},()=>'  |').join('')}`;
 
   let L=[];
 
@@ -2767,20 +2770,20 @@ function generateBash(name){
   L.push(``);
 
   // ── Endpoint config arrays (always 20 columns) ───────────────
-  L.push(`#${' '.repeat(20)}E N D P O I N T   C O N F I G U R A T I O N`);
+  L.push(`#                    E N D P O I N T   C O N F I G U R A T I O N`);
   L.push(`#             1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20`);
   L.push(`#             |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`);
 
-  const fmt20=(arr)=>arr.map(v=>String(v).padStart(2)).join('  ');
+  const fmt20=(arr)=>arr.map(v=>String(v).padStart(3)).join('');
 
-  L.push(`no_of_mics=(  ${fmt20(fullArr(p=>p.mics||1, 0))})\t# number of microphones`);
-  L.push(`record=(      ${fmt20(fullArr(p=>p.rec?1:0, 0))})\t# make local recording?`);
-  L.push(`mixer=(\t      ${fmt20(fullArr(p=>p.mixer!==false?1:0, 0))})\t# mixer required?`);
-  L.push(`str2T=(\t      ${fmt20(fullArr(p=>hasTM&&p.str2t!==false?1:0, 0))})\t# stream to Tonmeister?`);
-  L.push(`str2I=(       ${fmt20(fullArr(p=>p.noctcast&&sess.noctcast?1:0, 0))})\t# stream to Icecast?`);
-  L.push(`conductor=(   ${fmt20(fullArr(p=>p.mac===sess.condEp&&sess.cond?1:0, 0))})\t# show conductor hands?`);
-  L.push(`ttb=(         ${fmt20(fullArr(p=>p.ttb?1:0, 0))})\t# TTB-device in use?`);
-  L.push(`in_test=(     ${fmt20(fullArr(p=>p.inTest?1:0, 0))})\t# put endpoint in test?`);
+  L.push(`no_of_mics=(${fmt20(fullArr(p=>p.mics||1, 0))})\t# number of microphones`);
+  L.push(`record=(    ${fmt20(fullArr(p=>p.rec?1:0, 0))})\t# make local recording?`);
+  L.push(`mixer=(     ${fmt20(fullArr(p=>p.mixer!==false?1:0, 0))})\t# mixer required?`);
+  L.push(`str2T=(     ${fmt20(fullArr(p=>hasTM&&p.str2t!==false?1:0, 0))})\t# stream to Tonmeister?`);
+  L.push(`str2I=(     ${fmt20(fullArr(p=>p.noctcast&&sess.noctcast?1:0, 0))})\t# stream to Icecast?`);
+  L.push(`conductor=( ${fmt20(fullArr(p=>p.mac===sess.condEp&&sess.cond?1:0, 0))})\t# show conductor hands?`);
+  L.push(`ttb=(       ${fmt20(fullArr(p=>p.ttb?1:0, 0))})\t# TTB-device in use?`);
+  L.push(`in_test=(   ${fmt20(fullArr(p=>p.inTest?1:0, 0))})\t# put endpoint in test?`);
   L.push(``);
   L.push(``);
   L.push(`########################## SETTINGS BEYOND THIS LINE ARE EXPERT-MODE #################################`);
@@ -2806,9 +2809,9 @@ function generateBash(name){
   L.push(`# accomodate concurrent streams to all other endpoints (each stream requires about 800Kb/s),`);
   L.push(`# such endpoint should be marked as "low bandwidth". Note that the Junctionbox will be needed.`);
   L.push(`#`);
-  L.push(`#               1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20`);
-  L.push(`#               |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`);
-  L.push(`lbw_endpoint=(  ${fmt20(fullArr(p=>p.lbw?1:0, 0))})\t# low bandwidth?`);
+  L.push(lbwColNums);
+  L.push(lbwColBars);
+  L.push(`lbw_endpoint=(${fmt20(fullArr(p=>p.lbw?1:0, 0))})\t# low bandwidth?`);
   L.push(``);
   L.push(``);
 
@@ -2820,8 +2823,8 @@ function generateBash(name){
     L.push(`pd_script="leap-receiver-v1.3.pd"\t# PD-script to load`);
     L.push(`pd_port_base=3000       \t\t# UDP-port in use for PD-app`);
     L.push(`#`);
-    L.push(`#               1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20`);
-    L.push(`#               |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`);
+    L.push(lbwColNums);
+    L.push(lbwColBars);
     L.push(`pd_port_offset=(${fmt20(fullArr(()=>0, 0))})`);
     L.push(``);
     L.push(``);
