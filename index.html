@@ -2810,14 +2810,12 @@ function generateBash(name){
   for(let mi=0;mi<nm;mi++){
     const row=musicians.map((_,mj)=>{
       if(mj===mi) return 'X';
-      // If TTB active and ttbRoutes defined, use it; otherwise default all-to-all
       if(musicians[mi].ttb&&musicians[mi].ttbRoutes) return musicians[mi].ttbRoutes[mj]!==false?'1':'0';
-      return '1';  // default: route to all others
+      return '1';
     }).join(' ');
     const ord=ordinals[mi]||`${mi+1}th`;
-    const others=musicians.filter((_,j)=>j!==mi).map(p=>{const ep=EPS.find(e=>e.mac===p.mac)||p;return ordinals[musicians.indexOf(p)]||''}).filter(Boolean);
-    const otherStr=others.length>1?others.slice(0,-1).join(', ')+', '+others[others.length-1]:others[0]||'';
-    const comment=`\t# routing from ${ord} endpoint to ${nm>2?others.join(', '):others[0]||'others'}`;
+    const otherOrd=ordinals.filter((_,i)=>i!==mi&&i<nm);
+    const comment=`\t# routing from ${ord} endpoint to ${otherOrd.join(', ')}`;
     L.push(`declare -a ttb_${mi}=(${row})${comment}`);
   }
   L.push(``);
