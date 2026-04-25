@@ -2711,7 +2711,9 @@ function generateBash(name){
   const tmEp=sess.tmEp||(tmPart&&tmPart.mac)||'';
   const hasTM=sess.tm&&tmEp;
   const hasJB=sess.jb&&jbEp;
-  const nc=nm+3;
+
+  const MAXEP=20;  // always 20 columns like Christiaan's format
+  const nc=MAXEP+3;
 
   const masterQ=parseInt(document.getElementById('masterq-sel')?.value||8);
   const masterTMQ=parseInt(document.getElementById('mastertmq-sel')?.value||38);
@@ -2720,24 +2722,22 @@ function generateBash(name){
     if(ci===mi) return 'X';
     const inp=document.getElementById(`q_${mi}_${ci}`);
     if(inp) return inp.value;
-    if(ci===nm)   return masterQ;
-    if(ci>=nm+1)  return 4;
+    if(ci===nm)   return masterQ;   // TM col
+    if(ci>=nm+1)  return 4;         // JB/HUB col
+    if(ci>=nm)    return masterQ;   // unused musician cols → masterQ
     return masterQ;
   };
 
   // Padding helpers
   const p2=v=>String(v).padStart(2);
-  const p3=v=>String(v).padStart(3);   // for matrix index padding (Qsize_10 etc.)
-  const tabArr=arr=>arr.join('\t');
-  const spArr=arr=>arr.map(v=>String(v).padStart(2)).join(' ');  // space-separated padded
 
-  // Column numbers header: "  1  2  3..."
-  const colNums=(n)=>'#'+Array.from({length:n},(_,i)=>String(i+1).padStart(3)).join('');
-  const colBars=(n)=>'#'+Array.from({length:n},()=>'  |').join('');
+  // Full 20-column value: actual value for active endpoints, 0/masterQ for unused
+  const fullArr=(getVal, defVal=0)=>
+    Array.from({length:MAXEP},(_,i)=>i<nm?getVal(musicians[i],i):defVal);
 
-  // Arrow alignment for Q/Redun matrices — arrows over last 3 cols
-  const tmPos=21+nm*3;
-  const to=(s,pos,fill)=>s+fill.repeat(Math.max(0,pos-s.length));
+  // Column numbers header: "  1  2  3...20"
+  const colNums=`#${Array.from({length:MAXEP},(_,i)=>String(i+1).padStart(3)).join('')}`;
+  const colBars=`#${Array.from({length:MAXEP},()=>'  |').join('')}`;
 
   let L=[];
 
@@ -2766,50 +2766,53 @@ function generateBash(name){
   L.push(`endpoints=(\t${musicians.map(p=>p.mac).join(' \\\n\t\t')})`);
   L.push(``);
 
-  // ── Endpoint config arrays (with column numbers) ─────────────
+  // ── Endpoint config arrays (always 20 columns) ───────────────
   L.push(`#${' '.repeat(20)}E N D P O I N T   C O N F I G U R A T I O N`);
-  L.push(colNums(nm));
-  L.push(colBars(nm));
-  L.push(`no_of_mics=(${spArr(musicians.map(p=>p.mics||1))})\t# number of microphones`);
-  L.push(`record=(    ${spArr(musicians.map(p=>p.rec?1:0))})\t# make local recording?`);
-  L.push(`mixer=(\t    ${spArr(musicians.map(p=>p.mixer!==false?1:0))})\t# mixer required?`);
-  L.push(`str2T=(\t    ${spArr(musicians.map(p=>hasTM&&p.str2t!==false?1:0))})\t# stream to Tonmeister?`);
-  L.push(`str2I=(     ${spArr(musicians.map(p=>p.noctcast&&sess.noctcast?1:0))})\t# stream to Icecast?`);
-  L.push(`conductor=( ${spArr(musicians.map(p=>p.mac===sess.condEp&&sess.cond?1:0))})\t# show conductor hands?`);
-  L.push(`ttb=(       ${spArr(musicians.map(p=>p.ttb?1:0))})\t# TTB-device in use?`);
-  L.push(`in_test=(   ${spArr(musicians.map(p=>p.inTest?1:0))})\t# put endpoint in test?`);
+  L.push(`#             1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20`);
+  L.push(`#             |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`);
+
+  const fmt20=(arr)=>arr.map(v=>String(v).padStart(2)).join('  ');
+
+  L.push(`no_of_mics=(  ${fmt20(fullArr(p=>p.mics||1, 0))})\t# number of microphones`);
+  L.push(`record=(      ${fmt20(fullArr(p=>p.rec?1:0, 0))})\t# make local recording?`);
+  L.push(`mixer=(\t      ${fmt20(fullArr(p=>p.mixer!==false?1:0, 0))})\t# mixer required?`);
+  L.push(`str2T=(\t      ${fmt20(fullArr(p=>hasTM&&p.str2t!==false?1:0, 0))})\t# stream to Tonmeister?`);
+  L.push(`str2I=(       ${fmt20(fullArr(p=>p.noctcast&&sess.noctcast?1:0, 0))})\t# stream to Icecast?`);
+  L.push(`conductor=(   ${fmt20(fullArr(p=>p.mac===sess.condEp&&sess.cond?1:0, 0))})\t# show conductor hands?`);
+  L.push(`ttb=(         ${fmt20(fullArr(p=>p.ttb?1:0, 0))})\t# TTB-device in use?`);
+  L.push(`in_test=(     ${fmt20(fullArr(p=>p.inTest?1:0, 0))})\t# put endpoint in test?`);
   L.push(``);
   L.push(``);
   L.push(`########################## SETTINGS BEYOND THIS LINE ARE EXPERT-MODE #################################`);
   L.push(``);
   L.push(``);
 
-  // ── Expert: TM / JB / mode / VPN ─────────────────────────────
+  // ── Expert: JB / TM / mode / VPN ────────────────────────────
   if(hasJB) L.push(`Junctionbox=(\t${jbEp})\t# Required for sessions with a)lbw_endpoints or b)in HUB-mode`);
-  if(hasTM){ L.push(`Tonmeister=(\t${tmEp})\t# Dedicated endpoint for live-productions and/or recordings`);
+  if(hasTM){
+    L.push(`Tonmeister=(\t${tmEp})\t# Dedicated endpoint for live-productions and/or recordings`);
     L.push(`external_mixer=${sess.extmix?1:0}\t\t\t# external mixer (like MIDAS M32) connected to "Tonmeister"?`);
   }
   L.push(``);
   L.push(`tailscale_VPN=1\t\t\t\t# Setup network in (Tailscale) VPN-mode?`);
   L.push(``);
-  L.push(`soundcloud_mode=${mode}\t\t\t\t# Touchlab-TERMINAL can operate in MESH- and in HUB-mode`);
+  L.push(`soundcloud_mode=${mode}\t\t\t# Touchlab-TERMINAL can operate in MESH- and in HUB-mode`);
   L.push(`UDP_hole_punching=${sess.udp?1:0}\t\t\t\t# "1" if ALL endpoints support UDP_hole_punching and/or`);
   L.push(`\t\t\t\t\t# port-forwarding has been configured. "0" otherwise.`);
   L.push(``);
 
-  // ── lbw (in expert section) ───────────────────────────────────
+  // ── lbw (expert, 20 cols) ────────────────────────────────────
   L.push(`# If, in a MESH-based session, any endpoints' internet-connection lacks sufficient bandwidth to`);
   L.push(`# accomodate concurrent streams to all other endpoints (each stream requires about 800Kb/s),`);
   L.push(`# such endpoint should be marked as "low bandwidth". Note that the Junctionbox will be needed.`);
   L.push(`#`);
-  L.push(`#${' '.repeat(14)}E N D P O I N T   C O N F I G U R A T I O N`);
-  L.push(colNums(nm));
-  L.push(colBars(nm));
-  L.push(`lbw_endpoint=(${spArr(musicians.map(p=>p.lbw?1:0))})\t# low bandwidth?`);
+  L.push(`#               1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20`);
+  L.push(`#               |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`);
+  L.push(`lbw_endpoint=(  ${fmt20(fullArr(p=>p.lbw?1:0, 0))})\t# low bandwidth?`);
   L.push(``);
   L.push(``);
 
-  // ── Conductor module params (if conductor active) ─────────────
+  // ── Conductor module params ───────────────────────────────────
   const hasCond=sess.cond&&musicians.some(p=>p.mac===sess.condEp);
   if(hasCond){
     L.push(`# conductor-module parameters`);
@@ -2817,14 +2820,14 @@ function generateBash(name){
     L.push(`pd_script="leap-receiver-v1.3.pd"\t# PD-script to load`);
     L.push(`pd_port_base=3000       \t\t# UDP-port in use for PD-app`);
     L.push(`#`);
-    L.push(colNums(nm));
-    L.push(colBars(nm));
-    L.push(`pd_port_offset=(${spArr(musicians.map(()=>0))})`);
+    L.push(`#               1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20`);
+    L.push(`#               |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`);
+    L.push(`pd_port_offset=(${fmt20(fullArr(()=>0, 0))})`);
     L.push(``);
     L.push(``);
   }
 
-  // ── Q matrices ───────────────────────────────────────────────
+  // ── Q matrices (20 cols + 3 special) ─────────────────────────
   L.push(`# Jacktrip (jitter-buffer) Qsize- matrices.`);
   L.push(`# Two matrices are used; one named "Qsize" for the normal queues, one named "BQsize" for the`);
   L.push(`# broadcast "lines".`);
@@ -2833,34 +2836,40 @@ function generateBash(name){
   L.push(`# "Tonmeister", "Junctionbox", "Hub-server". Last three rows showing Qsize for inbound`);
   L.push(`# traffic at "Tonmeister", "Junctionbox" and "HUB-server".`);
   L.push(``);
-
-  // New arrow style: comments on right side of line
   L.push(`# inbound from HUB-server --- (Applicable when session is in "HUB" mode) -------------------|`);
   L.push(`# inbound from Junctionbox -- (Session in "MESH" mode, >=1 lbw-endpoint) --------------|  |`);
   L.push(`# inbound from Tonmeister --- (For endpoints hooked-up to Tonmeister) -------------|  |  |`);
   L.push(`#                                                                                  |  |  |`);
   L.push(`#                                                                                  v  v  v`);
 
-  // Index padding for large sessions (Qsize_10 etc.)
-  const idxW=Math.max(1,String(nm-1).length);
+  // Full 20+3 col Q matrix
+  const fullQ=(mi)=>Array.from({length:nc},(_,ci)=>{
+    if(ci===mi) return p2('X');
+    if(ci<nm)   return p2(getQ(mi,ci));  // active musician cols
+    if(ci<MAXEP) return p2(masterQ);     // unused musician cols
+    if(ci===MAXEP)  return p2(masterQ);  // TM col
+    if(ci===MAXEP+1) return p2(4);       // JB col
+    return p2(4);                        // HUB col
+  });
+
   for(let mi=0;mi<nm;mi++){
-    const vals=Array.from({length:nc},(_,ci)=>p2(getQ(mi,ci)));
-    L.push(`declare -a ${' '.repeat(Math.max(0,idxW-String(mi).length))}Qsize_${mi}=(${vals.join(' ')})`);
+    const vals=fullQ(mi);
+    L.push(`declare -a ${String(mi).padStart(2,' ')===String(mi)?'':'  '}Qsize_${mi < 10?'':' '}${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a ${' '.repeat(idxW)}Qsize_T=(${musicians.map(()=>p2(masterTMQ)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
-  if(hasJB) L.push(`declare -a ${' '.repeat(idxW)}Qsize_J=(${musicians.map(()=>p2(4)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
+  if(hasTM) L.push(`declare -a   Qsize_T=(${Array.from({length:MAXEP},()=>p2(masterTMQ)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
+  if(hasJB) L.push(`declare -a   Qsize_J=(${Array.from({length:MAXEP},()=>p2(4)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
   L.push(``);
 
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>p2(ci===mi?'X':50));
-    L.push(`declare -a ${' '.repeat(Math.max(0,idxW-String(mi).length))}BQsize_${mi}=(${vals.join(' ')})`);
+    L.push(`declare -a  BQsize_${mi < 10?'':' '}${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a ${' '.repeat(idxW)}BQsize_T=(${musicians.map(()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
-  if(hasJB) L.push(`declare -a ${' '.repeat(idxW)}BQsize_J=(${musicians.map(()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
+  if(hasTM) L.push(`declare -a  BQsize_T=(${Array.from({length:MAXEP},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
+  if(hasJB) L.push(`declare -a  BQsize_J=(${Array.from({length:MAXEP},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
   L.push(``);
   L.push(``);
 
-  // ── Redundancy matrix ─────────────────────────────────────────
+  // ── Redundancy matrix (20 cols) ───────────────────────────────
   L.push(`# Outgoing jacktrip-connections can send each UDP-packet multiple times, so as to`);
   L.push(`# overcome drop-outs. Next matrix defines the redundancy-factor per endpoint, for`);
   L.push(`# every outgoing UDP-stream.`);
@@ -2876,33 +2885,39 @@ function generateBash(name){
     const vals=Array.from({length:nc},(_,ci)=>{
       if(ci===mi) return p2('X');
       const inp=document.getElementById(`r_${mi}_${ci}`);
-      if(inp) return p2(inp.value);
-      return p2(ci===nm?2:1);
+      if(ci<nm){
+        return inp?p2(inp.value):p2(1);
+      }
+      if(ci<MAXEP) return p2(1);    // unused musician cols
+      if(ci===MAXEP) return inp?p2(inp.value):p2(2);  // TM col
+      return p2(1);
     });
-    L.push(`declare -a ${' '.repeat(Math.max(0,idxW-String(mi).length))}Redun_${mi}=(${vals.join(' ')})`);
+    L.push(`declare -a   Redun_${mi < 10?'':' '}${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a ${' '.repeat(idxW)}Redun_T=(${musicians.map(()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
-  if(hasJB) L.push(`declare -a ${' '.repeat(idxW)}Redun_J=(${musicians.map(()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  if(hasTM) L.push(`declare -a   Redun_T=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  if(hasJB) L.push(`declare -a   Redun_J=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
   L.push(``);
   L.push(``);
 
-  // ── TTB matrix ───────────────────────────────────────────────
+  // ── TTB matrix (20 cols) ──────────────────────────────────────
   L.push(`# TapTapBoom routing-matrix.`);
   L.push(`# Routing from the TTB generated at any endpoint to other endpoints is specified by a "1"`);
   L.push(`# in the respective column(s).`);
   L.push(`#`);
-  L.push(colNums(nm));
-  L.push(colBars(nm));
+  L.push(`#                      1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20`);
+  L.push(`#                      |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`);
   const ordinals=['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','13th','14th','15th','16th','17th','18th','19th','20th'];
   for(let mi=0;mi<nm;mi++){
-    const row=musicians.map((_,mj)=>{
+    const row=Array.from({length:MAXEP},(_,mj)=>{
       if(mj===mi) return 'X';
-      if(musicians[mi].ttb&&musicians[mi].ttbRoutes) return musicians[mi].ttbRoutes[mj]!==false?'1':'0';
-      return '1';
-    }).join(' ');
+      if(mj<nm){
+        if(musicians[mi].ttb&&musicians[mi].ttbRoutes) return musicians[mi].ttbRoutes[mj]!==false?'1':'0';
+        return '1';
+      }
+      return '0';  // unused cols = 0
+    }).join('  ');
     const otherOrd=ordinals.filter((_,i)=>i!==mi&&i<nm);
-    const comment=`\t# routing from ${ordinals[mi]} endpoint to ${otherOrd.join(', ')}`;
-    L.push(`declare -a ${' '.repeat(Math.max(0,idxW-String(mi).length))}ttb_${mi}=( ${row})${comment}`);
+    L.push(`declare -a     ttb_${mi < 10?'':' '}${mi}=( ${row})\t# routing from ${ordinals[mi]} endpoint to ${otherOrd.join(', ')}`);
   }
   L.push(``);
   L.push(``);
@@ -2917,11 +2932,10 @@ function generateBash(name){
     L.push(`HUB_Port=60`);
     L.push(`HUB_UDPbaseport=61001`);
   }
-
+  L.push(``);
   const babQs=document.getElementById('bab-qsize')?.value||'25';
   const babBQs=document.getElementById('bab-bqsize')?.value||'50';
   const babR=document.getElementById('bab-redun')?.value||'1';
-  L.push(``);
   L.push(`BAB_Qsize=${babQs}\t\t# Babbelbox@Junctionbox incoming connections Qsize (MESH & HUB mode!)`);
   L.push(`BAB_BQsize=${babBQs}\t\t# Babbelbox@Junctionbox broadcast-line Qsize`);
   L.push(`BAB_Redun=${babR}\t\t# redundancy-factor`);
