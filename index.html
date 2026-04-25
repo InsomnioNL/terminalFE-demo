@@ -408,6 +408,18 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       </select>
     </div>
 
+    <!-- VLAN -->
+    <div class="tgr" style="cursor:pointer" onclick="togVlan()">
+      <div class="tgi">
+        <div class="tgl-l" data-nl="Eindpunten in zelfde VLAN?" data-en="Endpoints sharing a VLAN?">Eindpunten in zelfde VLAN?</div>
+        <div class="tgl-s" data-nl="Eindpunten op hetzelfde lokale netwerk" data-en="Endpoints on the same local network">Eindpunten op hetzelfde lokale netwerk</div>
+      </div>
+      <div class="tg" id="tg-vlan" onclick="event.stopPropagation();togVlan()"></div>
+    </div>
+    <div id="row-vlan" style="display:none;padding:4px 0 8px">
+      <div id="vlan-matrix"></div>
+    </div>
+
     <!-- UDP -->
     <div class="tgr" style="cursor:pointer" style="cursor:pointer">
       <div class="tgi">
@@ -461,12 +473,6 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       </div>
     </div>
 
-    <!-- VLAN grouping -->
-    <div id="row-vlan" style="display:none;margin-top:4px;padding:8px 0">
-      <div style="font-size:9px;color:rgba(255,255,255,.4);font-family:var(--mono);margin-bottom:8px">VLAN GROEPEN — eindpunten op hetzelfde lokale netwerk</div>
-      <div id="vlan-matrix"></div>
-      <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:6px;font-family:var(--mono)">🔒 Nocturne</div>
-    </div>
 
     <!-- TapTapBoom sessie-breed -->
     <div class="tgr" style="cursor:pointer" onclick="handleRowClick('ttbsess')">
@@ -794,6 +800,17 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
           <option value="piano.mp3">piano.mp3</option>
           <option value="cello.mp3">cello.mp3</option>
         </select>
+      </div>
+
+      <!-- VLAN badge (read-only) -->
+      <div id="edit-vlan-badge" style="display:none;padding:6px 0 2px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="tgl-l" style="font-size:11px">VLAN</div>
+            <div class="tgl-s">Ingesteld via sessie-instellingen</div>
+          </div>
+          <div id="edit-vlan-label" style="font-size:12px;font-weight:600;font-family:var(--mono);color:#45e68f;padding:3px 10px;border:1px solid rgba(69,230,143,.3);border-radius:4px;background:rgba(69,230,143,.08)">A</div>
+        </div>
       </div>
     </div>
 
@@ -1755,25 +1772,24 @@ function renderVlanMatrix(){
   const el=document.getElementById('vlan-matrix');
   if(!el) return;
   const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='hub');
-  const mus=parts.filter(p=>!isSpecial(p));
-  if(mus.length===0){el.innerHTML='';return;}
+  const allParts=parts.filter(p=>!isSpecial(p)); // incl TM
+  if(allParts.length===0){el.innerHTML='';return;}
 
-  // Ensure there's always one empty group at end
   const groups=[...vlanGroups];
   if(groups.length===0||groups[groups.length-1].length>0) groups.push([]);
 
   const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-  let h='<table style="border-collapse:collapse;width:100%">';
+  let h='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table style="border-collapse:collapse;min-width:100%">';
 
-  // Header row: endpoint names
-  h+=`<tr><th style="font-size:8px;font-family:var(--mono);color:rgba(255,255,255,.35);padding:2px 4px 6px 0;text-align:left">Groep</th>`;
-  mus.forEach(p=>{
+  // Header: compact 3-char initials
+  h+=`<tr><th style="font-size:8px;font-family:var(--mono);color:rgba(255,255,255,.35);padding:2px 6px 6px 0;text-align:left;white-space:nowrap">Groep</th>`;
+  allParts.forEach(p=>{
     const ep=EPS.find(e=>e.mac===p.mac)||p;
     const name=init2(ep.name,ep.player);
     const isTM=(p.roles_active||[p.role]).includes('tonmeister');
     const color=isTM?'#b06af5':'#45e68f';
-    h+=`<th style="font-size:8px;font-family:var(--mono);color:${color};padding:2px 4px 6px;text-align:center">${name}</th>`;
+    h+=`<th style="font-size:8px;font-family:var(--mono);color:${color};padding:2px 3px 6px;text-align:center;min-width:28px">${name}</th>`;
   });
   h+='</tr>';
 
@@ -1781,18 +1797,19 @@ function renderVlanMatrix(){
   groups.forEach((group,gi)=>{
     const letter=letters[gi]||'?';
     const isEmpty=group.length===0;
-    const labelColor=isEmpty?'rgba(255,255,255,.2)':'rgba(255,255,255,.6)';
-    h+=`<tr><td style="font-size:9px;font-family:var(--mono);color:${labelColor};padding:3px 4px 3px 0;font-weight:600">${isEmpty?'…':letter}</td>`;
-    mus.forEach(p=>{
+    const labelColor=isEmpty?'rgba(255,255,255,.2)':'rgba(255,255,255,.7)';
+    h+=`<tr><td style="font-size:9px;font-family:var(--mono);color:${labelColor};padding:3px 6px 3px 0;font-weight:600;white-space:nowrap">${isEmpty?'…':letter}</td>`;
+    allParts.forEach(p=>{
       const inGroup=group.includes(p.mac);
-      h+=`<td style="text-align:center;padding:2px">
-        <div onclick="toggleVlanMember(${gi},'${p.mac}')" style="width:18px;height:18px;border-radius:3px;border:1px solid ${inGroup?'#45e68f':'rgba(255,255,255,.2)'};background:${inGroup?'rgba(69,230,143,.2)':'transparent'};cursor:pointer;margin:auto;display:flex;align-items:center;justify-content:center;font-size:10px;color:#45e68f">${inGroup?'✓':''}</div>
+      h+=`<td style="text-align:center;padding:2px 3px">
+        <div onclick="toggleVlanMember(${gi},'${p.mac}')" style="width:20px;height:20px;border-radius:3px;border:1px solid ${inGroup?'#45e68f':'rgba(255,255,255,.15)'};background:${inGroup?'rgba(69,230,143,.25)':'transparent'};cursor:pointer;margin:auto;display:flex;align-items:center;justify-content:center;font-size:11px;color:#45e68f">${inGroup?'✓':''}</div>
       </td>`;
     });
     h+='</tr>';
   });
 
-  h+='</table>';
+  h+='</table></div>';
+  h+=`<div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:6px;font-family:var(--mono)">← scroll voor meer eindpunten</div>`;
   el.innerHTML=h;
 }
 
@@ -2491,6 +2508,15 @@ function openEdit(i){
   // Show/hide rec row
   const recRow=document.getElementById('edit-row-rec');
   if(recRow) recRow.style.display=sess.rec?'flex':'none';
+
+  // VLAN badge
+  const vlanBadge=document.getElementById('edit-vlan-badge');
+  const vlanLabel=document.getElementById('edit-vlan-label');
+  if(vlanBadge&&vlanLabel){
+    const group=p.vlanGroup;
+    vlanBadge.style.display=group?'block':'none';
+    if(group) vlanLabel.textContent=`Groep ${group}`;
+  }
 
   // Test tune dropdown — show when session test mode is on
   const tuneRow=document.getElementById('edit-row-tune');
