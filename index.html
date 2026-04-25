@@ -2695,7 +2695,9 @@ function removeFromEdit(){
 function generateBash(name){
   const now=new Date();
   const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const dateStr=`${months[now.getMonth()]} ${now.getDate()}${['th','st','nd','rd'][Math.min(now.getDate()%10,3)]||'th'}, ${now.getFullYear()}`;
+  const day=now.getDate();
+  const sfx=['th','st','nd','rd'];
+  const dateStr=`${months[now.getMonth()]} ${day}${sfx[day%10<4&&(day<11||day>13)?day%10:0]}, ${now.getFullYear()}`;
   const timeStr=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}NL`;
   const modeEl=document.getElementById('b-mode');
   const mode=(modeEl?modeEl.value:'MESH').split(' ')[0];
@@ -2707,9 +2709,9 @@ function generateBash(name){
   const jbPart=parts.find(p=>(p.roles_active||[p.role]).includes('hub'));
   const jbEp=sess.jbEp||(jbPart&&jbPart.mac)||'';
   const tmEp=sess.tmEp||(tmPart&&tmPart.mac)||'';
-  const nc=nm+3;
   const hasTM=sess.tm&&tmEp;
   const hasJB=sess.jb&&jbEp;
+  const nc=nm+3;
 
   const masterQ=parseInt(document.getElementById('masterq-sel')?.value||8);
   const masterTMQ=parseInt(document.getElementById('mastertmq-sel')?.value||38);
@@ -2723,18 +2725,25 @@ function generateBash(name){
     return masterQ;
   };
 
-  // Padding: right-align in 2 chars (matches Christiaan's format)
+  // Padding helpers
   const p2=v=>String(v).padStart(2);
-  // Tab-separated array values
+  const p3=v=>String(v).padStart(3);   // for matrix index padding (Qsize_10 etc.)
   const tabArr=arr=>arr.join('\t');
-  // Arrow alignment: v's sit above last 3 columns
-  // Format: ( p2(v0) [space p2(vi)] ... ) → TM starts at offset 21+nm*3 from line start
+  const spArr=arr=>arr.map(v=>String(v).padStart(2)).join(' ');  // space-separated padded
+
+  // Column numbers header: "  1  2  3..."
+  const colNums=(n)=>'#'+Array.from({length:n},(_,i)=>String(i+1).padStart(3)).join('');
+  const colBars=(n)=>'#'+Array.from({length:n},()=>'  |').join('');
+
+  // Arrow alignment for Q/Redun matrices — arrows over last 3 cols
+  const tmPos=21+nm*3;
+  const to=(s,pos,fill)=>s+fill.repeat(Math.max(0,pos-s.length));
+
   let L=[];
 
   // ── Header ──────────────────────────────────────────────────
   L.push(`# ${name}`);
   L.push(`#`);
-  L.push(`# This file contains all parameters needed to setup the "${name}" session.`);
   L.push(`# Lots of parameters are booleans, where "1" should be read as "Yes" and "0" as "No".`);
   L.push(`#`);
   L.push(`# Version:\t1.0`);
@@ -2742,66 +2751,80 @@ function generateBash(name){
   L.push(`# Time:\t\t${timeStr}`);
   L.push(`# Author:\tTERMINAL Web Interface — TouchLab`);
   L.push(`#`);
-  L.push(`# Following list for readability-purposes only...`);
   L.push(``);
-  musicians.forEach(p=>{ const ep=EPS.find(e=>e.mac===p.mac)||p; L.push(`# ${(ep.name||'').padEnd(14)}\t${p.mac}\t${ep.player?ep.player+'@':''}\t${p.isp||''}`); });
-  if(tmPart){ const ep=EPS.find(e=>e.mac===tmPart.mac)||tmPart; L.push(`# ${(ep.name||'').padEnd(14)}\t${tmPart.mac}\tTonmeister`); }
-  if(jbPart){ const ep=EPS.find(e=>e.mac===jbPart.mac)||jbPart; L.push(`# ${(ep.name||'').padEnd(14)}\t${jbPart.mac}\tJunctionbox`); }
+  L.push(`Cfg_version=1.4`);
   L.push(``);
 
-  // ── Session settings ─────────────────────────────────────────
-  L.push(`soundcloud_mode=${mode}\t# Touchlab-TERMINAL can operate in MESH- and in HUB-mode`);
-  L.push(``);
-  L.push(`UDP_hole_punching=${sess.udp?1:0}\t# "1" if ALL endpoints support UDP hole punching and/or`);
-  L.push(`\t\t\t# port-forwarding has been configured. "0" otherwise.`);
-  L.push(``);
-  if(hasTM||hasJB){
-    L.push(`# Specific endpoints for this session`);
-    L.push(`#`);
-    if(hasTM) L.push(`Tonmeister=(\t${tmEp})\t# Tonmeister macID`);
-    if(hasJB) L.push(`Junctionbox=(\t${jbEp})\t# Junctionbox macID`);
-    L.push(``);
-  }
-  L.push(`external_mixer=${sess.extmix?1:0}\t\t\t# external mixer at "Tonmeister"?`);
-  L.push(``);
-
-  // ── Endpoint lists ───────────────────────────────────────────
-  L.push(`# List of participating musicians' endpoints for this session.`);
-  L.push(`# NOTE: the order in which endpoints appear in this list will be the same order in which`);
-  L.push(`# incoming audiostreams from these endpoints are assigned to input-channels of a mixer,`);
+  // ── Participants & endpoints ─────────────────────────────────
+  L.push(`# List of participating musicians and their endpoints for this session.`);
+  L.push(`# The order in which endpoints appear in this list will be the same order in which`);
+  L.push(`# incoming streams from these endpoints are assigned to input-channels of a mixer,`);
   L.push(`# should a mixer be selected for an endpoint (see further down this config-file).`);
   L.push(`#`);
+  L.push(`participants=(\t${musicians.map(p=>{const ep=EPS.find(e=>e.mac===p.mac)||p;return ep.player||p.name;}).join(' \\\n\t\t')})`);
+  L.push(``);
   L.push(`endpoints=(\t${musicians.map(p=>p.mac).join(' \\\n\t\t')})`);
   L.push(``);
-  L.push(`participants=(\t${musicians.map(p=>{ const ep=EPS.find(e=>e.mac===p.mac)||p; return ep.player||p.name; }).join(' \\\n\t\t')})`);
+
+  // ── Endpoint config arrays (with column numbers) ─────────────
+  L.push(`#${' '.repeat(20)}E N D P O I N T   C O N F I G U R A T I O N`);
+  L.push(colNums(nm));
+  L.push(colBars(nm));
+  L.push(`no_of_mics=(${spArr(musicians.map(p=>p.mics||1))})\t# number of microphones`);
+  L.push(`record=(    ${spArr(musicians.map(p=>p.rec?1:0))})\t# make local recording?`);
+  L.push(`mixer=(\t    ${spArr(musicians.map(p=>p.mixer!==false?1:0))})\t# mixer required?`);
+  L.push(`str2T=(\t    ${spArr(musicians.map(p=>hasTM&&p.str2t!==false?1:0))})\t# stream to Tonmeister?`);
+  L.push(`str2I=(     ${spArr(musicians.map(p=>p.noctcast&&sess.noctcast?1:0))})\t# stream to Icecast?`);
+  L.push(`conductor=( ${spArr(musicians.map(p=>p.mac===sess.condEp&&sess.cond?1:0))})\t# show conductor hands?`);
+  L.push(`ttb=(       ${spArr(musicians.map(p=>p.ttb?1:0))})\t# TTB-device in use?`);
+  L.push(`in_test=(   ${spArr(musicians.map(p=>p.inTest?1:0))})\t# put endpoint in test?`);
   L.push(``);
-  L.push(`# If, in a MESH-based session, any endpoint's internet-connection lacks sufficient bandwidth`);
-  L.push(`# to accommodate concurrent streams to all other endpoints (each stream requires ~800Kb/s),`);
-  L.push(`# such endpoint should be marked as "low bandwidth".`);
-  L.push(`#`);
-  L.push(`lbw_endpoint=(\t${tabArr(musicians.map(p=>p.lbw?'1':'0'))})\t# low bandwidth connection?`);
+  L.push(``);
+  L.push(`########################## SETTINGS BEYOND THIS LINE ARE EXPERT-MODE #################################`);
+  L.push(``);
   L.push(``);
 
-  // ── Per-endpoint arrays ───────────────────────────────────────
-  L.push(`no_of_mics=(\t${tabArr(musicians.map(p=>p.mics||1))})\t# number of microphones at endpoint[i]`);
-  L.push(`mixer=(\t\t${tabArr(musicians.map(p=>p.mixer!==false?1:0))})\t# mixer present (or not) at endpoint[i]? (0/1)`);
-  L.push(`ttb=(\t\t${tabArr(musicians.map(p=>p.ttb?1:0))})\t# TTB-device in use at endpoint[i]? (0/1)`);
-  L.push(`str2T=(\t\t${tabArr(musicians.map(p=>hasTM&&p.str2t!==false?1:0))})\t# stream audio to Tonmeister? (0/1)`);
+  // ── Expert: TM / JB / mode / VPN ─────────────────────────────
+  if(hasJB) L.push(`Junctionbox=(\t${jbEp})\t# Required for sessions with a)lbw_endpoints or b)in HUB-mode`);
+  if(hasTM){ L.push(`Tonmeister=(\t${tmEp})\t# Dedicated endpoint for live-productions and/or recordings`);
+    L.push(`external_mixer=${sess.extmix?1:0}\t\t\t# external mixer (like MIDAS M32) connected to "Tonmeister"?`);
+  }
   L.push(``);
-  L.push(`str2I=(\t\t${tabArr(musicians.map(p=>p.noctcast&&sess.noctcast?1:0))})\t# stream audio to Icecast-server? (0/1)`);
+  L.push(`tailscale_VPN=1\t\t\t\t# Setup network in (Tailscale) VPN-mode?`);
   L.push(``);
-  if(sess.cond) L.push(`conductor=(\t${tabArr(musicians.map(p=>p.mac===sess.condEp?1:0))})\t# conductor endpoint? (0/1)`);
-  L.push(`# When in test-mode, microphones (if present) are virtually disconnected and a tune is played`);
-  L.push(`# and streamed to all other participants, Tonmeister and Icecast-server (if applicable).`);
-  L.push(`# Every endpoint can have its own tune; corresponding .mp3-files must be present.`);
+  L.push(`soundcloud_mode=${mode}\t\t\t\t# Touchlab-TERMINAL can operate in MESH- and in HUB-mode`);
+  L.push(`UDP_hole_punching=${sess.udp?1:0}\t\t\t\t# "1" if ALL endpoints support UDP_hole_punching and/or`);
+  L.push(`\t\t\t\t\t# port-forwarding has been configured. "0" otherwise.`);
+  L.push(``);
+
+  // ── lbw (in expert section) ───────────────────────────────────
+  L.push(`# If, in a MESH-based session, any endpoints' internet-connection lacks sufficient bandwidth to`);
+  L.push(`# accomodate concurrent streams to all other endpoints (each stream requires about 800Kb/s),`);
+  L.push(`# such endpoint should be marked as "low bandwidth". Note that the Junctionbox will be needed.`);
   L.push(`#`);
-  L.push(`in_test=(\t${tabArr(musicians.map(p=>p.inTest?1:0))})\t# endpoint in test? (0/1)`);
+  L.push(`#${' '.repeat(14)}E N D P O I N T   C O N F I G U R A T I O N`);
+  L.push(colNums(nm));
+  L.push(colBars(nm));
+  L.push(`lbw_endpoint=(${spArr(musicians.map(p=>p.lbw?1:0))})\t# low bandwidth?`);
   L.push(``);
-  L.push(`tune=(\t${musicians.map(p=>p.tune||'viola.mp3').join(' \\\n\t')})`);
   L.push(``);
+
+  // ── Conductor module params (if conductor active) ─────────────
+  const hasCond=sess.cond&&musicians.some(p=>p.mac===sess.condEp);
+  if(hasCond){
+    L.push(`# conductor-module parameters`);
+    L.push(`#`);
+    L.push(`pd_script="leap-receiver-v1.3.pd"\t# PD-script to load`);
+    L.push(`pd_port_base=3000       \t\t# UDP-port in use for PD-app`);
+    L.push(`#`);
+    L.push(colNums(nm));
+    L.push(colBars(nm));
+    L.push(`pd_port_offset=(${spArr(musicians.map(()=>0))})`);
+    L.push(``);
+    L.push(``);
+  }
 
   // ── Q matrices ───────────────────────────────────────────────
-  L.push(``);
   L.push(`# Jacktrip (jitter-buffer) Qsize- matrices.`);
   L.push(`# Two matrices are used; one named "Qsize" for the normal queues, one named "BQsize" for the`);
   L.push(`# broadcast "lines".`);
@@ -2810,43 +2833,45 @@ function generateBash(name){
   L.push(`# "Tonmeister", "Junctionbox", "Hub-server". Last three rows showing Qsize for inbound`);
   L.push(`# traffic at "Tonmeister", "Junctionbox" and "HUB-server".`);
   L.push(``);
-  const tmPos=21+nm*3;
-  const to=(s,pos,fill)=>s+fill.repeat(Math.max(0,pos-s.length));
-  L.push(to('# inbound from HUB-server',tmPos+5,'-')+'|\t(Applicable when session is in "HUB" mode)');
-  L.push(to('# inbound from Junctionbox',tmPos+2,' ')+'|  |\t(Session in "MESH" mode, >=1 lbw-endpoint)');
-  L.push(to('# inbound from Tonmeister', tmPos-1,' ')+'|  |  |\t(Applicable for endpoints hooked-up to Tonmeister)');
-  L.push('#'+' '.repeat(tmPos-1)+'|  |  |');
-  L.push('#'+' '.repeat(tmPos-1)+'v  v  v');
 
-  // Q + BQ together (no blank line between, like original)
+  // New arrow style: comments on right side of line
+  L.push(`# inbound from HUB-server --- (Applicable when session is in "HUB" mode) -------------------|`);
+  L.push(`# inbound from Junctionbox -- (Session in "MESH" mode, >=1 lbw-endpoint) --------------|  |`);
+  L.push(`# inbound from Tonmeister --- (For endpoints hooked-up to Tonmeister) -------------|  |  |`);
+  L.push(`#                                                                                  |  |  |`);
+  L.push(`#                                                                                  v  v  v`);
+
+  // Index padding for large sessions (Qsize_10 etc.)
+  const idxW=Math.max(1,String(nm-1).length);
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>p2(getQ(mi,ci)));
-    L.push(`declare -a Qsize_${mi}=(${vals.join(' ')})`);
+    L.push(`declare -a ${' '.repeat(Math.max(0,idxW-String(mi).length))}Qsize_${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a Qsize_T=(${musicians.map(()=>p2(masterTMQ)).join(' ')}  X  X  X)\t# inbound queue at "Tonmeister"`);
-  if(hasJB) L.push(`declare -a Qsize_J=(${musicians.map(()=>p2(4)).join(' ')}  X  X  X)\t# inbound queue at "Junctionbox"`);
+  if(hasTM) L.push(`declare -a ${' '.repeat(idxW)}Qsize_T=(${musicians.map(()=>p2(masterTMQ)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
+  if(hasJB) L.push(`declare -a ${' '.repeat(idxW)}Qsize_J=(${musicians.map(()=>p2(4)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
   L.push(``);
 
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>p2(ci===mi?'X':50));
-    L.push(`declare -a BQsize_${mi}=(${vals.join(' ')})`);
+    L.push(`declare -a ${' '.repeat(Math.max(0,idxW-String(mi).length))}BQsize_${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a BQsize_T=(${musicians.map(()=>p2(50)).join(' ')}  X  X  X)\t# inbound queue at "Tonmeister"`);
-  if(hasJB) L.push(`declare -a BQsize_J=(${musicians.map(()=>p2(50)).join(' ')}  X  X  X)\t# inbound queue at "Junctionbox"`);
+  if(hasTM) L.push(`declare -a ${' '.repeat(idxW)}BQsize_T=(${musicians.map(()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
+  if(hasJB) L.push(`declare -a ${' '.repeat(idxW)}BQsize_J=(${musicians.map(()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
+  L.push(``);
   L.push(``);
 
   // ── Redundancy matrix ─────────────────────────────────────────
-  L.push(``);
   L.push(`# Outgoing jacktrip-connections can send each UDP-packet multiple times, so as to`);
   L.push(`# overcome drop-outs. Next matrix defines the redundancy-factor per endpoint, for`);
   L.push(`# every outgoing UDP-stream.`);
   L.push(`# In most cases only connections towards "Tonmeister" are made redundant.`);
   L.push(``);
-  L.push(to('# outbound to HUB-server ', tmPos+5,'-')+'|\t(Applicable when session is in "HUB" mode)');
-  L.push(to('# outbound to Junctionbox',tmPos+2,' ')+'|  |\t(Session in "MESH" mode, >=1 lbw-endpoint)');
-  L.push(to('# outbound to Tonmeister ',tmPos-1,' ')+'|  |  |\t(Applicable for endpoints hooked-up to Tonmeister)');
-  L.push('#'+' '.repeat(tmPos-1)+'|  |  |');
-  L.push('#'+' '.repeat(tmPos-1)+'v  v  v');
+  L.push(`# outbound to HUB-server --- (Applicable when session is in "HUB" mode) -------------------|`);
+  L.push(`# outbound to Junctionbox -- (Session in "MESH" mode, >=1 lbw-endpoint) --------------|  |`);
+  L.push(`# outbound to Tonmeister --- (For endpoints hooked-up to Tonmeister) -------------|  |  |`);
+  L.push(`#                                                                                  |  |  |`);
+  L.push(`#                                                                                  v  v  v`);
+
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>{
       if(ci===mi) return p2('X');
@@ -2854,52 +2879,61 @@ function generateBash(name){
       if(inp) return p2(inp.value);
       return p2(ci===nm?2:1);
     });
-    L.push(`declare -a Redun_${mi}=(${vals.join(' ')})`);
+    L.push(`declare -a ${' '.repeat(Math.max(0,idxW-String(mi).length))}Redun_${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a Redun_T=(${musicians.map(()=>p2(1)).join(' ')}  X  X  X)`);
-  if(hasJB) L.push(`declare -a Redun_J=(${musicians.map(()=>p2(1)).join(' ')}  X  X  X)`);
+  if(hasTM) L.push(`declare -a ${' '.repeat(idxW)}Redun_T=(${musicians.map(()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  if(hasJB) L.push(`declare -a ${' '.repeat(idxW)}Redun_J=(${musicians.map(()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  L.push(``);
   L.push(``);
 
-  // ── TTB matrix: always present (default all-to-all routing) ─
-  L.push(``);
+  // ── TTB matrix ───────────────────────────────────────────────
   L.push(`# TapTapBoom routing-matrix.`);
   L.push(`# Routing from the TTB generated at any endpoint to other endpoints is specified by a "1"`);
   L.push(`# in the respective column(s).`);
   L.push(`#`);
-  const ordinals=['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th'];
+  L.push(colNums(nm));
+  L.push(colBars(nm));
+  const ordinals=['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','13th','14th','15th','16th','17th','18th','19th','20th'];
   for(let mi=0;mi<nm;mi++){
     const row=musicians.map((_,mj)=>{
       if(mj===mi) return 'X';
       if(musicians[mi].ttb&&musicians[mi].ttbRoutes) return musicians[mi].ttbRoutes[mj]!==false?'1':'0';
       return '1';
     }).join(' ');
-    const ord=ordinals[mi]||`${mi+1}th`;
     const otherOrd=ordinals.filter((_,i)=>i!==mi&&i<nm);
-    const comment=`\t# routing from ${ord} endpoint to ${otherOrd.join(', ')}`;
-    L.push(`declare -a ttb_${mi}=(${row})${comment}`);
+    const comment=`\t# routing from ${ordinals[mi]} endpoint to ${otherOrd.join(', ')}`;
+    L.push(`declare -a ${' '.repeat(Math.max(0,idxW-String(mi).length))}ttb_${mi}=( ${row})${comment}`);
   }
   L.push(``);
-
-  // ── Device params ────────────────────────────────────────────
   L.push(``);
-  L.push(`# Some device-specific Qsizes, rarely to be modified`);
+
+  // ── Hub/device params ─────────────────────────────────────────
+  L.push(`# Hubserver settings, rarely to be modified`);
   L.push(`#`);
   L.push(`HUB_Qsize=4\t\t# HUBserver@Junctionbox incoming connections Qsize when in "HUB" mode`);
   L.push(`HUB_BQsize=50\t\t# HUBserver@Junctionbox broadcast-line Qsize`);
   L.push(`HUB_Redun=1\t\t# redundancy-factor`);
+  if(hasJB){
+    L.push(`HUB_Port=60`);
+    L.push(`HUB_UDPbaseport=61001`);
+  }
+
   const babQs=document.getElementById('bab-qsize')?.value||'25';
   const babBQs=document.getElementById('bab-bqsize')?.value||'50';
   const babR=document.getElementById('bab-redun')?.value||'1';
-  const bitres=document.getElementById('sys-bitres-b')?.value||'16';
+  L.push(``);
   L.push(`BAB_Qsize=${babQs}\t\t# Babbelbox@Junctionbox incoming connections Qsize (MESH & HUB mode!)`);
   L.push(`BAB_BQsize=${babBQs}\t\t# Babbelbox@Junctionbox broadcast-line Qsize`);
   L.push(`BAB_Redun=${babR}\t\t# redundancy-factor`);
   L.push(``);
+
+  // ── Jackd params ─────────────────────────────────────────────
+  const bitres=document.getElementById('sys-bitres-b')?.value||'16';
   L.push(`# Jackd (audio-interface) configuration parameters`);
   L.push(`#`);
   L.push(`sample_rate=${getSys('samplerate')}\t# 48Khz meaning CD-quality`);
   L.push(`fps=${getSys('fps')}\t\t\t# audio-samples are bundled into frames, #fps samples per frame`);
-  L.push(`\t\t\t# Valid values are: 32 / 64 / 128 / 256 / 512 / 1024`);
+  L.push(`\t\t\t# Valid values are: 32 / 64 / 128 / 256 /512 / 1024`);
   L.push(`bitres=${bitres}\t\t# Audio Bit Rate Resolutions (8, 16, 24, 32)`);
   L.push(`USB_bufsize=${getSys('usbbuffer')}\t\t# recommended buffersize for USB audio-interfaces, see jackd man-page`);
 
