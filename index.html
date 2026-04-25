@@ -2945,19 +2945,14 @@ function generateBash(name){
   L.push(``);
   L.push(`# Any endpoints sharing a VLAN? Mark them in groups`);
   L.push(`#`);
-  // VLAN has 23 cols: 20 endpoints + TM + JB + HS
   const vlanColNums=`#               1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 TM JB HS`;
   const vlanColBars=`#               |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`;
   L.push(vlanColNums);
   L.push(vlanColBars);
-  // Default: all dashes (no VLAN groups) — 20 endpoints + TM + JB + HS
-  // VLAN: 20 endpoint cols + TM + JB + HS
-  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const vlanVals=Array.from({length:MAXEP},(_,i)=>{
     const p=musicians[i];
     return p&&p.vlanGroup?p.vlanGroup:'-';
   });
-  // TM and JB vlanGroup
   const tmVlan=tmPart&&tmPart.vlanGroup?tmPart.vlanGroup:'-';
   const jbVlan=jbPart&&jbPart.vlanGroup?jbPart.vlanGroup:'-';
   const vlanStr=[...vlanVals,tmVlan,jbVlan,'-'].join('  ');
