@@ -2669,11 +2669,6 @@ function generateBash(name){
   const tabArr=arr=>arr.join('\t');
   // Arrow alignment: v's sit above last 3 columns
   // Format: ( p2(v0) [space p2(vi)] ... ) → TM starts at offset 21+nm*3 from line start
-  const arrowLine=()=>{
-    const spaces=20+nm*3;
-    return '#'+' '.repeat(spaces)+'v  v  v';
-  };
-
   let L=[];
 
   // ── Header ──────────────────────────────────────────────────
@@ -2755,11 +2750,13 @@ function generateBash(name){
   L.push(`# "Tonmeister", "Junctionbox", "Hub-server". Last three rows showing Qsize for inbound`);
   L.push(`# traffic at "Tonmeister", "Junctionbox" and "HUB-server".`);
   L.push(``);
-  L.push(`# inbound from HUB-server------------\t(Applicable when session is in "HUB" mode)`);
-  L.push(`# inbound from Junctionbox -------  |\t(Session in "MESH" mode, >=1 lbw-endpoint)`);
-  L.push(`# inbound from Tonmeister -----  |  |\t(Applicable for endpoints hooked-up to Tonmeister)`);
-  L.push('#'+' '.repeat(20+nm*3)+'|  |  |');
-  L.push(arrowLine());
+  const tmPos=21+nm*3;
+  const to=(s,pos,fill)=>s+fill.repeat(Math.max(0,pos-s.length));
+  L.push(to('# inbound from HUB-server',tmPos+5,'-')+'|\t(Applicable when session is in "HUB" mode)');
+  L.push(to('# inbound from Junctionbox',tmPos+2,' ')+'|  |\t(Session in "MESH" mode, >=1 lbw-endpoint)');
+  L.push(to('# inbound from Tonmeister', tmPos-1,' ')+'|  |  |\t(Applicable for endpoints hooked-up to Tonmeister)');
+  L.push('#'+' '.repeat(tmPos-1)+'|  |  |');
+  L.push('#'+' '.repeat(tmPos-1)+'v  v  v');
 
   // Q + BQ together (no blank line between, like original)
   for(let mi=0;mi<nm;mi++){
@@ -2768,6 +2765,7 @@ function generateBash(name){
   }
   if(hasTM) L.push(`declare -a Qsize_T=(${musicians.map(()=>p2(masterTMQ)).join(' ')}  X  X  X)\t# inbound queue at "Tonmeister"`);
   if(hasJB) L.push(`declare -a Qsize_J=(${musicians.map(()=>p2(4)).join(' ')}  X  X  X)\t# inbound queue at "Junctionbox"`);
+  L.push(``);
 
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>p2(ci===mi?'X':50));
@@ -2802,26 +2800,27 @@ function generateBash(name){
   if(hasJB) L.push(`declare -a Redun_J=(${musicians.map(()=>p2(1)).join(' ')}  X  X  X)`);
   L.push(``);
 
-  // ── TTB matrix ───────────────────────────────────────────────
-  const hasTTB=musicians.some(p=>p.ttb);
-  if(hasTTB){
-    L.push(``);
-    L.push(`# TapTapBoom routing-matrix.`);
-    L.push(`# Routing from the TTB generated at any endpoint to other endpoints is specified by a "1"`);
-    L.push(`# in the respective column(s).`);
-    L.push(`#`);
-    for(let mi=0;mi<nm;mi++){
-      const row=musicians.map((_,mj)=>{
-        if(mj===mi) return 'X';
-        return (musicians[mi].ttbRoutes&&musicians[mi].ttbRoutes[mj]!==false)?'1':'0';
-      }).join(' ');
-      const ordinals=['1st','2nd','3rd'];
-      const ord=ordinals[mi]||`${mi+1}th`;
-      const comment=mi===0?`\t# routing from ${ord} endpoint to others`:`\t# routing from ${ord} endpoint`;
-      L.push(`declare -a ttb_${mi}=(${row})${comment}`);
-    }
-    L.push(``);
+  // ── TTB matrix: always present (default all-to-all routing) ─
+  L.push(``);
+  L.push(`# TapTapBoom routing-matrix.`);
+  L.push(`# Routing from the TTB generated at any endpoint to other endpoints is specified by a "1"`);
+  L.push(`# in the respective column(s).`);
+  L.push(`#`);
+  const ordinals=['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th'];
+  for(let mi=0;mi<nm;mi++){
+    const row=musicians.map((_,mj)=>{
+      if(mj===mi) return 'X';
+      // If TTB active and ttbRoutes defined, use it; otherwise default all-to-all
+      if(musicians[mi].ttb&&musicians[mi].ttbRoutes) return musicians[mi].ttbRoutes[mj]!==false?'1':'0';
+      return '1';  // default: route to all others
+    }).join(' ');
+    const ord=ordinals[mi]||`${mi+1}th`;
+    const others=musicians.filter((_,j)=>j!==mi).map(p=>{const ep=EPS.find(e=>e.mac===p.mac)||p;return ordinals[musicians.indexOf(p)]||''}).filter(Boolean);
+    const otherStr=others.length>1?others.slice(0,-1).join(', ')+', '+others[others.length-1]:others[0]||'';
+    const comment=`\t# routing from ${ord} endpoint to ${nm>2?others.join(', '):others[0]||'others'}`;
+    L.push(`declare -a ttb_${mi}=(${row})${comment}`);
   }
+  L.push(``);
 
   // ── Device params ────────────────────────────────────────────
   L.push(``);
@@ -2949,7 +2948,7 @@ function closeBashPreview(){
   nav('monitor');
 }
 function downloadBash(){
-  const blob=new Blob([generatedBash],{type:'application/octet-stream'});
+  const blob=new Blob([generatedBash],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   // No extension — matches Christiaan's format (e.g. "Gaudeamus_Q8_Life" not ".txt")
