@@ -2758,7 +2758,7 @@ function generateBash(name){
   L.push(`# inbound from HUB-server------------\t(Applicable when session is in "HUB" mode)`);
   L.push(`# inbound from Junctionbox -------  |\t(Session in "MESH" mode, >=1 lbw-endpoint)`);
   L.push(`# inbound from Tonmeister -----  |  |\t(Applicable for endpoints hooked-up to Tonmeister)`);
-  L.push(`#                             |  |  |`);
+  L.push('#'+' '.repeat(20+nm*3)+'|  |  |');
   L.push(arrowLine());
 
   // Q + BQ together (no blank line between, like original)
@@ -2787,7 +2787,7 @@ function generateBash(name){
   L.push(`# outbound to HUB-server  -----------\t(Applicable when session is in "HUB" mode)`);
   L.push(`# outbound to Junctionbox --------  |\t(Session in "MESH" mode, >=1 lbw-endpoint)`);
   L.push(`# outbound to Tonmeister  -----  |  |\t(Applicable for endpoints hooked-up to Tonmeister)`);
-  L.push(`#                             |  |  |`);
+  L.push('#'+' '.repeat(20+nm*3)+'|  |  |');
   L.push(arrowLine());
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>{
@@ -2949,7 +2949,7 @@ function closeBashPreview(){
   nav('monitor');
 }
 function downloadBash(){
-  const blob=new Blob([generatedBash],{type:'text/plain'});
+  const blob=new Blob([generatedBash],{type:'application/octet-stream'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   // No extension — matches Christiaan's format (e.g. "Gaudeamus_Q8_Life" not ".txt")
