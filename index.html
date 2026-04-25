@@ -461,6 +461,13 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       </div>
     </div>
 
+    <!-- VLAN grouping -->
+    <div id="row-vlan" style="display:none;margin-top:4px;padding:8px 0">
+      <div style="font-size:9px;color:rgba(255,255,255,.4);font-family:var(--mono);margin-bottom:8px">VLAN GROEPEN — eindpunten op hetzelfde lokale netwerk</div>
+      <div id="vlan-matrix"></div>
+      <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:6px;font-family:var(--mono)">🔒 Nocturne</div>
+    </div>
+
     <!-- TapTapBoom sessie-breed -->
     <div class="tgr" style="cursor:pointer" onclick="handleRowClick('ttbsess')">
       <div class="tgi">
@@ -1153,7 +1160,7 @@ function applyFeatureVisibility(){
   // Grey out features not accessible in current mode
   const features={
     'tg-cond':'conductor','tg-noctcast':'nosleepcast',
-    'tg-ttbsess':'ttb','tg-rec':'localrec',
+    'tg-ttbsess':'ttb','tg-rec':'localrec','tg-vlan':'nosleepcast',
     'row-cond-ep':'conductor','row-noctcast':'nosleepcast',
     'tg-extmix':'extmix'
   };
@@ -1346,7 +1353,7 @@ let sess={
   jb:false, jbEp:'',
   cond:false, condEp:'',
   udp:true, test:false, hpm:true,
-  noctcast:false, noctmix:false, ttbsess:false,
+  noctcast:false, noctmix:false, ttbsess:false, vlan:false,
   rec:false
 };
 let logLines=[];
@@ -1443,7 +1450,8 @@ function doCmd(cmd){
 
 function newSession(){
   parts=[];
-  sess={tm:false,tmEp:'',extmix:false,jb:false,jbEp:'',cond:false,condEp:'',udp:true,test:false,hpm:true,noctcast:false,noctmix:false,ttbsess:false,rec:false};
+  sess={tm:false,tmEp:'',extmix:false,jb:false,jbEp:'',cond:false,condEp:'',udp:true,test:false,hpm:true,noctcast:false,noctmix:false,ttbsess:false,rec:false,vlan:false};
+  vlanGroups=[];
   document.getElementById('b-name').value='';
   document.getElementById('b-mode').value='MESH';
   renderBuilder();nav('builder');
@@ -1729,6 +1737,100 @@ function toggleTTBExpand(){
   const row=document.getElementById('ttb-expert');
   if(!row) return;
   row.style.display=row.style.display==='none'?'block':'none';
+}
+
+// VLAN groups: array of arrays of MACs
+let vlanGroups=[];
+
+function togVlan(){
+  sess.vlan=!sess.vlan;
+  const tg=document.getElementById('tg-vlan');
+  if(tg) tg.className='tg'+(sess.vlan?' on':'');
+  const row=document.getElementById('row-vlan');
+  if(row) row.style.display=sess.vlan?'block':'none';
+  if(sess.vlan) renderVlanMatrix();
+}
+
+function renderVlanMatrix(){
+  const el=document.getElementById('vlan-matrix');
+  if(!el) return;
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='hub');
+  const mus=parts.filter(p=>!isSpecial(p));
+  if(mus.length===0){el.innerHTML='';return;}
+
+  // Ensure there's always one empty group at end
+  const groups=[...vlanGroups];
+  if(groups.length===0||groups[groups.length-1].length>0) groups.push([]);
+
+  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  let h='<table style="border-collapse:collapse;width:100%">';
+
+  // Header row: endpoint names
+  h+=`<tr><th style="font-size:8px;font-family:var(--mono);color:rgba(255,255,255,.35);padding:2px 4px 6px 0;text-align:left">Groep</th>`;
+  mus.forEach(p=>{
+    const ep=EPS.find(e=>e.mac===p.mac)||p;
+    const name=init2(ep.name,ep.player);
+    const isTM=(p.roles_active||[p.role]).includes('tonmeister');
+    const color=isTM?'#b06af5':'#45e68f';
+    h+=`<th style="font-size:8px;font-family:var(--mono);color:${color};padding:2px 4px 6px;text-align:center">${name}</th>`;
+  });
+  h+='</tr>';
+
+  // Group rows
+  groups.forEach((group,gi)=>{
+    const letter=letters[gi]||'?';
+    const isEmpty=group.length===0;
+    const labelColor=isEmpty?'rgba(255,255,255,.2)':'rgba(255,255,255,.6)';
+    h+=`<tr><td style="font-size:9px;font-family:var(--mono);color:${labelColor};padding:3px 4px 3px 0;font-weight:600">${isEmpty?'…':letter}</td>`;
+    mus.forEach(p=>{
+      const inGroup=group.includes(p.mac);
+      h+=`<td style="text-align:center;padding:2px">
+        <div onclick="toggleVlanMember(${gi},'${p.mac}')" style="width:18px;height:18px;border-radius:3px;border:1px solid ${inGroup?'#45e68f':'rgba(255,255,255,.2)'};background:${inGroup?'rgba(69,230,143,.2)':'transparent'};cursor:pointer;margin:auto;display:flex;align-items:center;justify-content:center;font-size:10px;color:#45e68f">${inGroup?'✓':''}</div>
+      </td>`;
+    });
+    h+='</tr>';
+  });
+
+  h+='</table>';
+  el.innerHTML=h;
+}
+
+function toggleVlanMember(groupIdx, mac){
+  // Ensure group exists
+  while(vlanGroups.length<=groupIdx) vlanGroups.push([]);
+
+  const idx=vlanGroups[groupIdx].indexOf(mac);
+  if(idx>=0){
+    vlanGroups[groupIdx].splice(idx,1);
+  } else {
+    // Remove from any other group first
+    vlanGroups.forEach((g,i)=>{
+      if(i!==groupIdx){
+        const j=g.indexOf(mac);
+        if(j>=0) g.splice(j,1);
+      }
+    });
+    vlanGroups[groupIdx].push(mac);
+  }
+
+  // Remove empty groups except last one
+  while(vlanGroups.length>1&&vlanGroups[vlanGroups.length-2].length===0){
+    vlanGroups.splice(vlanGroups.length-2,1);
+  }
+  // Add empty group if last is not empty
+  if(vlanGroups.length===0||vlanGroups[vlanGroups.length-1].length>0) vlanGroups.push([]);
+
+  // Sync to parts (set p.vlanGroup)
+  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  parts.forEach(p=>{
+    p.vlanGroup=null;
+    vlanGroups.forEach((g,gi)=>{
+      if(g.includes(p.mac)) p.vlanGroup=letters[gi];
+    });
+  });
+
+  renderVlanMatrix();
 }
 
 function togSess(k){
@@ -2486,6 +2588,8 @@ function closeEdit(){
         :`Warning: ${ep.display||p.name} has lbw + ${p.mics} mics + TM stream. This uses significant bandwidth.`
     ), 100);
   }
+  // VLAN: sync from EI p.vlanGroup back to vlanGroups
+  // (EI doesn't have its own VLAN control — it syncs from SI matrix)
   // Bottom-up TTB sync: if any musician has TTB, turn on sess.ttbsess
   if(parts.some(p=>p.ttb)) sess.ttbsess=true;
   editIdx=-1;
@@ -2813,6 +2917,26 @@ function generateBash(name){
   L.push(lbwColBars);
   L.push(`lbw_endpoint=(${fmt20(fullArr(p=>p.lbw?1:0, 0))})\t# low bandwidth?`);
   L.push(``);
+  L.push(`# Any endpoints sharing a VLAN? Mark them in groups`);
+  L.push(`#`);
+  // VLAN has 23 cols: 20 endpoints + TM + JB + HS
+  const vlanColNums=`#               1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 TM JB HS`;
+  const vlanColBars=`#               |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`;
+  L.push(vlanColNums);
+  L.push(vlanColBars);
+  // Default: all dashes (no VLAN groups) — 20 endpoints + TM + JB + HS
+  // VLAN: 20 endpoint cols + TM + JB + HS
+  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const vlanVals=Array.from({length:MAXEP},(_,i)=>{
+    const p=musicians[i];
+    return p&&p.vlanGroup?p.vlanGroup:'-';
+  });
+  // TM and JB vlanGroup
+  const tmVlan=tmPart&&tmPart.vlanGroup?tmPart.vlanGroup:'-';
+  const jbVlan=jbPart&&jbPart.vlanGroup?jbPart.vlanGroup:'-';
+  const vlanStr=[...vlanVals,tmVlan,jbVlan,'-'].join('  ');
+  L.push(`vlan=(          ${vlanStr})`);
+  L.push(``);
   L.push(``);
 
   // ── Conductor module params ───────────────────────────────────
@@ -2857,7 +2981,7 @@ function generateBash(name){
 
   for(let mi=0;mi<nm;mi++){
     const vals=fullQ(mi);
-    L.push(`declare -a ${String(mi).padStart(2,' ')===String(mi)?'':'  '}Qsize_${mi < 10?'':' '}${mi}=(${vals.join(' ')})`);
+    L.push(`declare -a   Qsize_${String(mi).padStart(2)}=(${vals.join(' ')})`);
   }
   if(hasTM) L.push(`declare -a   Qsize_T=(${Array.from({length:MAXEP},()=>p2(masterTMQ)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
   if(hasJB) L.push(`declare -a   Qsize_J=(${Array.from({length:MAXEP},()=>p2(4)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
@@ -2865,7 +2989,7 @@ function generateBash(name){
 
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>p2(ci===mi?'X':50));
-    L.push(`declare -a  BQsize_${mi < 10?'':' '}${mi}=(${vals.join(' ')})`);
+    L.push(`declare -a  BQsize_${String(mi).padStart(2)}=(${vals.join(' ')})`);
   }
   if(hasTM) L.push(`declare -a  BQsize_T=(${Array.from({length:MAXEP},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
   if(hasJB) L.push(`declare -a  BQsize_J=(${Array.from({length:MAXEP},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
@@ -2888,17 +3012,15 @@ function generateBash(name){
     const vals=Array.from({length:nc},(_,ci)=>{
       if(ci===mi) return p2('X');
       const inp=document.getElementById(`r_${mi}_${ci}`);
-      if(ci<nm){
-        return inp?p2(inp.value):p2(1);
-      }
-      if(ci<MAXEP) return p2(1);    // unused musician cols
-      if(ci===MAXEP) return inp?p2(inp.value):p2(2);  // TM col
+      if(ci<nm)    return inp?p2(inp.value):p2(1);
+      if(ci<MAXEP) return p2(1);
+      if(ci===MAXEP) return inp?p2(inp.value):p2(2);
       return p2(1);
     });
-    L.push(`declare -a   Redun_${mi < 10?'':' '}${mi}=(${vals.join(' ')})`);
+    L.push(`declare -a   ${idxPad(mi,'Redun')}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a   Redun_T=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
-  if(hasJB) L.push(`declare -a   Redun_J=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  if(hasTM) L.push(`declare -a   ${'Redun_T'.padStart(7)}=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  if(hasJB) L.push(`declare -a   ${'Redun_J'.padStart(7)}=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
   L.push(``);
   L.push(``);
 
@@ -2920,7 +3042,7 @@ function generateBash(name){
       return '0';  // unused cols = 0
     }).join('  ');
     const otherOrd=ordinals.filter((_,i)=>i!==mi&&i<nm);
-    L.push(`declare -a     ttb_${mi < 10?'':' '}${mi}=( ${row})\t# routing from ${ordinals[mi]} endpoint to ${otherOrd.join(', ')}`);
+    L.push(`declare -a     ttb_${String(mi).padStart(2)}=( ${row})\t# routing from ${ordinals[mi]} endpoint to ${otherOrd.join(', ')}`);
   }
   L.push(``);
   L.push(``);
