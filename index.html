@@ -2782,11 +2782,11 @@ function generateBash(name){
   L.push(`# every outgoing UDP-stream.`);
   L.push(`# In most cases only connections towards "Tonmeister" are made redundant.`);
   L.push(``);
-  L.push(`# outbound to HUB-server  -----------\t(Applicable when session is in "HUB" mode)`);
-  L.push(`# outbound to Junctionbox --------  |\t(Session in "MESH" mode, >=1 lbw-endpoint)`);
-  L.push(`# outbound to Tonmeister  -----  |  |\t(Applicable for endpoints hooked-up to Tonmeister)`);
-  L.push('#'+' '.repeat(20+nm*3)+'|  |  |');
-  L.push(arrowLine());
+  L.push(to('# outbound to HUB-server ', tmPos+5,'-')+'|\t(Applicable when session is in "HUB" mode)');
+  L.push(to('# outbound to Junctionbox',tmPos+2,' ')+'|  |\t(Session in "MESH" mode, >=1 lbw-endpoint)');
+  L.push(to('# outbound to Tonmeister ',tmPos-1,' ')+'|  |  |\t(Applicable for endpoints hooked-up to Tonmeister)');
+  L.push('#'+' '.repeat(tmPos-1)+'|  |  |');
+  L.push('#'+' '.repeat(tmPos-1)+'v  v  v');
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>{
       if(ci===mi) return p2('X');
