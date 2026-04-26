@@ -3449,7 +3449,12 @@ function generateBash(name){
   const vlanVals=musicians.map(p=>p.vlanGroup||'-');
   const tmVlan=tmPart&&tmPart.vlanGroup?tmPart.vlanGroup:'-';
   const jbVlan=jbPart&&jbPart.vlanGroup?jbPart.vlanGroup:'-';
-  const vlanStr=[...vlanVals,tmVlan,jbVlan,'-'].join('  ');
+  // Only include TM/JB/HS if they're part of the session
+  const vlanExtra=[];
+  vlanExtra.push(hasTM?tmVlan:'-');
+  vlanExtra.push(hasJB?jbVlan:'-');
+  vlanExtra.push('-'); // HS always -
+  const vlanStr=[...vlanVals,...vlanExtra].join('  ');
   L.push(`vlan=(          ${vlanStr})`);
   L.push(``);
   L.push(``);
@@ -3479,12 +3484,14 @@ function generateBash(name){
   // Dynamic arrows: TM col starts at pos 22 + nm*3 (0-indexed from line start)
   // '#' + (tmColPos-1) spaces + 'v  v  v'
   const tmColPos=22+nm*3;
+  // Arrow alignment: TM at tmColPos, JB at +3, HUB at +6, | after last col at +8
+  const hubEnd=tmColPos+8;
   const toA=(s,pos,fill)=>s+fill.repeat(Math.max(0,pos-s.length));
-  L.push(toA('# inbound from HUB-server ---',tmColPos+8,'-')+'|');
-  L.push(toA('# inbound from Junctionbox --',tmColPos+5,' ')+'|  |');
-  L.push(toA('# inbound from Tonmeister ---',tmColPos+2,' ')+'|  |  |');
-  L.push('#'+' '.repeat(tmColPos-1)+'|  |  |');
-  L.push('#'+' '.repeat(tmColPos-1)+'v  v  v');
+  L.push(toA('# inbound from HUB-server ---',hubEnd,'-')+'|');
+  L.push(toA('# inbound from Junctionbox --',hubEnd-3,' ')+'|  |');
+  L.push(toA('# inbound from Tonmeister ---',hubEnd-6,' ')+'|  |  |');
+  L.push('#'+' '.repeat(hubEnd-7)+'|  |  |');
+  L.push('#'+' '.repeat(hubEnd-7)+'v  v  v');
 
   // Full 20+3 col Q matrix
   const fullQ=(mi)=>Array.from({length:nc},(_,ci)=>{
@@ -3520,12 +3527,12 @@ function generateBash(name){
   L.push(`# every outgoing UDP-stream.`);
   L.push(`# In most cases only connections towards "Tonmeister" are made redundant.`);
   L.push(``);
-  // Redun arrows: same tmColPos (declare -a   Redun_0=( = 22 chars)
-  L.push(toA('# outbound to HUB-server ---',tmColPos+8,'-')+'|');
-  L.push(toA('# outbound to Junctionbox --',tmColPos+5,' ')+'|  |');
-  L.push(toA('# outbound to Tonmeister ---',tmColPos+2,' ')+'|  |  |');
-  L.push('#'+' '.repeat(tmColPos-1)+'|  |  |');
-  L.push('#'+' '.repeat(tmColPos-1)+'v  v  v');
+  // Redun arrows: same alignment
+  L.push(toA('# outbound to HUB-server ---',hubEnd,'-')+'|');
+  L.push(toA('# outbound to Junctionbox --',hubEnd-3,' ')+'|  |');
+  L.push(toA('# outbound to Tonmeister ---',hubEnd-6,' ')+'|  |  |');
+  L.push('#'+' '.repeat(hubEnd-7)+'|  |  |');
+  L.push('#'+' '.repeat(hubEnd-7)+'v  v  v');
 
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>{
