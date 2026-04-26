@@ -324,6 +324,22 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
   <button class="btn btp" onclick="newSession()" data-nl="+ Nieuwe sessie" data-en="+ New session" data-nl="+ Nieuwe sessie" data-en="+ New session">+ Nieuwe sessie</button>
 </div>
 
+<!-- LOGIN -->
+<div class="screen" id="sc-login" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:20px">
+  <div style="text-align:center;margin-bottom:8px">
+    <div style="font-family:var(--serif);font-size:32px;font-weight:700;font-style:italic;color:var(--text);letter-spacing:1px">TERMINAL</div>
+    <div style="font-size:11px;color:var(--text2);font-family:var(--mono);margin-top:4px">by TouchLab · Ensemble INSOMNIO</div>
+  </div>
+  <div style="width:100%;max-width:320px">
+    <input id="login-code" type="password" placeholder="Toegangscode"
+      style="width:100%;box-sizing:border-box;font-size:16px;font-family:var(--mono);background:var(--bg2);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px 14px;color:#fff;text-align:center;letter-spacing:4px"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <div id="login-error" style="font-size:11px;color:#ff6060;text-align:center;margin-top:8px;min-height:16px"></div>
+    <button class="btn btp" onclick="doLogin()" style="margin-top:12px;padding:13px">Inloggen</button>
+  </div>
+  <div style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--mono);text-align:center;margin-top:12px">TERMINAL v1.0 · © 2026 TouchLab</div>
+</div>
+
 <!-- BUILDER -->
 <div class="screen" id="sc-builder">
 
@@ -1544,6 +1560,12 @@ function renderTouchLabPanel(){
   const el=document.getElementById('tl-panel-content');
   if(el) el.innerHTML=rows + `
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)">
+      <div style="font-size:10px;color:#f0b93a;margin-bottom:6px">App toegangscode</div>
+      <div style="display:flex;gap:6px;margin-bottom:4px">
+        <input id="set-access-code" type="password" class="fi" placeholder="Nieuwe code..." style="font-size:12px;flex:1;letter-spacing:3px">
+        <button onclick="const v=document.getElementById('set-access-code').value.trim();if(v.length>=3){localStorage.setItem('terminal_access_code',v);alert('Toegangscode ingesteld.');}" style="background:rgba(138,54,236,.3);border:1px solid rgba(138,54,236,.5);color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px">Opslaan</button>
+      </div>
+      <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:12px">Wordt gevraagd bij elke sessie. Default: Insomnio</div>
       <div style="font-size:10px;color:#f0b93a;margin-bottom:6px">Nocturne toegangscode</div>
       <div style="display:flex;gap:6px">
         <input id="set-nocturne-pw" type="text" class="fi" placeholder="Nieuwe code..." style="font-size:12px;flex:1">
@@ -1596,13 +1618,21 @@ Object.entries(WR).forEach(([mac,info])=>{
 });
 
 function nav(s){
-  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  // Auth guard — redirect to login if not authenticated
+  if(s!=='login'&&!isLoggedIn()){
+    document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
+    const login=document.getElementById('sc-login');
+    if(login){login.classList.add('active');login.style.display='flex';}
+    return;
+  }
+  document.querySelectorAll('.screen').forEach(x=>{x.classList.remove('active');x.style.display='';});
   document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
   const sc=document.getElementById('sc-'+s);
-  if(sc) sc.classList.add('active');
+  if(sc){sc.classList.add('active');if(s==='login')sc.style.display='flex';}
   const nb=document.getElementById('nb-'+s);
   if(nb) nb.classList.add('active');
-  if(s==='monitor') renderMonitor();
+  if(s==='monitor'){startPolling();renderMonitor();}
   if(s==='eps') renderEps('');
   if(s==='touchlab') renderTouchLabPanel();
 }
@@ -1628,6 +1658,46 @@ function roleCls(r){return r==='tonmeister'?'bam':r==='hub'||r==='conductor'?'bb
 // ── Monitor state ─────────────────────────────────────────────
 let monitorOnline={};   // mac → true/false (from ONLINE map)
 let monitorPending={};  // mac → true/false (command file still present)
+// ── Authentication ───────────────────────────────────────────
+const DEFAULT_ACCESS_CODE='Insomnio'; // Default — change in TouchLab > Functiebeheer
+
+function getAccessCode(){
+  return localStorage.getItem('terminal_access_code')||DEFAULT_ACCESS_CODE;
+}
+
+function isLoggedIn(){
+  return sessionStorage.getItem('terminal_auth')==='1';
+}
+
+function doLogin(){
+  const code=document.getElementById('login-code').value;
+  const err=document.getElementById('login-error');
+  if(code===getAccessCode()){
+    sessionStorage.setItem('terminal_auth','1');
+    document.getElementById('login-code').value='';
+    err.textContent='';
+    isLoggedIn()?nav('build'):nav('login');
+    applyFeatureVisibility();
+  } else {
+    err.textContent='Onjuiste toegangscode';
+    document.getElementById('login-code').value='';
+    document.getElementById('login-code').focus();
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem('terminal_auth');
+  nav('login');
+}
+
+function checkAuth(){
+  if(!isLoggedIn()){
+    nav('login');
+    return false;
+  }
+  return true;
+}
+
 let pollTimer=null;
 
 function renderMonitor(){
