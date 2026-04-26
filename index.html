@@ -3743,15 +3743,6 @@ function saveAndGo(){
     }
   }
 
-  // HPM volgorde check
-  if(sess.hpm){
-    const hasInstruments=parts.some(p=>p.instrument);
-    const msg=lang==='nl'
-      ?'Headphone mix is actief — de volgorde van de spelers bepaalt de kanaalvolgorde in de mixer. Is de volgorde correct?\n\nTip: gebruik de ♩ Sorteren knop voor orkestrale volgorde.'
-      :'Headphone mix is active — the order of players determines the channel order in the mixer. Is the order correct?\n\nTip: use the ♩ Sort button for orchestral order.';
-    if(!confirm(msg)) return;
-  }
-
   const bash=generateBash(name);
   const now=new Date().toTimeString().slice(0,8);
   logLines.unshift(`<span class="lo">${now} sessie "${name}" gegenereerd → CnC-server</span>`);
