@@ -1659,7 +1659,7 @@ function roleCls(r){return r==='tonmeister'?'bam':r==='hub'||r==='conductor'?'bb
 let monitorOnline={};   // mac → true/false (from ONLINE map)
 let monitorPending={};  // mac → true/false (command file still present)
 // ── Authentication ───────────────────────────────────────────
-const DEFAULT_ACCESS_CODE='Insomnio'; // Default — change in TouchLab > Functiebeheer
+const DEFAULT_ACCESS_CODE='Ins0mni0'; // Default — change in TouchLab > Functiebeheer
 
 function getAccessCode(){
   return localStorage.getItem('terminal_access_code')||DEFAULT_ACCESS_CODE;
@@ -3438,10 +3438,14 @@ function generateBash(name){
   L.push(``);
   L.push(`# Any endpoints sharing a VLAN? Mark them in groups`);
   L.push(`#`);
-  const vlanColNums=`#               1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 TM JB HS`;
-  const vlanColBars=`#               |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`;
-  L.push(vlanColNums);
-  L.push(vlanColBars);
+  // VLAN: dynamic nm cols + TM + JB + HS labels
+  const vlanNums='#             '+
+    Array.from({length:nm},(_,i)=>String(i+1).padStart(3)).join('')+
+    ' TM JB HS';
+  const vlanBars='#             '+
+    Array.from({length:nm},()=>'  |').join('')+'  |  |  |';
+  L.push(vlanNums);
+  L.push(vlanBars);
   const vlanVals=musicians.map(p=>p.vlanGroup||'-');
   const tmVlan=tmPart&&tmPart.vlanGroup?tmPart.vlanGroup:'-';
   const jbVlan=jbPart&&jbPart.vlanGroup?jbPart.vlanGroup:'-';
@@ -3471,11 +3475,16 @@ function generateBash(name){
   L.push(`# "Tonmeister", "Junctionbox", "Hub-server". Last three rows showing Qsize for inbound`);
   L.push(`# traffic at "Tonmeister", "Junctionbox" and "HUB-server".`);
   L.push(``);
-  L.push(`# inbound from HUB-server --- (Applicable when session is in "HUB" mode) -------------------|`);
-  L.push(`# inbound from Junctionbox -- (Session in "MESH" mode, >=1 lbw-endpoint) --------------|  |`);
-  L.push(`# inbound from Tonmeister --- (For endpoints hooked-up to Tonmeister) -------------|  |  |`);
-  L.push(`#                                                                                  |  |  |`);
-  L.push(`#                                                                                  v  v  v`);
+
+  // Dynamic arrows: TM col starts at pos 22 + nm*3 (0-indexed from line start)
+  // '#' + (tmColPos-1) spaces + 'v  v  v'
+  const tmColPos=22+nm*3;
+  const toA=(s,pos,fill)=>s+fill.repeat(Math.max(0,pos-s.length));
+  L.push(toA('# inbound from HUB-server ---',tmColPos+8,'-')+'|');
+  L.push(toA('# inbound from Junctionbox --',tmColPos+5,' ')+'|  |');
+  L.push(toA('# inbound from Tonmeister ---',tmColPos+2,' ')+'|  |  |');
+  L.push('#'+' '.repeat(tmColPos-1)+'|  |  |');
+  L.push('#'+' '.repeat(tmColPos-1)+'v  v  v');
 
   // Full 20+3 col Q matrix
   const fullQ=(mi)=>Array.from({length:nc},(_,ci)=>{
@@ -3488,7 +3497,7 @@ function generateBash(name){
 
   for(let mi=0;mi<nm;mi++){
     const vals=fullQ(mi);
-    const qPfx=mi<10?'   ':'  ';
+    const qPfx=mi<10?'  ':' ';
     L.push(`declare -a ${qPfx}Qsize_${mi}=(${vals.join(' ')})`);
   }
   if(hasTM) L.push(`declare -a   Qsize_T=(${Array.from({length:nm},()=>p2(masterTMQ)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
@@ -3511,11 +3520,12 @@ function generateBash(name){
   L.push(`# every outgoing UDP-stream.`);
   L.push(`# In most cases only connections towards "Tonmeister" are made redundant.`);
   L.push(``);
-  L.push(`# outbound to HUB-server --- (Applicable when session is in "HUB" mode) -------------------|`);
-  L.push(`# outbound to Junctionbox -- (Session in "MESH" mode, >=1 lbw-endpoint) --------------|  |`);
-  L.push(`# outbound to Tonmeister --- (For endpoints hooked-up to Tonmeister) -------------|  |  |`);
-  L.push(`#                                                                                  |  |  |`);
-  L.push(`#                                                                                  v  v  v`);
+  // Redun arrows: same tmColPos (declare -a   Redun_0=( = 22 chars)
+  L.push(toA('# outbound to HUB-server ---',tmColPos+8,'-')+'|');
+  L.push(toA('# outbound to Junctionbox --',tmColPos+5,' ')+'|  |');
+  L.push(toA('# outbound to Tonmeister ---',tmColPos+2,' ')+'|  |  |');
+  L.push('#'+' '.repeat(tmColPos-1)+'|  |  |');
+  L.push('#'+' '.repeat(tmColPos-1)+'v  v  v');
 
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>{
@@ -3526,7 +3536,7 @@ function generateBash(name){
       if(ci===nm) return inp?p2(inp.value):p2(2);
       return p2(1);
     });
-    const rPfx=mi<10?'   ':'  ';
+    const rPfx=mi<10?'  ':' ';
     L.push(`declare -a ${rPfx}Redun_${mi}=(${vals.join(' ')})`);
   }
   if(hasTM) L.push(`declare -a   Redun_T=(${Array.from({length:nm},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
@@ -3552,7 +3562,7 @@ function generateBash(name){
       return '0';  // unused cols = 0
     }).join('  ');
     const otherOrd=ordinals.filter((_,i)=>i!==mi&&i<nm);
-    const tPfx=mi<10?'     ':'    ';
+    const tPfx=mi<10?'    ':'   ';
     L.push(`declare -a ${tPfx}ttb_${mi}=( ${row})\t# routing from ${ordinals[mi]} endpoint to ${otherOrd.join(', ')}`);
   }
   L.push(``);
