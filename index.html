@@ -353,8 +353,10 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
   <div class="card" style="padding:8px 13px" id="b-parts">
     <div class="nf" style="color:rgba(255,255,255,.55)">Voeg spelers toe via de knop hieronder</div>
   </div>
-  <button class="btn bot" onclick="openPicker()" data-nl="+ Speler toevoegen" data-en="+ Add player">+ Speler toevoegen</button>
-  <button class="btn bot" onclick="sortPartsByInstrument()" title="Sorteer op orkestrale volgorde" style="font-size:10px;padding:6px 10px">♩ Sorteren</button>
+  <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+    <button class="btn bot" onclick="openPicker()" data-nl="+ Speler toevoegen" data-en="+ Add player" style="flex:1;width:auto;margin-top:0">+ Speler toevoegen</button>
+    <button class="btn bot" onclick="sortPartsByInstrument()" title="Sorteer op orkestrale volgorde" style="width:42px;flex-shrink:0;margin-top:0;padding:11px 6px;font-size:11px">♩⇅</button>
+  </div>
 
   <!-- STAP 3: Sessie-instellingen -->
   <div class="sh" style="margin-top:10px" data-nl="Sessie-instellingen" data-en="Session settings">Sessie-instellingen</div>
@@ -816,7 +818,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
       </div>
       <!-- Instrument -->
       <div style="padding:6px 0 2px">
-        <label class="fl" style="font-size:10px" data-nl="Instrument" data-en="Instrument">Instrument</label>
+        <label class="fl" style="font-size:9px" data-nl="Instrument" data-en="Instrument">Instrument</label>
         <select class="fs" id="edit-sel-instrument" style="font-size:11px" onchange="parts[editIdx].instrument=this.value">
           <option value="">— geen / onbekend —</option>
           <optgroup label="Hout">
@@ -874,68 +876,6 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
         </select>
       </div>
 
-      <!-- Instrument -->
-      <div style="padding:6px 0 2px">
-        <label class="fl" style="font-size:10px" data-nl="Instrument" data-en="Instrument">Instrument</label>
-        <select class="fs" id="edit-sel-instrument" style="font-size:11px">
-          <option value="">— onbekend —</option>
-          <optgroup label="Hout">
-            <option value="piccolo">Piccolo</option>
-            <option value="fluit">Fluit</option>
-            <option value="altfluit">Altfluit</option>
-            <option value="hobo">Hobo</option>
-            <option value="engelse hoorn">Engelse hoorn</option>
-            <option value="klarinet es">Klarinet in Es</option>
-            <option value="klarinet">Klarinet in Bes/A</option>
-            <option value="basklarinet">Basklarinet</option>
-            <option value="fagot">Fagot</option>
-            <option value="contrafagot">Contrafagot</option>
-          </optgroup>
-          <optgroup label="Saxofoon">
-            <option value="sopraansaxofoon">Sopraansaxofoon</option>
-            <option value="altsaxofoon">Altsaxofoon</option>
-            <option value="tenorsaxofoon">Tenorsaxofoon</option>
-            <option value="baritonsaxofoon">Baritonsaxofoon</option>
-          </optgroup>
-          <optgroup label="Koper">
-            <option value="hoorn">Hoorn</option>
-            <option value="trompet">Trompet</option>
-            <option value="trombone">Trombone</option>
-            <option value="bastrombone">Bastrombone</option>
-            <option value="tuba">Tuba</option>
-          </optgroup>
-          <optgroup label="Toetsen / Pluk / Snaar">
-            <option value="accordeon">Accordeon</option>
-            <option value="mandoline">Mandoline</option>
-            <option value="gitaar">Gitaar</option>
-            <option value="elektrische gitaar">Elektrische gitaar</option>
-            <option value="elektrische bas">Elektrische bas</option>
-            <option value="harp">Harp</option>
-            <option value="celesta">Celesta</option>
-            <option value="keyboard">Keyboard</option>
-            <option value="piano">Piano</option>
-            <option value="orgel">Orgel</option>
-          </optgroup>
-          <optgroup label="Slagwerk">
-            <option value="melodisch slagwerk">Melodisch slagwerk</option>
-            <option value="slagwerk">Slagwerk</option>
-          </optgroup>
-          <optgroup label="Solist">
-            <option value="solist">Solist</option>
-          </optgroup>
-          <optgroup label="Strijkers">
-            <option value="1e viool">1e Viool</option>
-            <option value="2e viool">2e Viool</option>
-            <option value="altviool">Altviool</option>
-            <option value="cello">Cello</option>
-            <option value="contrabas">Contrabas</option>
-          </optgroup>
-          <optgroup label="Overig">
-            <option value="dirigent">Dirigent</option>
-            <option value="other">Overig</option>
-          </optgroup>
-        </select>
-      </div>
 
       <div id="edit-row-tune" style="display:none;padding:6px 0 2px">
         <label class="fl" id="edit-lbl-tune" style="font-size:10px">Test tune</label>
@@ -2931,7 +2871,7 @@ function openEdit(i){
   rolesEl.innerHTML=allRoles.map(r=>{
     const active=parts[i].roles_active.includes(r);
     return `<div class="role-option${active?' active':''}" 
-      style="background:${active?'#45e68f':'rgba(138,54,236,.12)'};color:${active?'#0e0020':'#b06af5'};border-color:${active?'#45e68f':'rgba(138,54,236,.3)'};padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--mono);cursor:pointer;border:1px solid;transition:all .15s"
+      style="background:${active?'#45e68f':'rgba(138,54,236,.12)'};color:${active?'#0e0020':'#b06af5'};border-color:${active?'#45e68f':'rgba(138,54,236,.3)'};padding:5px 8px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);cursor:pointer;border:1px solid;transition:all .15s;flex:1 1 calc(50% - 4px);text-align:center;box-sizing:border-box"
       onclick="toggleRole('${r}')">${roleLblFull(r)}</div>`;
   }).join('');
 
@@ -3323,8 +3263,7 @@ function generateBash(name){
   const hasTM=sess.tm&&tmEp;
   const hasJB=sess.jb&&jbEp;
 
-  const MAXEP=20;  // always 20 columns like Christiaan's format
-  const nc=MAXEP+3;
+  const nc=nm+3;  // dynamic columns based on number of musicians
 
   const masterQ=parseInt(document.getElementById('masterq-sel')?.value||8);
   const masterTMQ=parseInt(document.getElementById('mastertmq-sel')?.value||38);
@@ -3343,15 +3282,15 @@ function generateBash(name){
   const p2=v=>String(v).padStart(2);
 
   // Full 20-column value: actual value for active endpoints, 0/masterQ for unused
-  const fullArr=(getVal, defVal=0)=>
-    Array.from({length:MAXEP},(_,i)=>i<nm?getVal(musicians[i],i):defVal);
+  const fullArr=(getVal)=>
+    musicians.map((p,i)=>getVal(p,i));
 
   // Column numbers header: "  1  2  3...20"
-  const colNums=`#           ${Array.from({length:MAXEP},(_,i)=>String(i+1).padStart(3)).join('')}`;
-  const colBars=`#           ${Array.from({length:MAXEP},()=>'  |').join('')}`;
+  const colNums=`#           ${Array.from({length:nm},(_,i)=>String(i+1).padStart(3)).join('')}`;
+  const colBars=`#           ${Array.from({length:nm},()=>'  |').join('')}`;
   // Expert section (lbw_endpoint=( = 14 chars → 2 more spaces in prefix)
-  const lbwColNums=`#             ${Array.from({length:MAXEP},(_,i)=>String(i+1).padStart(3)).join('')}`;
-  const lbwColBars=`#             ${Array.from({length:MAXEP},()=>'  |').join('')}`;
+  const lbwColNums=`#             ${Array.from({length:nm},(_,i)=>String(i+1).padStart(3)).join('')}`;
+  const lbwColBars=`#             ${Array.from({length:nm},()=>'  |').join('')}`;
 
   let L=[];
 
@@ -3385,19 +3324,19 @@ function generateBash(name){
 
   // ── Endpoint config arrays (always 20 columns) ───────────────
   L.push(`#                    E N D P O I N T   C O N F I G U R A T I O N`);
-  L.push(`#             1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20`);
-  L.push(`#             |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`);
+  L.push(colNums);
+  L.push(colBars);
 
-  const fmt20=(arr)=>arr.map(v=>String(v).padStart(3)).join('');
+  const fmtN=(arr)=>arr.map(v=>String(v).padStart(3)).join('');
 
-  L.push(`no_of_mics=(${fmt20(fullArr(p=>p.mics||1, 0))})\t# number of microphones`);
-  L.push(`record=(    ${fmt20(fullArr(p=>p.rec?1:0, 0))})\t# make local recording?`);
-  L.push(`mixer=(     ${fmt20(fullArr(p=>p.mixer!==false?1:0, 0))})\t# mixer required?`);
-  L.push(`str2T=(     ${fmt20(fullArr(p=>hasTM&&p.str2t!==false?1:0, 0))})\t# stream to Tonmeister?`);
-  L.push(`str2I=(     ${fmt20(fullArr(p=>p.noctcast&&sess.noctcast?1:0, 0))})\t# stream to Icecast?`);
-  L.push(`conductor=( ${fmt20(fullArr(p=>p.mac===sess.condEp&&sess.cond?1:0, 0))})\t# show conductor hands?`);
-  L.push(`ttb=(       ${fmt20(fullArr(p=>p.ttb?1:0, 0))})\t# TTB-device in use?`);
-  L.push(`in_test=(   ${fmt20(fullArr(p=>p.inTest?1:0, 0))})\t# put endpoint in test?`);
+  L.push(`no_of_mics=(${fmtN(fullArr(p=>p.mics||1))})\t# number of microphones`);
+  L.push(`record=(    ${fmtN(fullArr(p=>p.rec?1:0))})\t# make local recording?`);
+  L.push(`mixer=(     ${fmtN(fullArr(p=>p.mixer!==false?1:0))})\t# mixer required?`);
+  L.push(`str2T=(     ${fmtN(fullArr(p=>hasTM&&p.str2t!==false?1:0))})\t# stream to Tonmeister?`);
+  L.push(`str2I=(     ${fmtN(fullArr(p=>p.noctcast&&sess.noctcast?1:0))})\t# stream to Icecast?`);
+  L.push(`conductor=( ${fmtN(fullArr(p=>p.mac===sess.condEp&&sess.cond?1:0))})\t# show conductor hands?`);
+  L.push(`ttb=(       ${fmtN(fullArr(p=>p.ttb?1:0))})\t# TTB-device in use?`);
+  L.push(`in_test=(   ${fmtN(fullArr(p=>p.inTest?1:0))})\t# put endpoint in test?`);
   L.push(``);
   L.push(``);
   L.push(`########################## SETTINGS BEYOND THIS LINE ARE EXPERT-MODE #################################`);
@@ -3425,7 +3364,7 @@ function generateBash(name){
   L.push(`#`);
   L.push(lbwColNums);
   L.push(lbwColBars);
-  L.push(`lbw_endpoint=(${fmt20(fullArr(p=>p.lbw?1:0, 0))})\t# low bandwidth?`);
+  L.push(`lbw_endpoint=(${fmtN(fullArr(p=>p.lbw?1:0))})\t# low bandwidth?`);
   L.push(``);
   L.push(`# Any endpoints sharing a VLAN? Mark them in groups`);
   L.push(`#`);
@@ -3433,10 +3372,7 @@ function generateBash(name){
   const vlanColBars=`#               |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`;
   L.push(vlanColNums);
   L.push(vlanColBars);
-  const vlanVals=Array.from({length:MAXEP},(_,i)=>{
-    const p=musicians[i];
-    return p&&p.vlanGroup?p.vlanGroup:'-';
-  });
+  const vlanVals=musicians.map(p=>p.vlanGroup||'-');
   const tmVlan=tmPart&&tmPart.vlanGroup?tmPart.vlanGroup:'-';
   const jbVlan=jbPart&&jbPart.vlanGroup?jbPart.vlanGroup:'-';
   const vlanStr=[...vlanVals,tmVlan,jbVlan,'-'].join('  ');
@@ -3452,7 +3388,7 @@ function generateBash(name){
   L.push(`#`);
   L.push(lbwColNums);
   L.push(lbwColBars);
-  L.push(`pd_port_offset=(${fmt20(fullArr(()=>0, 0))})`);
+  L.push(`pd_port_offset=(${fmtN(fullArr(()=>0))})`);
   L.push(``);
   L.push(``);
 
@@ -3475,9 +3411,8 @@ function generateBash(name){
   const fullQ=(mi)=>Array.from({length:nc},(_,ci)=>{
     if(ci===mi) return p2('X');
     if(ci<nm)   return p2(getQ(mi,ci));  // active musician cols
-    if(ci<MAXEP) return p2(masterQ);     // unused musician cols
-    if(ci===MAXEP)  return p2(masterQ);  // TM col
-    if(ci===MAXEP+1) return p2(4);       // JB col
+    if(ci===nm)  return p2(masterQ);  // TM col
+    if(ci===nm+1) return p2(4);       // JB col
     return p2(4);                        // HUB col
   });
 
@@ -3486,8 +3421,8 @@ function generateBash(name){
     const qPfx=mi<10?'   ':'  ';
     L.push(`declare -a ${qPfx}Qsize_${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a   Qsize_T=(${Array.from({length:MAXEP},()=>p2(masterTMQ)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
-  if(hasJB) L.push(`declare -a   Qsize_J=(${Array.from({length:MAXEP},()=>p2(4)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
+  if(hasTM) L.push(`declare -a   Qsize_T=(${Array.from({length:nm},()=>p2(masterTMQ)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
+  if(hasJB) L.push(`declare -a   Qsize_J=(${Array.from({length:nm},()=>p2(4)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
   L.push(``);
 
   for(let mi=0;mi<nm;mi++){
@@ -3495,8 +3430,8 @@ function generateBash(name){
     const bqPfx=mi<10?' ':' ';
     L.push(`declare -a ${bqPfx}BQsize_${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a  BQsize_T=(${Array.from({length:MAXEP},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
-  if(hasJB) L.push(`declare -a  BQsize_J=(${Array.from({length:MAXEP},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
+  if(hasTM) L.push(`declare -a  BQsize_T=(${Array.from({length:nm},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
+  if(hasJB) L.push(`declare -a  BQsize_J=(${Array.from({length:nm},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
   L.push(``);
   L.push(``);
 
@@ -3517,15 +3452,15 @@ function generateBash(name){
       if(ci===mi) return p2('X');
       const inp=document.getElementById(`r_${mi}_${ci}`);
       if(ci<nm)    return inp?p2(inp.value):p2(1);
-      if(ci<MAXEP) return p2(1);
-      if(ci===MAXEP) return inp?p2(inp.value):p2(2);
+      if(ci<nm) return p2(1);
+      if(ci===nm) return inp?p2(inp.value):p2(2);
       return p2(1);
     });
     const rPfx=mi<10?'   ':'  ';
     L.push(`declare -a ${rPfx}Redun_${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a   Redun_T=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
-  if(hasJB) L.push(`declare -a   Redun_J=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  if(hasTM) L.push(`declare -a   Redun_T=(${Array.from({length:nm},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  if(hasJB) L.push(`declare -a   Redun_J=(${Array.from({length:nm},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
   L.push(``);
   L.push(``);
 
@@ -3534,11 +3469,11 @@ function generateBash(name){
   L.push(`# Routing from the TTB generated at any endpoint to other endpoints is specified by a "1"`);
   L.push(`# in the respective column(s).`);
   L.push(`#`);
-  L.push(`#                      1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20`);
-  L.push(`#                      |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |`);
+  L.push('#                     '+Array.from({length:nm},(_,i)=>String(i+1).padStart(3)).join(''));
+  L.push('#                     '+Array.from({length:nm},()=>'  |').join(''));
   const ordinals=['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','13th','14th','15th','16th','17th','18th','19th','20th'];
   for(let mi=0;mi<nm;mi++){
-    const row=Array.from({length:MAXEP},(_,mj)=>{
+    const row=Array.from({length:nm},(_,mj)=>{
       if(mj===mi) return 'X';
       if(mj<nm){
         if(musicians[mi].ttb&&musicians[mi].ttbRoutes) return musicians[mi].ttbRoutes[mj]!==false?'1':'0';
