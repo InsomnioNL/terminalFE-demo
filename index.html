@@ -3461,8 +3461,11 @@ function generateBash(name){
   L.push(`pd_script="leap-receiver-v1.3.pd"\t# PD-script to load`);
   L.push(`pd_port_base=3000       \t\t# UDP-port in use for PD-app`);
   L.push(`#`);
-  L.push(lbwColNums);
-  L.push(lbwColBars);
+  // pd_port_offset: "pd_port_offset=(" = 16 chars, digit at 18 → "#" + 15 spaces prefix
+  const pdColNums='#               '+Array.from({length:nm},(_,i)=>String(i+1).padStart(3)).join('');
+  const pdColBars='#               '+Array.from({length:nm},()=>'  |').join('');
+  L.push(pdColNums);
+  L.push(pdColBars);
   L.push(`pd_port_offset=(${fmtN(fullArr(()=>0))})`);
   L.push(``);
   L.push(``);
@@ -3551,8 +3554,9 @@ function generateBash(name){
   L.push(`# Routing from the TTB generated at any endpoint to other endpoints is specified by a "1"`);
   L.push(`# in the respective column(s).`);
   L.push(`#`);
-  L.push('#                     '+Array.from({length:nm},(_,i)=>String(i+1).padStart(3)).join(''));
-  L.push('#                     '+Array.from({length:nm},()=>'  |').join(''));
+  // TTB: "declare -a     ttb_0=( " = 23 chars → "#" + 22 spaces, values 1 char joined with '  '
+  L.push('#                      '+Array.from({length:nm},(_,i)=>String(i+1)).join('  '));
+  L.push('#                      '+Array.from({length:nm},()=>'|').join('  '));
   const ordinals=['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','13th','14th','15th','16th','17th','18th','19th','20th'];
   for(let mi=0;mi<nm;mi++){
     const row=Array.from({length:nm},(_,mj)=>{
