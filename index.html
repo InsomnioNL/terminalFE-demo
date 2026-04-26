@@ -354,6 +354,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     <div class="nf" style="color:rgba(255,255,255,.55)">Voeg spelers toe via de knop hieronder</div>
   </div>
   <button class="btn bot" onclick="openPicker()" data-nl="+ Speler toevoegen" data-en="+ Add player">+ Speler toevoegen</button>
+  <button class="btn bot" onclick="sortPartsByInstrument()" title="Sorteer op orkestrale volgorde" style="font-size:10px;padding:6px 10px">♩ Sorteren</button>
 
   <!-- STAP 3: Sessie-instellingen -->
   <div class="sh" style="margin-top:10px" data-nl="Sessie-instellingen" data-en="Session settings">Sessie-instellingen</div>
@@ -813,6 +814,129 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
         </div>
         <div class="tg" id="edit-tg-rec" onclick="event.stopPropagation();editTog('rec')"></div>
       </div>
+      <!-- Instrument -->
+      <div style="padding:6px 0 2px">
+        <label class="fl" style="font-size:10px" data-nl="Instrument" data-en="Instrument">Instrument</label>
+        <select class="fs" id="edit-sel-instrument" style="font-size:11px" onchange="parts[editIdx].instrument=this.value">
+          <option value="">— geen / onbekend —</option>
+          <optgroup label="Hout">
+            <option value="piccolo">Piccolo</option>
+            <option value="fluit">Fluit</option>
+            <option value="altfluit">Altfluit</option>
+            <option value="hobo">Hobo</option>
+            <option value="althobo">Althobo / Engelse hoorn</option>
+            <option value="klarinet es">Klarinet in Es</option>
+            <option value="klarinet">Klarinet in Bes/A</option>
+            <option value="basklarinet">Basklarinet</option>
+            <option value="fagot">Fagot</option>
+            <option value="contrafagot">Contrafagot</option>
+          </optgroup>
+          <optgroup label="Saxofoon">
+            <option value="sopraansaxofoon">Sopraansaxofoon</option>
+            <option value="altsaxofoon">Altsaxofoon</option>
+            <option value="tenorsaxofoon">Tenorsaxofoon</option>
+            <option value="baritonsaxofoon">Baritonsaxofoon</option>
+          </optgroup>
+          <optgroup label="Koper">
+            <option value="hoorn">Hoorn</option>
+            <option value="trompet">Trompet</option>
+            <option value="trombone">Trombone</option>
+            <option value="bastrombone">Bastrombone</option>
+            <option value="tuba">Tuba</option>
+          </optgroup>
+          <optgroup label="Toetsen / Pluk">
+            <option value="accordeon">Accordeon</option>
+            <option value="mandoline">Mandoline</option>
+            <option value="gitaar">Gitaar</option>
+            <option value="elektrische gitaar">Elektrische gitaar</option>
+            <option value="elektrische bas">Elektrische bas</option>
+            <option value="harp">Harp</option>
+            <option value="celesta">Celesta</option>
+            <option value="keyboard">Keyboards</option>
+            <option value="piano">Piano</option>
+            <option value="orgel">Orgel</option>
+          </optgroup>
+          <optgroup label="Slagwerk">
+            <option value="melodisch slagwerk">Melodisch slagwerk</option>
+            <option value="slagwerk">Slagwerk</option>
+          </optgroup>
+          <optgroup label="Overig">
+            <option value="solist">Solist</option>
+            <option value="dirigent">Dirigent</option>
+          </optgroup>
+          <optgroup label="Strijkers">
+            <option value="1e viool">1e Violinen</option>
+            <option value="2e viool">2e Violinen</option>
+            <option value="altviool">Altviolen</option>
+            <option value="cello">Celli</option>
+            <option value="contrabas">Contrabassen</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <!-- Instrument -->
+      <div style="padding:6px 0 2px">
+        <label class="fl" style="font-size:10px" data-nl="Instrument" data-en="Instrument">Instrument</label>
+        <select class="fs" id="edit-sel-instrument" style="font-size:11px">
+          <option value="">— onbekend —</option>
+          <optgroup label="Hout">
+            <option value="piccolo">Piccolo</option>
+            <option value="fluit">Fluit</option>
+            <option value="altfluit">Altfluit</option>
+            <option value="hobo">Hobo</option>
+            <option value="engelse hoorn">Engelse hoorn</option>
+            <option value="klarinet es">Klarinet in Es</option>
+            <option value="klarinet">Klarinet in Bes/A</option>
+            <option value="basklarinet">Basklarinet</option>
+            <option value="fagot">Fagot</option>
+            <option value="contrafagot">Contrafagot</option>
+          </optgroup>
+          <optgroup label="Saxofoon">
+            <option value="sopraansaxofoon">Sopraansaxofoon</option>
+            <option value="altsaxofoon">Altsaxofoon</option>
+            <option value="tenorsaxofoon">Tenorsaxofoon</option>
+            <option value="baritonsaxofoon">Baritonsaxofoon</option>
+          </optgroup>
+          <optgroup label="Koper">
+            <option value="hoorn">Hoorn</option>
+            <option value="trompet">Trompet</option>
+            <option value="trombone">Trombone</option>
+            <option value="bastrombone">Bastrombone</option>
+            <option value="tuba">Tuba</option>
+          </optgroup>
+          <optgroup label="Toetsen / Pluk / Snaar">
+            <option value="accordeon">Accordeon</option>
+            <option value="mandoline">Mandoline</option>
+            <option value="gitaar">Gitaar</option>
+            <option value="elektrische gitaar">Elektrische gitaar</option>
+            <option value="elektrische bas">Elektrische bas</option>
+            <option value="harp">Harp</option>
+            <option value="celesta">Celesta</option>
+            <option value="keyboard">Keyboard</option>
+            <option value="piano">Piano</option>
+            <option value="orgel">Orgel</option>
+          </optgroup>
+          <optgroup label="Slagwerk">
+            <option value="melodisch slagwerk">Melodisch slagwerk</option>
+            <option value="slagwerk">Slagwerk</option>
+          </optgroup>
+          <optgroup label="Solist">
+            <option value="solist">Solist</option>
+          </optgroup>
+          <optgroup label="Strijkers">
+            <option value="1e viool">1e Viool</option>
+            <option value="2e viool">2e Viool</option>
+            <option value="altviool">Altviool</option>
+            <option value="cello">Cello</option>
+            <option value="contrabas">Contrabas</option>
+          </optgroup>
+          <optgroup label="Overig">
+            <option value="dirigent">Dirigent</option>
+            <option value="other">Overig</option>
+          </optgroup>
+        </select>
+      </div>
+
       <div id="edit-row-tune" style="display:none;padding:6px 0 2px">
         <label class="fl" id="edit-lbl-tune" style="font-size:10px">Test tune</label>
         <select class="fs" id="edit-sel-tune" style="font-size:11px">
@@ -969,17 +1093,70 @@ document.addEventListener('click', function(e){
   if(tg) tg.click();
 });
 
+// Orkestrale volgorde voor default endpoint sortering
+const INSTRUMENT_ORDER=[
+  // Hout
+  'piccolo','fluit','altfluit','hobo','althobo','engelse hoorn',
+  'klarinet es','klarinet','basklarinet','fagot','contrafagot',
+  // Sax
+  'sopraansaxofoon','altsaxofoon','tenorsaxofoon','baritonsaxofoon',
+  // Koper
+  'hoorn','trompet','trombone','bastrombone','tuba',
+  // Toetsen/Pluk/Snaar
+  'accordeon','mandoline','gitaar','elektrische gitaar','elektrische bas',
+  'harp','celesta','keyboard','piano','orgel',
+  // Slagwerk
+  'melodisch slagwerk','slagwerk',
+  // Solist
+  'solist',
+  // Strijkers
+  '1e viool','2e viool','altviool','cello','contrabas',
+  // Overig (geen instrument → achteraan)
+  'other'
+];
+
+function instrumentIndex(ep){
+  const instr=(ep.instrument||'').toLowerCase();
+  if(!instr) return INSTRUMENT_ORDER.length; // geen instrument → achteraan
+  for(let i=0;i<INSTRUMENT_ORDER.length;i++){
+    if(instr.includes(INSTRUMENT_ORDER[i])) return i;
+  }
+  return INSTRUMENT_ORDER.length-1; // 'other'
+}
+
+function sortPartsByInstrument(){
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const musicians=parts.filter(p=>!isSpecial(p));
+  const specials=parts.filter(p=>isSpecial(p));
+  musicians.sort((a,b)=>{
+    const epA=EPS.find(e=>e.mac===a.mac)||a;
+    const epB=EPS.find(e=>e.mac===b.mac)||b;
+    const iA=instrumentIndex(epA);
+    const iB=instrumentIndex(epB);
+    // No instrument → after all instruments but before TM/JB
+    const noA=!(a.instrument||epA.instrument);
+    const noB=!(b.instrument||epB.instrument);
+    if(noA&&noB) return 0;
+    if(noA) return 1;
+    if(noB) return -1;
+    return iA-iB;
+  });
+  // TM/JB always last
+  parts.splice(0,parts.length,...musicians,...specials);
+  renderBuilder();
+}
+
 const EPS=[
   // ── Musici INSOMNIO ─────────────────────────────────────────
-  {mac:'m_64_0b_d7_aa_d1_96',player:'Uli',name:'N08',display:'Uli — N08',loc:'Muziekhuis Utrecht',isp:'KPN VDSL',lbw:false,mics:2,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'Focusrite Scarlett 2i2',conductor_capable:false},
-  {mac:'m_00_23_24_55_0f_f1',player:'Siebe',name:'A6',display:'Siebe — A6',loc:'Thuis Rotterdam',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'Behringer UMC22',conductor_capable:false},
-  {mac:'m_00_23_24_46_02_82',player:'Sabien',name:'A5',display:'Sabien — A5',loc:'Thuis',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
-  {mac:'m_00_23_24_e3_22_be',player:'Pepe',name:'A0',display:'Pepe — A0',loc:'Muziekhuis Utrecht',isp:'Odido glasvezel',lbw:false,mics:2,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'Scarlett Solo',conductor_capable:false},
-  {mac:'m_00_e0_4c_68_52_df',player:'Christiaan',name:'CJR',display:'Christiaan — CJR',loc:'Thuis',isp:'KPN glasvezel',lbw:false,mics:1,roles:['normal'],machine:'MacBook',av:'aa',ai:'Apogee Duet',conductor_capable:true,notes:'USB3.0 Gigabit Lan adapter'},
+  {mac:'m_64_0b_d7_aa_d1_96',instrument:'dirigent',player:'Uli',name:'N08',display:'Uli — N08',loc:'Muziekhuis Utrecht',isp:'KPN VDSL',lbw:false,mics:2,roles:['normal'],machine:'Mac Mini',av:'ab',ai:'Focusrite Scarlett 2i2',conductor_capable:false},
+  {mac:'m_00_23_24_55_0f_f1',instrument:'altviool',player:'Siebe',name:'A6',display:'Siebe — A6',loc:'Thuis Rotterdam',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'Behringer UMC22',conductor_capable:false},
+  {mac:'m_00_23_24_46_02_82',instrument:'harp',player:'Sabien',name:'A5',display:'Sabien — A5',loc:'Thuis',isp:'Delta glasvezel',lbw:true,mics:1,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'',conductor_capable:false},
+  {mac:'m_00_23_24_e3_22_be',instrument:'slagwerk',player:'Pepe',name:'A0',display:'Pepe — A0',loc:'Muziekhuis Utrecht',isp:'Odido glasvezel',lbw:false,mics:2,roles:['normal'],machine:'Linux mini-PC',av:'ag',ai:'Scarlett Solo',conductor_capable:false},
+  {mac:'m_00_e0_4c_68_52_df',instrument:'dirigent',player:'Christiaan',name:'CJR',display:'Christiaan — CJR',loc:'Thuis',isp:'KPN glasvezel',lbw:false,mics:1,roles:['normal'],machine:'MacBook',av:'aa',ai:'Apogee Duet',conductor_capable:true,notes:'USB3.0 Gigabit Lan adapter'},
 
   // ── Speciale eindpunten ──────────────────────────────────────
   {mac:'m_1c_f6_4c_40_83_88',player:null,name:'MX0',display:'MX0 — Tonmeister',loc:'TouchLab Hall',isp:'KPN zakelijk',lbw:false,mics:0,roles:['tonmeister'],machine:'Mac Mini M4',av:'agr',ai:'',conductor_capable:false,avb_bridge:true,notes:'AVB bridge → MOTU netwerk. Reaper multispeaker.'},
-  {mac:'m_d0_11_e5_82_b5_b3',player:'Uli',name:'MX1',display:'Uli — MX1',loc:'Bij jou',isp:'KPN glasvezel',lbw:false,mics:0,roles:['conductor'],machine:'Mac Mini',av:'aa',ai:'',conductor_capable:true,notes:'Conductor. Leap Motion, Max/MSP, Glover.'},
+  {mac:'m_d0_11_e5_82_b5_b3',instrument:'dirigent',player:'Uli',name:'MX1',display:'Uli — MX1',loc:'Bij jou',isp:'KPN glasvezel',lbw:false,mics:0,roles:['conductor'],machine:'Mac Mini',av:'aa',ai:'',conductor_capable:true,notes:'Conductor. Leap Motion, Max/MSP, Glover.'},
   {mac:'m_00_23_24_55_10_9a',player:null,name:'Junctionbox',display:'Junctionbox',loc:'Thuis Christiaan',isp:'KPN glasvezel',lbw:false,mics:0,roles:['hub'],machine:'Linux mini-PC',av:'agr',ai:'',conductor_capable:false},
   {mac:'m_00_23_24_46_6c_41',player:null,name:'CnC-server',display:'CnC-server',loc:'Thuis Christiaan',isp:'KPN glasvezel',lbw:false,mics:0,roles:['hub'],machine:'Linux mini-PC',av:'agr',ai:'',conductor_capable:false,notes:'cnc-server.tail247ab6.ts.net'},
   {mac:'m_9c_58_84_1e_83_1f',player:'Christiaan',name:'CJR-WiFi',display:'Christiaan — CJR WiFi',loc:'Thuis',isp:'KPN glasvezel',lbw:true,mics:1,roles:['normal'],machine:'MacBook',av:'aa',ai:'',conductor_capable:true,notes:'WiFi — lbw'},
@@ -2801,6 +2978,10 @@ function openEdit(i){
   const recRow=document.getElementById('edit-row-rec');
   if(recRow) recRow.style.display=sess.rec?'flex':'none';
 
+  // Instrument
+  const instrSel2=document.getElementById('edit-sel-instrument');
+  if(instrSel2) instrSel2.value=ep.instrument||p.instrument||'';
+
   // VLAN badge
   const vlanBadge=document.getElementById('edit-vlan-badge');
   const vlanLabel=document.getElementById('edit-vlan-label');
@@ -2815,6 +2996,9 @@ function openEdit(i){
   if(tuneRow) tuneRow.style.display=sess.test?'block':'none';
   const tuneSel=document.getElementById('edit-sel-tune');
   if(tuneSel) tuneSel.value=p.tune||'viola.mp3';
+  // Load instrument
+  const instrSel=document.getElementById('edit-sel-instrument');
+  if(instrSel){ const ep=EPS.find(e=>e.mac===p.mac)||p; instrSel.value=p.instrument||ep.instrument||''; }
 
   // Green labels
   ['edit-lbl-lbw','edit-lbl-str2t','edit-lbl-mixer','edit-lbl-ttb','edit-lbl-noctcast','edit-lbl-rec','edit-lbl-tune'].forEach(id=>{
@@ -2885,6 +3069,8 @@ function closeEdit(){
   if(!p) { editIdx=-1; document.getElementById('ep-edit').classList.remove('open'); return; }
   const tgVal=(id,def)=>{ const el=document.getElementById(id); return el?el.classList.contains('on'):def; };
   p.lbw=tgVal('edit-tg-lbw',false);
+  const instrEl=document.getElementById('edit-sel-instrument');
+  if(instrEl) p.instrument=instrEl.value;
   p.ttb=tgVal('edit-tg-ttb',false);
   p.rec=tgVal('edit-tg-rec',false);
   p.str2t=tgVal('edit-tg-str2t',true);
@@ -2892,6 +3078,9 @@ function closeEdit(){
   p.noctcast=tgVal('edit-tg-noctcast',true);
   const tuneSel=document.getElementById('edit-sel-tune');
   p.tune=tuneSel?tuneSel.value||'viola.mp3':'viola.mp3';
+  // Save instrument
+  const instrSelC=document.getElementById('edit-sel-instrument');
+  if(instrSelC) p.instrument=instrSelC.value;
   const micSel=document.getElementById('mic-sel');
   if(micSel) p.mics=parseInt(micSel.value)||1;
   // Save primary role from roles_active
@@ -3496,6 +3685,22 @@ function saveAndGo(){
   if(!name){alert(lang==='nl'?'Voer een sessienaam in':'Enter a session name');return;}
   if(parts.length===0){alert(lang==='nl'?'Voeg minimaal één speler toe':'Add at least one player');return;}
 
+  // HPM actief: bevestig volgorde (bepaalt mixer-kanaaltoewijzing)
+  if(sess.hpm){
+    const isSpecialS=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+    const musiciansS=parts.filter(p=>!isSpecialS(p));
+    const orderList=musiciansS.map((p,i)=>{
+      const ep=EPS.find(e=>e.mac===p.mac)||p;
+      const nm=ep.display||p.name;
+      const instr=ep.instrument||p.instrument||'';
+      return `${i+1}. ${nm}${instr?' ('+instr+')':''}`;
+    }).join('\n');
+    const msg=lang==='nl'
+      ?`Headphone mix is actief.\nDe volgorde bepaalt de mixer-kanaaltoewijzing.\n\n${orderList}\n\nIs deze volgorde correct?`
+      :`Headphone mix is active.\nOrder determines mixer channel assignment.\n\n${orderList}\n\nIs this order correct?`;
+    if(!confirm(msg)) return;
+  }
+
   // Validatie 1: Tonmeister aan maar geen eindpunt gekozen
   if(sess.tm&&!sess.tmEp){
     const sel=document.getElementById('sel-tm');
@@ -3521,6 +3726,15 @@ function saveAndGo(){
     if(recPlayers.length===0){
       if(!confirm(lang==='nl'?'Lokale opname staat aan maar geen enkel eindpunt heeft opname ingeschakeld. Toch doorgaan?':'Record is on but no endpoint has recording enabled. Continue?')) return;
     }
+  }
+
+  // HPM volgorde check
+  if(sess.hpm){
+    const hasInstruments=parts.some(p=>p.instrument);
+    const msg=lang==='nl'
+      ?'Headphone mix is actief — de volgorde van de spelers bepaalt de kanaalvolgorde in de mixer. Is de volgorde correct?\n\nTip: gebruik de ♩ Sorteren knop voor orkestrale volgorde.'
+      :'Headphone mix is active — the order of players determines the channel order in the mixer. Is the order correct?\n\nTip: use the ♩ Sort button for orchestral order.';
+    if(!confirm(msg)) return;
   }
 
   const bash=generateBash(name);
@@ -3688,6 +3902,15 @@ Cancel = add as Musician`
     ttb:false, noctcast:sess.noctcast,
     rec:false, tune:mem.tune||'viola.mp3'
   });
+
+  // Warning: combined musician + TM role
+  const hasNormalRole=initRoles.includes('normal')||(!initRoles.includes('tonmeister')&&!initRoles.includes('hub'));
+  const hasTMRole=initRoles.includes('tonmeister');
+  if(hasNormalRole&&hasTMRole){
+    setTimeout(()=>alert(lang==='nl'
+      ?'Let op: dit eindpunt heeft zowel een muzikant- als Tonmeister-rol. Dit kan de stabiliteit beïnvloeden.'
+      :'Note: this endpoint has both musician and Tonmeister roles. This may affect stability.'),100);
+  }
 
   // Sync SI for special roles
   if(initRoles.includes('tonmeister')){sess.tm=true;sess.tmEp=mac;}
