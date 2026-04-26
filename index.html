@@ -648,31 +648,53 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
 
 <!-- MONITOR -->
 <div class="screen" id="sc-monitor">
+  <!-- Header -->
   <div style="display:flex;align-items:center;justify-content:space-between;padding:2px 0 9px">
     <div>
-      <div style="font-family:var(--serif);font-size:20px;font-weight:600;font-style:italic;color:var(--text)" id="mon-title">Waiting room</div>
+      <div style="font-family:var(--serif);font-size:20px;font-weight:600;font-style:italic;color:var(--text)" id="mon-title">Monitor</div>
       <div style="font-size:12px;color:var(--text2)" id="mon-sub"></div>
     </div>
-    <span class="bdg bg" id="mon-badge"></span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="bdg bg" id="mon-badge"></span>
+      <button onclick="pollStatus()" style="font-size:10px;font-family:var(--mono);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);border-radius:4px;padding:3px 8px;cursor:pointer" title="Refresh">↻</button>
+    </div>
   </div>
+
+  <!-- Server URL instelling — TouchLab only -->
+  <div id="mon-server-card" style="display:none;margin-bottom:8px">
+    <div class="card" style="padding:10px 13px">
+      <div style="font-size:9px;color:#f0b93a;font-family:var(--mono);margin-bottom:6px">SERVER — TouchLab</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input id="server-url-input" type="text" placeholder="https://insomnio.dynet.com:5000"
+          style="flex:1;font-size:11px;font-family:var(--mono);background:var(--bg2);border:1px solid rgba(255,255,255,.15);border-radius:4px;padding:5px 8px;color:#fff"
+          oninput="localStorage.setItem('terminal_server_url',this.value)">
+        <button onclick="pollStatus()" style="font-size:10px;font-family:var(--mono);background:rgba(69,230,143,.12);border:1px solid rgba(69,230,143,.3);color:#45e68f;border-radius:4px;padding:5px 10px;cursor:pointer;white-space:nowrap">Test</button>
+      </div>
+      <div id="server-status" style="font-size:9px;color:rgba(255,255,255,.3);font-family:var(--mono);margin-top:5px"></div>
+    </div>
+  </div>
+
+  <!-- Sessie-brede commando's -->
+  <div class="sh" data-nl="Sessie" data-en="Session">Sessie</div>
+  <div class="card" style="padding:10px 13px;margin-bottom:8px">
+    <div style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--mono);margin-bottom:8px" id="mon-sess-name">Geen actieve sessie</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="cb cj" onclick="sendCmd('session-start','ALL')" style="flex:1">▶ Session start</button>
+      <button class="cb cl" onclick="sendCmd('session-end','ALL')" style="flex:1">■ Session end</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+      <button class="cb cr2" onclick="confirmCmd('reboot','ALL')" style="flex:1">↺ Reboot ALL</button>
+      <button class="cb cs" onclick="confirmCmd('shutdown','ALL')" style="flex:1">⏻ Shutdown ALL</button>
+    </div>
+  </div>
+
+  <!-- Status per eindpunt -->
   <div class="sh" data-nl="Status per eindpunt" data-en="Status per endpoint">Status per eindpunt</div>
-  <div class="card" id="mon-eps"></div>
-  <div class="sh" data-nl="Live log" data-en="Live log">Live log</div>
+  <div id="mon-eps" style="margin-bottom:8px"></div>
+
+  <!-- Live log -->
+  <div class="sh" data-nl="Log" data-en="Log">Log</div>
   <div class="log" id="mon-log"></div>
-  <div class="sh" data-nl="Commando's" data-en="Commands">Commando's</div>
-  <div class="card" style="padding:9px 13px;margin-bottom:0">
-    <label class="fl" data-nl="Stuur naar" data-en="Send to">Stuur naar</label>
-    <select class="fs" id="cmd-target">
-      <option data-nl="Alle deelnemers" data-en="All participants">Alle deelnemers</option>
-      <option>Siebe</option><option>Sabien</option><option>Pepe</option><option>Uli</option>
-    </select>
-  </div>
-  <div class="cbar">
-    <button class="cb cj" onclick="doCmd('join_session')">join</button>
-    <button class="cb cl" onclick="doCmd('leave_session')">leave</button>
-    <button class="cb cr2" onclick="doCmd('reboot')">reboot</button>
-    <button class="cb cs" onclick="doCmd('shutdown')">stop</button>
-  </div>
 </div>
 
 <!-- EINDPUNTEN -->
@@ -1169,10 +1191,82 @@ function setMode(m){
   renderBuilder();
 }
 
+// RSA key management
+let rsaPrivateKey=null;
+let rsaPublicKeyPem=null;
+
+async function generateRSAKey(){
+  const status=document.getElementById('key-status');
+  const pubbox=document.getElementById('pubkey-box');
+  const pubtext=document.getElementById('pubkey-text');
+  if(status) status.textContent='Bezig met genereren...';
+  try {
+    const keyPair=await window.crypto.subtle.generateKey(
+      {name:'RSASSA-PKCS1-v1_5',modulusLength:4096,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},
+      false,  // private key is non-extractable
+      ['sign','verify']
+    );
+    rsaPrivateKey=keyPair.privateKey;
+
+    // Export public key as PEM
+    const pubKeyDer=await window.crypto.subtle.exportKey('spki',keyPair.publicKey);
+    const pubKeyB64=btoa(String.fromCharCode(...new Uint8Array(pubKeyDer)));
+    const pemHeader='-----BEGIN PUBLIC KEY-----';
+    const pemFooter='-----END PUBLIC KEY-----';
+    const pemBody=pubKeyB64.match(/.{1,64}/g).join('\n');
+    const pem=pemHeader+'\n'+pemBody+'\n'+pemFooter;
+    rsaPublicKeyPem=pem;
+
+    // Store public key PEM in localStorage
+    localStorage.setItem('terminal_pubkey_pem',pem);
+
+    if(status) status.textContent='✓ Sleutelpaar gegenereerd. Private key is veilig opgeslagen in deze browser.';
+    if(pubbox) pubbox.style.display='block';
+    if(pubtext) pubtext.value=pem;
+  } catch(e) {
+    if(status) status.textContent='Fout bij genereren: '+e.message;
+  }
+}
+
+function copyPubKey(){
+  const pubtext=document.getElementById('pubkey-text');
+  if(pubtext){
+    pubtext.select();
+    document.execCommand('copy');
+    alert('Public key gekopieerd naar klembord.');
+  }
+}
+
+async function signData(data){
+  if(!rsaPrivateKey) throw new Error('Geen private key beschikbaar');
+  const enc=new TextEncoder();
+  const sig=await window.crypto.subtle.sign('RSASSA-PKCS1-v1_5',rsaPrivateKey,enc.encode(data));
+  return btoa(String.fromCharCode(...new Uint8Array(sig)));
+}
+
+// Load stored pubkey on startup
+(function(){
+  const stored=localStorage.getItem('terminal_pubkey_pem');
+  if(stored){
+    rsaPublicKeyPem=stored;
+    setTimeout(()=>{
+      const status=document.getElementById('key-status');
+      const pubbox=document.getElementById('pubkey-box');
+      const pubtext=document.getElementById('pubkey-text');
+      if(status) status.textContent='✓ Bestaande public key gevonden.';
+      if(pubbox) pubbox.style.display='block';
+      if(pubtext) pubtext.value=stored;
+    },500);
+  }
+})();
+
 function applyFeatureVisibility(){
   // Show TouchLab builder section
   const tlSection=document.getElementById('tl-builder-section');
   if(tlSection) tlSection.style.display=appMode==='touchlab'?'block':'none';
+  // Show server URL card only in TouchLab mode
+  const monServer=document.getElementById('mon-server-card');
+  if(monServer) monServer.style.display=appMode==='touchlab'?'block':'none';
 
   // Grey out features not accessible in current mode
   const features={
@@ -1414,55 +1508,253 @@ function init2(n,player){
 function roleLbl(r){return r==='tonmeister'?'Tonmeister':r==='hub'?'Junctionbox':r==='conductor'?'Conductor':'Musician'}
 function roleCls(r){return r==='tonmeister'?'bam':r==='hub'||r==='conductor'?'bb':'bgr'}
 
+// ── Monitor state ─────────────────────────────────────────────
+let monitorOnline={};   // mac → true/false (from ONLINE map)
+let monitorPending={};  // mac → true/false (command file still present)
+let pollTimer=null;
+
 function renderMonitor(){
   const el=document.getElementById('mon-eps');
-  const log=document.getElementById('mon-log');
   const sub=document.getElementById('mon-sub');
   const badge=document.getElementById('mon-badge');
-  const n=Object.keys(WR).length;
-  sub.textContent=t('sub',n);
-  badge.textContent=n+' '+t('online');
-  el.innerHTML=Object.entries(WR).map(([mac,info])=>{
-    const ep=EPS.find(e=>e.mac===mac);
-    const name=ep?.display||ep?.name||info.name;
-    const monInitial=init2(ep?.name||info.name,ep?.player);
-    const monAvCls=avClass(ep);
-    const hasAi=!!info.ai;
-    return `<div class="ep-r">
-      <div class="sdot sg"></div>
-      <div class="ep-i">
-        <div class="ep-n">${name}</div>
-        <div class="ep-d">${info.public_ip} · LAN ${info.lan}</div>
-        <div class="pfc"><span class="${hasAi?'pok':'pwarn'}">${hasAi?'✓':'!'}</span>${hasAi?info.ai:t('no_ai')}</div>
-        ${info.teensy?`<div class="pfc"><span class="pok">✓</span>${t('ttb')}</div>`:''}
-        <div class="pfc"><span class="pok">✓</span>GoI ${info.goi} · ${t('online')} ${info.online}</div>
+  const sessName=document.getElementById('mon-sess-name');
+
+  // Session name
+  const sName=document.getElementById('b-name')?.value||'';
+  if(sessName) sessName.textContent=sName?`Sessie: ${sName}`:'Geen actieve sessie';
+
+  // Collect all endpoints in current session
+  const isJB=p=>(p.roles_active||[p.role]).includes('hub');
+  const sessionParts=parts.filter(p=>!isJB(p));
+
+  const n=sessionParts.length;
+  if(sub) sub.textContent=t('sub',n);
+  if(badge) badge.textContent=n+' '+t('online');
+
+  if(!el) return;
+
+  if(n===0){
+    el.innerHTML=`<div class="card" style="padding:13px"><div class="nf">${lang==='nl'?'Geen actieve sessie — bouw eerst een sessie in de builder':'No active session — build a session first'}</div></div>`;
+    return;
+  }
+
+  el.innerHTML=sessionParts.map(p=>{
+    const ep=EPS.find(e=>e.mac===p.mac)||p;
+    const name=ep.display||p.name;
+    const initial=init2(ep.name,ep.player);
+    const avcls=avClass(ep);
+    const online=monitorOnline[p.mac];
+    const pending=monitorPending[p.mac];
+
+    // Status
+    let statusColor='rgba(255,255,255,.2)';
+    let statusText=lang==='nl'?'Offline':'Offline';
+    let statusDot='rgba(255,255,255,.2)';
+    if(online&&pending){statusColor='#f0b93a';statusText=lang==='nl'?'Wacht op uitvoering':'Awaiting execution';statusDot='#f0b93a';}
+    else if(online&&!pending){statusColor='#45e68f';statusText=lang==='nl'?'Online':'Online';statusDot='#45e68f';}
+
+    return `<div class="card" style="padding:10px 13px;margin-bottom:6px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${statusDot};flex-shrink:0"></div>
+        <div class="av ${avcls}" style="width:28px;height:28px;font-size:9px;flex-shrink:0">${initial}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:#fff">${name}</div>
+          <div style="font-size:10px;color:${statusColor};font-family:var(--mono)">${statusText}</div>
+        </div>
+      </div>
+      <!-- Per-endpoint commands -->
+      <div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap">
+        <button onclick="sendCmd('session-start','${p.mac}')" style="font-size:10px;font-family:var(--mono);background:rgba(69,230,143,.12);border:1px solid rgba(69,230,143,.3);color:#45e68f;border-radius:4px;padding:4px 8px;cursor:pointer;flex:1">▶ start</button>
+        <button onclick="sendCmd('session-end','${p.mac}')" style="font-size:10px;font-family:var(--mono);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);border-radius:4px;padding:4px 8px;cursor:pointer;flex:1">■ end</button>
+        <button onclick="sendCmd('reboot','${p.mac}')" style="font-size:10px;font-family:var(--mono);background:rgba(240,185,58,.1);border:1px solid rgba(240,185,58,.3);color:#f0b93a;border-radius:4px;padding:4px 8px;cursor:pointer;flex:1">↺ reboot</button>
+        <button onclick="sendCmd('shutdown','${p.mac}')" style="font-size:10px;font-family:var(--mono);background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.3);color:#ff6060;border-radius:4px;padding:4px 8px;cursor:pointer;flex:1">⏻ stop</button>
       </div>
     </div>`;
   }).join('');
-  log.innerHTML=logLines.join('\n');
+
+  document.getElementById('mon-log').innerHTML=logLines.map(l=>`<div>${l}</div>`).join('');
+  document.getElementById('mon-log').scrollTop=9999;
 }
 
-function doCmd(cmd){
-  const tgt=document.getElementById('cmd-target').value;
-  if(!confirm(t('confirm_cmd',cmd,tgt))) return;
+async function sendCmd(cmd, target){
+  // target = 'ALL' or a MAC address
+  const sName=document.getElementById('b-name')?.value||'session';
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const musicians=parts.filter(p=>!isSpecial(p));
+
+  // Build targets list
+  let targets=[];
+  if(target==='ALL'){
+    targets=[...musicians];
+    // Add TM if str2T active
+    const tmPart=parts.find(p=>(p.roles_active||[p.role]).includes('tonmeister'));
+    if(sess.tm&&tmPart&&musicians.some(p=>p.str2t!==false)) targets.push(tmPart);
+    // Add JB if lbw active
+    const jbPart=parts.find(p=>(p.roles_active||[p.role]).includes('hub'));
+    if(sess.jb&&jbPart&&musicians.some(p=>p.lbw)) targets.push(jbPart);
+  } else {
+    const p=parts.find(x=>x.mac===target);
+    if(p) targets=[p];
+  }
+
+  if(targets.length===0){
+    addLog(`${cmd} → geen eindpunten gevonden`,'warn');
+    return;
+  }
+
+  const epIds=musicians.map(p=>{const ep=EPS.find(e=>e.mac===p.mac)||p;return ep.player||ep.name;});
+  const header=`#${cmd} ${sName} ${epIds.join(' ')}`;
+
+  addLog(`→ ${cmd} ${target==='ALL'?'ALL ('+targets.length+'x)':target}`,'info');
+
+  for(const p of targets){
+    const content=cmd==='session-start'?`${header}
+${generatedBash||''}`:header;
+    const ep=EPS.find(e=>e.mac===p.mac)||p;
+    const filename=`${p.mac}.command`;
+
+    try{
+      const serverUrl=localStorage.getItem('terminal_server_url')||'';
+      if(!serverUrl){
+        addLog('Server URL niet ingesteld — gebruik download','warn');
+        downloadCmd(filename, content);
+        continue;
+      }
+      const resp=await fetch(`${serverUrl}/send`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({filename, content, session:sName})
+      });
+      if(resp.ok){
+        monitorPending[p.mac]=true;
+        addLog(`✓ ${ep.display||ep.name} → ${filename}`,'ok');
+      } else {
+        addLog(`✗ ${ep.display||ep.name} → fout`,'err');
+      }
+    } catch(e){
+      addLog(`✗ ${ep.display||ep.name} → niet bereikbaar`,'err');
+    }
+  }
+  renderMonitor();
+}
+
+function downloadCmd(filename, content){
+  const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+}
+
+function addLog(msg, type){
   const now=new Date().toTimeString().slice(0,8);
-  logLines.push(`<span class="lo">${now} → ${cmd} → ${tgt}</span>`);
-  document.getElementById('mon-log').innerHTML=logLines.join('\n');
-  document.getElementById('mon-log').scrollTop=9999;
-  if(cmd==='join_session'){
-    document.getElementById('active-card').innerHTML=`
-      <div class="cr" onclick="nav('monitor')">
-        <div class="av ag">SE</div>
-        <div class="ri">
-          <div class="rn">Demo sessie</div>
-          <div class="rs">4 deeln. · MESH</div>
-        </div>
-        <div class="rr"><span class="bdg blive">${t('live')}</span><span class="chev">›</span></div>
-      </div>`;
+  const colors={ok:'#45e68f',warn:'#f0b93a',err:'#ff6060',info:'rgba(255,255,255,.6)'};
+  const color=colors[type]||colors.info;
+  logLines.push(`<span style="color:${color}">${now} ${msg}</span>`);
+  if(logLines.length>100) logLines.shift();
+  const log=document.getElementById('mon-log');
+  if(log){log.innerHTML=logLines.map(l=>`<div>${l}</div>`).join('');log.scrollTop=9999;}
+}
+
+function confirmCmd(cmd, target){
+  const msg=lang==='nl'
+    ?`${cmd} versturen naar ${target==='ALL'?'alle eindpunten':target}? Dit kan niet ongedaan worden gemaakt.`
+    :`Send ${cmd} to ${target==='ALL'?'all endpoints':target}? This cannot be undone.`;
+  if(confirm(msg)) sendCmd(cmd, target);
+}
+
+async function pollStatus(){
+  // Load saved server URL into input
+  const saved=localStorage.getItem('terminal_server_url')||'';
+  const inp=document.getElementById('server-url-input');
+  if(inp&&!inp.value&&saved) inp.value=saved;
+
+  const serverUrl=saved||inp?.value||'';
+  const statusEl=document.getElementById('server-status');
+
+  if(!serverUrl){
+    if(statusEl) statusEl.textContent=lang==='nl'?'Geen server ingesteld':'No server configured';
+    return;
   }
-  if(cmd==='leave_session'||cmd==='shutdown'){
-    document.getElementById('active-card').innerHTML=`<div class="nf">${lang==='nl'?'Geen actieve sessie':'No active session'}</div>`;
+
+  if(statusEl) statusEl.textContent=lang==='nl'?'Verbinden...':'Connecting...';
+
+  try{
+    // Check online endpoints
+    const resp=await fetch(`${serverUrl}/online`,{signal:AbortSignal.timeout(5000)});
+    if(resp.ok){
+      const data=await resp.json();
+      const onlineSet=new Set(data.online||[]);
+      parts.forEach(p=>{monitorOnline[p.mac]=onlineSet.has(p.mac);});
+      if(statusEl) statusEl.textContent=`✓ ${lang==='nl'?'Verbonden':'Connected'} · ${data.online?.length||0} ${lang==='nl'?'eindpunten online':'endpoints online'}`;
+    }
+    // Check pending command files
+    const resp2=await fetch(`${serverUrl}/commands`,{signal:AbortSignal.timeout(5000)});
+    if(resp2.ok){
+      const data=await resp2.json();
+      const listing=data.listing||'';
+      parts.forEach(p=>{monitorPending[p.mac]=listing.includes(p.mac+'.command');});
+    }
+  } catch(e){
+    if(statusEl) statusEl.textContent=`✗ ${lang==='nl'?'Niet bereikbaar':'Server unreachable'}`;
   }
+  renderMonitor();
+}
+
+let logEventSource=null;
+
+function startLogStream(){
+  const serverUrl=localStorage.getItem('terminal_server_url')||'';
+  if(!serverUrl) return;
+  if(logEventSource) logEventSource.close();
+
+  logEventSource=new EventSource(`${serverUrl}/log-stream`);
+
+  logEventSource.onmessage=e=>{
+    const line=e.data;
+    // Try to identify endpoint from MAC in line
+    const macMatch=line.match(/m_[0-9a-f_]{16}/);
+    const mac=macMatch?macMatch[0]:null;
+    const ep=mac?EPS.find(e=>e.mac===mac):null;
+    const name=ep?(ep.display||ep.name):'';
+
+    // Determine color from content
+    let color='rgba(255,255,255,.5)';
+    if(line.includes('READY')||line.includes('online')||line.includes('ONLINE')) color='#45e68f';
+    else if(line.includes('OFFLINE')||line.includes('offline')) color='rgba(255,255,255,.3)';
+    else if(line.includes('ERROR')||line.includes('error')) color='#ff6060';
+    else if(line.includes('command')||line.includes('session')) color='#f0b93a';
+
+    // Add endpoint name if recognized
+    const display=name?`${line} <span style="color:#45e68f;font-size:9px">(${name})</span>`:line;
+    logLines.push(`<span style="color:${color}">${display}</span>`);
+    if(logLines.length>200) logLines.shift();
+
+    // Update monitor pending status if command executed
+    if(mac&&(line.includes('READY')||line.includes('executed'))) monitorPending[mac]=false;
+    if(mac&&line.includes('ONLINE')) monitorOnline[mac]=true;
+    if(mac&&line.includes('OFFLINE')) monitorOnline[mac]=false;
+
+    const log=document.getElementById('mon-log');
+    if(log){log.innerHTML=logLines.map(l=>`<div>${l}</div>`).join('');log.scrollTop=9999;}
+    renderMonitor();
+  };
+
+  logEventSource.onerror=()=>{
+    // Reconnect after 5 seconds
+    setTimeout(startLogStream, 5000);
+  };
+}
+
+function stopLogStream(){
+  if(logEventSource){ logEventSource.close(); logEventSource=null; }
+}
+
+function startPolling(){
+  if(pollTimer) clearInterval(pollTimer);
+  pollTimer=setInterval(pollStatus, 30000);
+  pollStatus();
+  startLogStream();  // start SSE stream like Monitor.sh tail -f
 }
 
 function newSession(){
@@ -2887,6 +3179,9 @@ function generateBash(name){
   L.push(``);
   L.push(`Cfg_version=1.4`);
   L.push(``);
+  // Note: when sent via DoSession, file is prepended with:
+  // #session-start <name> <ep1> <ep2>... (endpoint identifiers, not MACs)
+  // This is handled by the SCP send function, not here
 
   // ── Participants & endpoints ─────────────────────────────────
   L.push(`# List of participating musicians and their endpoints for this session.`);
@@ -2960,20 +3255,17 @@ function generateBash(name){
   L.push(``);
   L.push(``);
 
-  // ── Conductor module params ───────────────────────────────────
-  const hasCond=sess.cond&&musicians.some(p=>p.mac===sess.condEp);
-  if(hasCond){
-    L.push(`# conductor-module parameters`);
-    L.push(`#`);
-    L.push(`pd_script="leap-receiver-v1.3.pd"\t# PD-script to load`);
-    L.push(`pd_port_base=3000       \t\t# UDP-port in use for PD-app`);
-    L.push(`#`);
-    L.push(lbwColNums);
-    L.push(lbwColBars);
-    L.push(`pd_port_offset=(${fmt20(fullArr(()=>0, 0))})`);
-    L.push(``);
-    L.push(``);
-  }
+  // ── Conductor module params (always present) ──────────────
+  L.push(`# conductor-module parameters`);
+  L.push(`#`);
+  L.push(`pd_script="leap-receiver-v1.3.pd"\t# PD-script to load`);
+  L.push(`pd_port_base=3000       \t\t# UDP-port in use for PD-app`);
+  L.push(`#`);
+  L.push(lbwColNums);
+  L.push(lbwColBars);
+  L.push(`pd_port_offset=(${fmt20(fullArr(()=>0, 0))})`);
+  L.push(``);
+  L.push(``);
 
   // ── Q matrices (20 cols + 3 special) ─────────────────────────
   L.push(`# Jacktrip (jitter-buffer) Qsize- matrices.`);
@@ -3002,7 +3294,8 @@ function generateBash(name){
 
   for(let mi=0;mi<nm;mi++){
     const vals=fullQ(mi);
-    L.push(`declare -a   Qsize_${String(mi).padStart(2)}=(${vals.join(' ')})`);
+    const qPfx=mi<10?'   ':'  ';
+    L.push(`declare -a ${qPfx}Qsize_${mi}=(${vals.join(' ')})`);
   }
   if(hasTM) L.push(`declare -a   Qsize_T=(${Array.from({length:MAXEP},()=>p2(masterTMQ)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
   if(hasJB) L.push(`declare -a   Qsize_J=(${Array.from({length:MAXEP},()=>p2(4)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
@@ -3010,7 +3303,8 @@ function generateBash(name){
 
   for(let mi=0;mi<nm;mi++){
     const vals=Array.from({length:nc},(_,ci)=>p2(ci===mi?'X':50));
-    L.push(`declare -a  BQsize_${String(mi).padStart(2)}=(${vals.join(' ')})`);
+    const bqPfx=mi<10?' ':' ';
+    L.push(`declare -a ${bqPfx}BQsize_${mi}=(${vals.join(' ')})`);
   }
   if(hasTM) L.push(`declare -a  BQsize_T=(${Array.from({length:MAXEP},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @TM`);
   if(hasJB) L.push(`declare -a  BQsize_J=(${Array.from({length:MAXEP},()=>p2(50)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})\t# in-queue @JB`);
@@ -3038,10 +3332,11 @@ function generateBash(name){
       if(ci===MAXEP) return inp?p2(inp.value):p2(2);
       return p2(1);
     });
-    L.push(`declare -a   ${idxPad(mi,'Redun')}=(${vals.join(' ')})`);
+    const rPfx=mi<10?'   ':'  ';
+    L.push(`declare -a ${rPfx}Redun_${mi}=(${vals.join(' ')})`);
   }
-  if(hasTM) L.push(`declare -a   ${'Redun_T'.padStart(7)}=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
-  if(hasJB) L.push(`declare -a   ${'Redun_J'.padStart(7)}=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  if(hasTM) L.push(`declare -a   Redun_T=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
+  if(hasJB) L.push(`declare -a   Redun_J=(${Array.from({length:MAXEP},()=>p2(1)).join(' ')} ${p2('X')} ${p2('X')} ${p2('X')})`);
   L.push(``);
   L.push(``);
 
@@ -3063,7 +3358,8 @@ function generateBash(name){
       return '0';  // unused cols = 0
     }).join('  ');
     const otherOrd=ordinals.filter((_,i)=>i!==mi&&i<nm);
-    L.push(`declare -a     ttb_${String(mi).padStart(2)}=( ${row})\t# routing from ${ordinals[mi]} endpoint to ${otherOrd.join(', ')}`);
+    const tPfx=mi<10?'     ':'    ';
+    L.push(`declare -a ${tPfx}ttb_${mi}=( ${row})\t# routing from ${ordinals[mi]} endpoint to ${otherOrd.join(', ')}`);
   }
   L.push(``);
   L.push(``);
@@ -3148,6 +3444,53 @@ function onSiEpChange(role, mac){
   renderBuilder();
 }
 
+function buildCommandFiles(name, bash){
+  // Build list of endpoints that get a command file
+  const isSpecial=p=>(p.roles_active||[p.role]).some(r=>r==='tonmeister'||r==='hub');
+  const musicians=parts.filter(p=>!isSpecial(p));
+  const tmPart=parts.find(p=>(p.roles_active||[p.role]).includes('tonmeister'));
+  const jbPart=parts.find(p=>(p.roles_active||[p.role]).includes('hub'));
+
+  // Collect all endpoints that receive a command file
+  const targets=[];
+  musicians.forEach(p=>{
+    const ep=EPS.find(e=>e.mac===p.mac)||p;
+    targets.push({mac:p.mac, name:ep.name, player:ep.player});
+  });
+  // TM gets command if anyone streams to TM
+  const hasTMstreams=musicians.some(p=>p.str2t!==false);
+  if(sess.tm&&tmPart&&hasTMstreams){
+    const ep=EPS.find(e=>e.mac===tmPart.mac)||tmPart;
+    targets.push({mac:tmPart.mac, name:ep.name, player:null});
+  }
+  // JB gets command if lbw endpoints or HUB mode
+  const hasLBW=musicians.some(p=>p.lbw);
+  const isHUB=document.getElementById('b-mode')?.value?.startsWith('HUB');
+  if(sess.jb&&jbPart&&(hasLBW||isHUB)){
+    const ep=EPS.find(e=>e.mac===jbPart.mac)||jbPart;
+    targets.push({mac:jbPart.mac, name:ep.name, player:null});
+  }
+
+  // Header: #session-start <sessienaam> <ep1> <ep2>...
+  // Endpoint identifiers: player name if set, otherwise machine name
+  const epIds=musicians.map(p=>{
+    const ep=EPS.find(e=>e.mac===p.mac)||p;
+    return ep.player||ep.name;
+  });
+  const header=`#session-start ${name} ${epIds.join(' ')}`;
+
+  // Build one command file per target
+  const files=targets.map(t=>({
+    mac: t.mac,
+    name: t.name,
+    filename: `${t.mac}.command`,
+    content: `${header}
+${bash}`
+  }));
+
+  return files;
+}
+
 function saveAndGo(){
   const name=document.getElementById('b-name').value.trim();
   if(!name){alert(lang==='nl'?'Voer een sessienaam in':'Enter a session name');return;}
@@ -3199,6 +3542,55 @@ function closeBashPreview(){
   document.getElementById('bash-preview').classList.remove('open');
   nav('monitor');
 }
+async function sendToServer(){
+  if(!generatedBash||!generatedName){
+    alert(lang==='nl'?'Genereer eerst een sessie.':'Please generate a session first.');
+    return;
+  }
+
+  const serverUrl=localStorage.getItem('terminal_server_url')||'';
+  if(!serverUrl){
+    const url=prompt(
+      lang==='nl'
+        ?'Server URL (bijv. https://insomnio.dynet.com:5000):'
+        :'Server URL (e.g. https://insomnio.dynet.com:5000):',
+      'https://insomnio.dynet.com:5000'
+    );
+    if(!url) return;
+    localStorage.setItem('terminal_server_url', url);
+  }
+
+  const files=buildCommandFiles(generatedName, generatedBash);
+  const btn=document.getElementById('btn-send-server');
+  if(btn){ btn.textContent='Versturen...'; btn.disabled=true; }
+
+  let success=0, failed=0;
+  for(const file of files){
+    try{
+      const resp=await fetch(`${localStorage.getItem('terminal_server_url')}/send`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          filename: file.filename,
+          content:  file.content,
+          session:  generatedName
+        })
+      });
+      if(resp.ok) success++;
+      else failed++;
+    } catch(e){
+      failed++;
+    }
+  }
+
+  if(btn){ btn.textContent='✓ Versturen'; btn.disabled=false; }
+
+  const msg=failed===0
+    ? (lang==='nl'?`${success} commando-bestanden verstuurd naar de server.`:`${success} command files sent to server.`)
+    : (lang==='nl'?`${success} verstuurd, ${failed} mislukt.`:`${success} sent, ${failed} failed.`);
+  alert(msg);
+}
+
 function downloadBash(){
   const blob=new Blob([generatedBash],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');
