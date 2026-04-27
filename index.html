@@ -521,7 +521,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
   <div class="card" style="padding:10px 13px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div>
-        <div class="tgl-l" id="lbl-q-mm" data-nl="Musici &lt;-&gt; Musici" data-en="Musicians &lt;-&gt; Musicians">Musici &lt;-&gt; Musici</div>
+        <div class="tgl-l" id="lbl-q-mm" data-nl="Musici <-> Musici" data-en="Musicians <-> Musicians">Musici <-> Musici</div>
         <div class="tgl-s" id="masterq-sub">Standaard voor alle musici-verbindingen</div>
       </div>
       <select id="masterq-sel" class="fs" style="font-size:11px;width:120px;padding:4px 6px" onchange="applyMasterQ()">
@@ -539,7 +539,7 @@ body[data-mode="touchlab"] #pill-touchlab{display:block !important;border:1px so
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div>
-        <div class="tgl-l" id="lbl-q-mt" data-nl="Musici -&gt; Tonmeister" data-en="Musicians -&gt; Tonmeister">Musici -&gt; Tonmeister</div>
+        <div class="tgl-l" id="lbl-q-mt" data-nl="Musici -> Tonmeister" data-en="Musicians -> Tonmeister">Musici -> Tonmeister</div>
         <div class="tgl-s" id="mastertmq-sub" data-nl="Broadcast-lijnen naar Tonmeister" data-en="Broadcast lines to Tonmeister">Broadcast-lijnen naar Tonmeister</div>
       </div>
       <select id="mastertmq-sel" class="fs" style="font-size:11px;width:120px;padding:4px 6px" onchange="applyMasterTMQ()">
@@ -966,7 +966,7 @@ const T={
     s_nsc:'Stream naar luisterserver',s_ttb:'MIDI-signaal per voetpedaal — routing in expert',
     s_rec:'Per eindpunt instelbaar na activatie',s_extmix:'Fysieke mixer of DAW op Tonmeister',
     s_noctmix:'Tonmeister-mix ook naar NoSleepCast',
-    q_mm:'Musici &lt;-&gt; Musici',q_mt:'Musici -&gt; Tonmeister',q_bcast:'Broadcast-lijnen naar Tonmeister',
+    q_mm:'Musici <-> Musici',q_mt:'Musici -> Tonmeister',q_bcast:'Broadcast-lijnen naar Tonmeister',
   },
   en:{
     search:'Search name or location...',picker_search:'Search player...',
@@ -992,7 +992,7 @@ const T={
     s_nsc:'Stream to listener server',s_ttb:'MIDI signal per foot pedal — routing in expert',
     s_rec:'Configurable per endpoint after activation',s_extmix:'Physical mixer or DAW at Tonmeister',
     s_noctmix:'Tonmeister mix to NoSleepCast',
-    q_mm:'Musicians &lt;-&gt; Musicians',q_mt:'Musicians -&gt; Tonmeister',q_bcast:'Broadcast lines to Tonmeister',
+    q_mm:'Musicians <-> Musicians',q_mt:'Musicians -> Tonmeister',q_bcast:'Broadcast lines to Tonmeister',
   }
 };
 function t(k,...a){const fn=T[lang][k];return typeof fn==='function'?fn(...a):fn||k;}
