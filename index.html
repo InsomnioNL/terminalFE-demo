@@ -1672,7 +1672,7 @@ function doLogin(){
     sessionStorage.setItem('terminal_auth','1');
     document.getElementById('login-code').value='';
     err.textContent='';
-    isLoggedIn()?nav('build'):nav('login');
+    nav('builder');
     applyFeatureVisibility();
   } else {
     err.textContent='Onjuiste toegangscode';
